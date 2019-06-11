@@ -144,9 +144,9 @@ From command line (while in same directory as file), run `python3 blinkatest.py`
    ### For code (same as wiring site):   
 https://learn.adafruit.com/pm25-air-quality-sensor/circuitpython-code
 
-    Make nano file or other text editor, copy code and save as .py file in /home/pi/SpokaneSchools/software directory (or use git clone - code is from adafruit not gound on github?)
+Make nano file or other text editor, copy code and save as .py file in /home/pi/SpokaneSchools/software directory (or use git clone - code is from adafruit not gound on github?)
 
-    To edit in Nano, type `nano filename.py` in command line. Use arrow keys to navigate. Use control+o, then press ENTER to save over file. Use  control+x to quit and return to command line.
+To edit in Nano, type `nano filename.py` in command line. Use arrow keys to navigate. Use control+o, then press ENTER to save over file. Use  control+x to quit and return to command line.
 
    - edit pms 5003 code in Nano as follows
    - add `import datetime` to top
@@ -164,3 +164,10 @@ sensor code should be in directory from git command above 12.5
 
 - run using `python3 bme280.py`
 
+## Connecting to Cloud
+1. Download connection kit from Urbanova
+2. Add install and cd changes to init.sh
+3. Add both_sensors.py to init.sh file and comment out hello_sensor.py lines
+4. `chmod +x init.sh`
+5. `sudo ./init.sh`
+6. change sleep to (60)

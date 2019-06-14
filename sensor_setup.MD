@@ -187,11 +187,12 @@ Edit sensor.py in Nano, type `nano sensor.py` in command line while in ./softwar
 ## Connecting to Cloud
 1. Download connection kit from Urbanova and extract to /home/pi/SpokaneSchools/Cloud
 2. Edit init.sh in the /home/pi/SpokaneSchools/Cloud directory
-   1. change `pushd` and `popd` to `cd's`
-   2. add `pip3 install RPI.GPIO`
-   3. add `pip3 install adafruit-blinka`
-   4. add `pip3 install AWSIotPythonSDK`
-   5. copy and paste last two lines, comment out `hello_sensor.py` lines and change the python command to `python3 /home/pi/SpokaneSchools/Cloud/both_sensors.py` and the comment to `"Running Sensors..."`
+   1. change `pushd` and `popd` to `cd's` - obsolete with update
+   2. add `pip3 install RPI.GPIO` - obsolete
+   3. add `pip3 install adafruit-blinka` - obsolete
+   4. change `python setup.py install` to  `python3 setup.py install`
+   5. add `pip3 install AWSIotPythonSDK`
+   6. copy and paste last two lines, comment out `hello_sensor.py` lines and change the python command to `python3 /home/pi/SpokaneSchools/Cloud/both_sensors.py` and the comment to `"Running Sensors..."`
 3. use flash drive to copy both_sensors.py to /home/pi/SpokaneSchools/Cloud
 4. edit /home/pi/SpokaneSchools/both_sensors.py
    1. change `sleep(1)` to `sleep(60)`

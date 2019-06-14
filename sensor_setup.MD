@@ -107,21 +107,23 @@
 12. Enable persistent system logs (IS THIS NEEDED?): `sudo mkdir -p /var/log/journal`
     [ref](https://www.digitalocean.com/community/tutorials/how-to-use-journalctl-to-view-and-manipulate-systemd-logs)
 
-13. Go to home directorya and download supporting packages for various sensors (need to check which of these actually needed)
+13. Go to home directory and download supporting packages for various sensors (need to check which of these actually needed)
     1. install `python-pip` (should we use this if installing python3 for sensor?)
     2. `pip install spidev`
     3. `mkdir SpokaneSchools`   
     4. `cd ./SpokaneSchools`
     5. `mkdir software`
     6. `cd ./software`
-    7. `git clone https://github.com/adafruit/Adafruit_Python_GPIO` -not needed
-    8. `git clone https://github.com/adafruit/Adafruit_Python_BME280`-not needed
-    9. `cd ./Adafruit_Python_GPIO && sudo python setup.py install`-not needed
+    7. `git clone https://github.com/adafruit/Adafruit_Python_GPIO` 
+    8. `git clone https://github.com/adafruit/Adafruit_Python_BME280`
+    9. `cd ./Adafruit_Python_GPIO && sudo python setup.py install`
     10. `cd ..`
-    11. `cd ./Adafruit_Python_BME280 && sudo python setup.py install`-not needed
+    11. `cd ./Adafruit_Python_BME280 && sudo python setup.py install`
     12. `cd ..`
-    13. `cd py-opc && sudo python setup.py install` - not needed
-    14. `sudo apt-get install python-pandas` -not needed
+    13. `cd ..`
+    14. `mkdir Cloud`
+    15. `cd py-opc && sudo python setup.py install` - not needed
+    16. `sudo apt-get install python-pandas` -not needed
 
 # Sensor Setups
 
@@ -183,10 +185,15 @@ Edit sensor.py in Nano, type `nano sensor.py` in command line while in ./softwar
 - run using `python3 bme280.py`
 
 ## Connecting to Cloud
-1. Download connection kit from Urbanova
-2. Add install and cd changes to init.sh
-3. Add pip3 install AWSIoTPythonSDK to init.sh
-4. Add both_sensors.py to init.sh file and comment out hello_sensor.py lines
-5. `chmod +x init.sh`
+1. Download connection kit from Urbanova and extract to /home/pi/SpokaneSchools/Cloud
+2. Edit init.sh in the /home/pi/SpokaneSchools/Cloud directory
+   1. change `pushd` and `popd` to `cd's`
+   2. add `pip3 install RPI.GPIO`
+   3. add `pip3 install adafruit-blinka`
+   4. add `pip3 install AWSIotPythonSDK`
+   5. copy and paste last two lines, comment out `hello_sensor.py` lines and change the python command to `python3 /home/pi/SpokaneSchools/Cloud/both_sensors.py`
+3. use flash drive to copy both_sensors.py to /home/pi/SpokaneSchools/Cloud
+4. edit /home/pi/SpokaneSchools/both_sensors.py
+   1. change `sleep(1)` to `sleep(60)`
+5. in terminal while in /home/pi/SpokaneSchools/Cloud type `chmod +x init.sh`
 6. `sudo ./init.sh`
-7. change sleep to (60) in both_sensorys.py

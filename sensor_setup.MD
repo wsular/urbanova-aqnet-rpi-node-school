@@ -72,7 +72,7 @@
     Exit with: ctrl+x
 
 
-11. Setup watchdog service
+11. Setup watchdog service (start in home directory)
     1. install watchdog timer using `sudo apt-get install watchdog`
     2. edit `/boot/config.txt` to add `dtoverlay=watchdog=on` to bottom of file
        [ref](https://github.com/raspberrypi/linux/issues/1285#issuecomment-182264729)   
@@ -108,7 +108,7 @@
     [ref](https://www.digitalocean.com/community/tutorials/how-to-use-journalctl-to-view-and-manipulate-systemd-logs)
 
 13. Go to home directory and download supporting packages for various sensors (need to check which of these actually needed)
-    1. install `python-pip` (should we use this if installing python3 for sensor?)
+    1. install `python-pip`  - no (should we use this if installing python3 for sensor?)
     2. `pip install spidev`
     3. `mkdir SpokaneSchools`   
     4. `cd ./SpokaneSchools`
@@ -191,7 +191,7 @@ Edit sensor.py in Nano, type `nano sensor.py` in command line while in ./softwar
    2. add `pip3 install RPI.GPIO`
    3. add `pip3 install adafruit-blinka`
    4. add `pip3 install AWSIotPythonSDK`
-   5. copy and paste last two lines, comment out `hello_sensor.py` lines and change the python command to `python3 /home/pi/SpokaneSchools/Cloud/both_sensors.py`
+   5. copy and paste last two lines, comment out `hello_sensor.py` lines and change the python command to `python3 /home/pi/SpokaneSchools/Cloud/both_sensors.py` and the comment to `"Running Sensors..."`
 3. use flash drive to copy both_sensors.py to /home/pi/SpokaneSchools/Cloud
 4. edit /home/pi/SpokaneSchools/both_sensors.py
    1. change `sleep(1)` to `sleep(60)`

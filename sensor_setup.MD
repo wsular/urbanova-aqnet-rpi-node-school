@@ -198,3 +198,46 @@ Edit sensor.py in Nano, type `nano sensor.py` in command line while in ./softwar
    1. change `sleep(1)` to `sleep(60)`
 5. in terminal while in /home/pi/SpokaneSchools/Cloud type `chmod +x init.sh`
 6. `sudo ./init.sh`
+
+
+## Adding RPi Monitor
+Follow instructions at https://xavierberger.github.io/RPi-Monitor-docs/11_installation.html (see below for necessary install commands)
+
+Start in Home Directory
+
+1. `sudo apt-get install dirmngr`  
+
+2. `sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 2C0D3C0F`
+
+3. `sudo wget http://goo.gl/vewCLL -O /etc/apt/sources.list.d/rpimonitor.list` (copy and paste all of 3, there isn't a break after -0)
+
+4. `sudo apt-get update`
+
+5. `sudo apt-get install rpimonitor`
+
+6. `sudo /etc/init.d/rpimonitor update`
+
+7. `sudo apt-get update`
+
+8. `sudo apt-get upgrade`
+
+9. `sudo /etc/init.d/rpimonitor update`
+
+10. `wget https://goo.gl/yDYFhy -O rpimonitor_latest.deb`
+
+11. `curl -L https://goo.gl/yDYFhy -o rpimonitor_latest.deb`
+
+12. `sudo aptitude install librrds-perl libhttp-daemon-perl libjson-perl \
+libipc-sharelite-perl libfile-which-perl libsnmp-extension-passpersist-perl`
+
+(just copy and paste all of 12)
+
+13. `sudo dpkg -i rpimonitor_latest.deb`
+
+14. `sudo /usr/share/rpimonitor/scripts/updatePackagesStatus.pl`
+
+15. check RPi IP address using `ifconfig` in home directory
+
+16. check to make sure RPi monitor running by going to http://IPaddress:8888
+
+

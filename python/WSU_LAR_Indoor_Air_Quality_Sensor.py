@@ -7,50 +7,6 @@ Contact: Von P. Walden, Washington State University
 Date:    16 July 2019
 '''
 
-def acquirePMS5003():
-    data = uart.read(32)  # read up to 32 bytes
-    data = list(data)
-    # print("read: ", data)          # this is a bytearray type
-
-    buffer += data
-    while buffer and buffer[0] != 0x42:
-        buffer.pop(0)
-
-    if len(buffer) > 200:
-        buffer = []  # avoid an overrun if all bad data
-    if len(buffer) < 32:
-        continue
-
-    if buffer[1] != 0x4d:
-        buffer.pop(0)
-        continue
-
-    frame_len = struct.unpack(">H", bytes(buffer[2:4]))[0]
-    if frame_len != 28:
-        buffer = []
-        continue
-    
-    frame = struct.unpack(">HHHHHHHHHHHHHH", bytes(buffer[4:]))
-
-    pm10_standard, pm25_standard, pm100_standard, pm10_env, \
-        pm25_env, pm100_env, particles_03um, particles_05um, particles_10um, \
-        particles_25um, particles_50um, particles_100um, skip, checksum = frame
-    
-    check = sum(buffer[0:30])
-    
-    if check != checksum:
-        buffer = []
-        continue
-    
-    PM_0_3.append(particles_03um)
-    PM_0_5.append(particles_05um)
-    PM_1.append(particles_10um)
-    PM_2_5.append(particles_25um)
-    PM_5.append(particles_50um)
-    PM_10.append(particles_100um)
-
-    return
-
 def acquireBME280():
     T.append(bme280.temperature)
     RH.append(bme280.humidity)
@@ -181,15 +137,37 @@ import struct
 import json
 import datetime
 import math
-import pandas as pd
+#from collections import OrderedDict
+#import pandas as pd
 
-sensorParameters = pd.read_csv('sensorParameters.csv')
+#sensorParameters = pd.read_csv('sensorParameters.csv')
+
+#sensorParameters = {'name':         'WSU_LAR_Indoor_Air_Quality_Sensor_1',
+#                    'ID':           1,
+#                    'Type':         'WSU LAR Indoor Air Quality Sensor',
+#                    'description':  'WSU LAR Indoor Air Quality Sensor measuring particulate matter pressure temperature and relative humidity',
+#                    'timeInterval': 120}
+
+#Create JSON file for sensorParameters
+#name='WSU_LAR_Indoor_Air_Quality_Sensor_1'
+#ID=1
+#Type='WSU LAR Indoor Air Quality Sensor'
+#description='WSU LAR Indoor Air Quality Sensor measuring particulate matter pressure temperature and relative humidity'
+#timeInterval=120
+
+#sensorParameters={'name':name,'ID':ID,'Type':Type,'description':description,'timeInterval':timeInterval}
+
+#with open("sensorParameters.json","w") as f:
+#        json.dump(sensorParameters, f, indent = 2,sort_keys=True)
+
+#Once JSON file is created, open to read in sensorParameters
+with open('sensorParameters.json') as json_file:
+    sensorParameters=json.load(json_file)
 
 # Create a unique filename for the current date.
 currentTime = datetime.datetime.now()
 currentDate = currentTime.date()
-filename = sensorParameters.name + currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
-json_file = open(filename)
+filename = sensorParameters['name'] + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
 
 ### Initialize variables to store in JSON file.
 DateTime = []
@@ -215,17 +193,56 @@ bme280.sea_level_pressure = 1013.25
 
 # .......................... Acquire and Store Sensor Data ...........................
 while True:
+    json_file = open(filename, 'w')
     # If new day, then close current JSON file and open a new file.
     if (datetime.datetime.now().date() != currentDate):
-        json_file.close()
-        filename = sensorParameters.name + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '.json'
-        json_file = open(filename)
+        filename = sensorParameters.name + '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '.json'
     
     # Stores the current time
     DateTime.append(datetime.datetime.now().isoformat())
 
     try:  # Attempts to acquire and decode the data from the PMS5003 particulate matter sensor
-        acquirePMS5003()
+        data = uart.read(32)  # read up to 32 bytes
+        data = list(data)
+        # print("read: ", data)          # this is a bytearray type
+
+        buffer += data
+        while buffer and buffer[0] != 0x42:
+            buffer.pop(0)
+
+        if len(buffer) > 200:
+            buffer = []  # avoid an overrun if all bad data
+        if len(buffer) < 32:
+            continue
+
+        if buffer[1] != 0x4d:
+            buffer.pop(0)
+            continue
+
+        frame_len = struct.unpack(">H", bytes(buffer[2:4]))[0]
+        if frame_len != 28:
+            buffer = []
+            continue
+        
+        frame = struct.unpack(">HHHHHHHHHHHHHH", bytes(buffer[4:]))
+
+        pm10_standard, pm25_standard, pm100_standard, pm10_env, \
+            pm25_env, pm100_env, particles_03um, particles_05um, particles_10um, \
+            particles_25um, particles_50um, particles_100um, skip, checksum = frame
+        
+        check = sum(buffer[0:30])
+        
+        if check != checksum:
+            buffer = []
+            continue
+        
+        PM_0_3.append(particles_03um)
+        PM_0_5.append(particles_05um)
+        PM_1.append(particles_10um)
+        PM_2_5.append(particles_25um)
+        PM_5.append(particles_50um)
+        PM_10.append(particles_100um)
+
     except:
         print('!! Erroneous data record from PMS5003 !!')
         print('    Skipping measurement and trying again...')
@@ -241,7 +258,7 @@ while True:
     print('Current time: ', DateTime[-1])
 
     print("Temperature       = %0.1f C" % T[-1])
-    print("Relative Humidity = %0.1f %" % RH[-1])
+    print("Relative Humidity = %0.1f percent" % RH[-1])
     print("Pressure          = %0.1f hPa" % P[-1])
 
     #print("Concentration Units (standard)")
@@ -262,7 +279,12 @@ while True:
     writeRPiMonitor()
 
     # Store all sensor data on RPI in JSON file
-    sensor_data = {'Datetime': DateTime,
+    sensor_data = {'name':         sensorParameters['name'],
+                   'ID':           sensorParameters['ID'],
+                   'Type':         sensorParameters['Type'],
+                   'description':  sensorParameters['description'],
+                   'timeInterval': sensorParameters['timeInterval'],
+                   'Datetime': DateTime,
                    'Temp':     T,
                    'P':        P,
                    'RH':       RH,
@@ -275,7 +297,12 @@ while True:
     json.dump(sensor_data, json_file, indent = 2,sort_keys=True)
 
     ### Send single json data packet to cloud
-    Cloud_data = {"datetime": DateTime[-1],
+    Cloud_data = {'name':         sensorParameters['name'],
+                  'ID':           sensorParameters['ID'],
+                  'Type':         sensorParameters['Type'],
+                  'description':  sensorParameters['description'],
+                  'timeInterval': sensorParameters['timeInterval'],
+                  "datetime": DateTime[-1],
                   "T":        T[-1],
                   "RH":       RH[-1],
                   "P":        P[-1],
@@ -289,8 +316,15 @@ while True:
     ucIoTDeviceClient.publish(deviceId, messageJson, 1) 
     print('Published to %s: %s\n' % (deviceId, messageJson)) # print console
     
-    # Waits for desired time interval
-    time.sleep(sensorParameters.timeInterval)
-
     # Reset data buffer for PMS5003
     buffer = buffer[32:]
+    
+    # Close JSON file
+    json_file.close()
+    
+    # Waits for desired time interval
+    #test = (sensorParameters['timeInterval']
+    #type(test)
+    #print(test)
+    time.sleep(sensorParameters['timeInterval'])
+

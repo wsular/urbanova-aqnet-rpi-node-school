@@ -129,41 +129,30 @@ time.sleep(2)
 # .......................... Connect to each Sensor of the Node ...........................
 import board
 import busio
-from digitalio import DigitalInOut, Direction
 import serial
 import adafruit_bme280
 import struct
-
+import os
 import json
 import datetime
-import math
+import time
 
-#import pandas as pd
 
-#Create Dictionary for sensor parameters file (check if this actually works instead of method below)
-#sensorParameters = {
-#                    "name": "WSU_LAR_Indoor_Air_Quality_Node",
-#                    "ID": 1,
-#                    "type": "WSU LAR Indoor Air Quality Node",
-#                    "description": "Indoor air quality sensor package (node) built at Washington State University's Laboratory for Atmospheric Research. Sensors include PMS5003 (particulate matter) and BME280 (TPU).",
-#                    "contact": "Von P. Walden, Washington State University, v.walden@wsu.edu",
-#                    "timeInterval": 120
-#                   }
+#Create JSON file for sensorParameters (just update ID for each sensor)
 
-#Create JSON file for sensorParameters
 #name='WSU_LAR_Indoor_Air_Quality_Node'
-#ID=1
+#ID='1'
 #Type='WSU LAR Indoor Air Quality Node'
-#description='Indoor air quality sensor package (node) built at Washington State University's Laboratory for Atmospheric Research. Sensors include PMS5003 (particulate matter) and BME280 (TPU).'
+#description='Indoor air quality sensor package (node) built at Washington State University Laboratory for Atmospheric Research. Sensors include PMS5003 (particulate matter) and BME280 (TPU).'
 #contact='Von P. Walden, Washington State University, v.walden@wsu.edu'
 #timeInterval=120
 
-#sensorParameters={'name':name,'ID':ID,'Type':Type,'description':description,'timeInterval':timeInterval}
+#sensorParameters={'name':name,'ID':ID,'Type':Type,'description':description,'contact':contact,'timeInterval':timeInterval}
 
 #with open("sensorParameters.json","w") as f:
 #        json.dump(sensorParameters, f, indent = 2,sort_keys=True)
 
-#Once JSON file is created, open to read in sensorParameters
+#Once JSON file is created, open the file to read in sensorParameters
 with open('sensorParameters.json') as json_file:
     sensorParameters=json.load(json_file)
 
@@ -263,7 +252,9 @@ while True:
     except:
         print('!! Erroneous data record from PMS5003 !!')
         print('    Skipping measurement and trying again...')
-        time.pause(2)
+        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
+        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
+        time.sleep(2)
         continue
     
     try:  # Attempts to acquire and decode the data from the BME280 meteorlogical sensor
@@ -271,7 +262,9 @@ while True:
     except:
         print('!! Erroneous data record from BME280 !!')
         print('    Skipping measurement and trying again...')
-        time.pause(2)
+        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
+        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
+        time.sleep(2)
         continue
     
     print('Current time: ', DateTime[-1])
@@ -298,12 +291,13 @@ while True:
     writeRPiMonitor()
 
     # Store all sensor data on RPI in JSON file
-    sensor_data = {'name':         sensorParameters['name'],
-                   'ID':           sensorParameters['ID'],
-                   'Type':         sensorParameters['Type'],
-                   'description':  sensorParameters['description'],
-                   'timeInterval': sensorParameters['timeInterval'],
-                   'Datetime': DateTime,
+    sensor_data = {'name':           sensorParameters['name'],
+                   'ID':             sensorParameters['ID'],
+                   'Type':           sensorParameters['Type'],
+                   'description':    sensorParameters['description'],
+                   'contact':        sensorParameters['contact'],
+                   'timeInterval':   sensorParameters['timeInterval'],
+                   'Datetime':       DateTime,
                    'Temp':           T,
                    'P':              P,
                    'RH':             RH,
@@ -327,6 +321,7 @@ while True:
                   'ID':             sensorParameters['ID'],
                   'Type':           sensorParameters['Type'],
                   'description':    sensorParameters['description'],
+                  'contact':        sensorParameters['contact'],
                   'timeInterval':   sensorParameters['timeInterval'],
                   "datetime":       DateTime[-1],
                   "T":              T[-1],
@@ -357,8 +352,5 @@ while True:
     json_file.close()
     
     # Waits for desired time interval
-    #test = (sensorParameters['timeInterval']
-    #type(test)
-    #print(test)
     time.sleep(sensorParameters['timeInterval'])
 

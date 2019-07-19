@@ -170,7 +170,7 @@ with open('sensorParameters.json') as json_file:
 # Create a unique filename for the current date.
 currentTime = datetime.datetime.now()
 currentDate = currentTime.date()
-filename = sensorParameters['name'] + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
+filename = sensorParameters['name'] + '_' + sensorParameters['ID'] + '_' +currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
 
 ### Initialize variables to store in JSON file.
 DateTime       = []
@@ -202,12 +202,12 @@ bme280.sea_level_pressure = 1013.25
 
 # .......................... Acquire and Store Sensor Data ...........................
 while True:
-    json_file = open(filename, 'w')
     # If new day, then close current JSON file and open a new file.
     if (datetime.datetime.now().date() != currentDate):
-        json_file.close()
-        filename = sensorParameters['name'] + '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '.json'
-        json_file = open(filename, 'w')
+        currentTime = datetime.datetime.now()
+        currentDate = currentTime.date()
+        filename = sensorParameters['name'] + '_' + sensorParameters['ID'] + '_' +currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
+    json_file = open(filename, 'w')
     
     # Stores the current time
     DateTime.append(datetime.datetime.now().isoformat())

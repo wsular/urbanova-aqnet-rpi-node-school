@@ -1,10 +1,8 @@
 {
-    "name":         "WSU LAR Indoor Air Sensor 1",
-    "type":         "WSU LAR Indoor Air Sensor",
-    "description":  "WSU LAR Indoor Air Sensor measuring particulate matter, pressure, temperature, and relative humidity",
-    "timeInterval": {
-        120: {
-            "type": "integer"
-        }
-    }
+    "name": "WSU_LAR_Indoor_Air_Quality_Node",
+    "ID": 1,
+    "type": "WSU LAR Indoor Air Quality Node",
+    "description": "Indoor air quality sensor package (node) built at Washington State University's Laboratory for Atmospheric Research. Sensors include PMS5003 (particulate matter) and BME280 (TPU).",
+    "contact": "Von P. Walden, Washington State University, v.walden@wsu.edu",
+    "timeInterval": 120
 }

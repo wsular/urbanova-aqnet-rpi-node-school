@@ -137,22 +137,25 @@ import struct
 import json
 import datetime
 import math
-#from collections import OrderedDict
+
 #import pandas as pd
 
-#sensorParameters = pd.read_csv('sensorParameters.csv')
-
-#sensorParameters = {'name':         'WSU_LAR_Indoor_Air_Quality_Sensor_1',
-#                    'ID':           1,
-#                    'Type':         'WSU LAR Indoor Air Quality Sensor',
-#                    'description':  'WSU LAR Indoor Air Quality Sensor measuring particulate matter pressure temperature and relative humidity',
-#                    'timeInterval': 120}
+#Create Dictionary for sensor parameters file (check if this actually works instead of method below)
+#sensorParameters = {
+#                    "name": "WSU_LAR_Indoor_Air_Quality_Node",
+#                    "ID": 1,
+#                    "type": "WSU LAR Indoor Air Quality Node",
+#                    "description": "Indoor air quality sensor package (node) built at Washington State University's Laboratory for Atmospheric Research. Sensors include PMS5003 (particulate matter) and BME280 (TPU).",
+#                    "contact": "Von P. Walden, Washington State University, v.walden@wsu.edu",
+#                    "timeInterval": 120
+#                   }
 
 #Create JSON file for sensorParameters
-#name='WSU_LAR_Indoor_Air_Quality_Sensor_1'
+#name='WSU_LAR_Indoor_Air_Quality_Node'
 #ID=1
-#Type='WSU LAR Indoor Air Quality Sensor'
-#description='WSU LAR Indoor Air Quality Sensor measuring particulate matter pressure temperature and relative humidity'
+#Type='WSU LAR Indoor Air Quality Node'
+#description='Indoor air quality sensor package (node) built at Washington State University's Laboratory for Atmospheric Research. Sensors include PMS5003 (particulate matter) and BME280 (TPU).'
+#contact='Von P. Walden, Washington State University, v.walden@wsu.edu'
 #timeInterval=120
 
 #sensorParameters={'name':name,'ID':ID,'Type':Type,'description':description,'timeInterval':timeInterval}
@@ -170,16 +173,22 @@ currentDate = currentTime.date()
 filename = sensorParameters['name'] + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
 
 ### Initialize variables to store in JSON file.
-DateTime = []
-T        = []
-RH       = []
-P        = []
-PM_0_3   = []
-PM_0_5   = []
-PM_1     = []
-PM_2_5   = []
-PM_5     = []
-PM_10    = []
+DateTime       = []
+T              = []
+RH             = []
+P              = []
+PM_0_3         = []
+PM_0_5         = []
+PM_1           = []
+PM_2_5         = []
+PM_5           = []
+PM_10          = []
+PM1_standard   = []
+PM2_5_standard = []
+PM10_standard  = []
+PM1_env        = []
+PM2_5_env      = []
+PM10_env       = []
 
 #### Create library object using our Bus I2C port
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -196,7 +205,9 @@ while True:
     json_file = open(filename, 'w')
     # If new day, then close current JSON file and open a new file.
     if (datetime.datetime.now().date() != currentDate):
-        filename = sensorParameters.name + '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '.json'
+        json_file.close()
+        filename = sensorParameters['name'] + '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + '.json'
+        json_file = open(filename, 'w')
     
     # Stores the current time
     DateTime.append(datetime.datetime.now().isoformat())
@@ -242,18 +253,26 @@ while True:
         PM_2_5.append(particles_25um)
         PM_5.append(particles_50um)
         PM_10.append(particles_100um)
+        PM1_standard.append(pm10_standard)
+        PM2_5_standard.append(pm25_standard)
+        PM10_standard.append(pm100_standard)
+        PM1_env.append(pm10_env)
+        PM2_5_env.append(pm25_env)
+        PM10_env.append(pm100_env)
 
     except:
         print('!! Erroneous data record from PMS5003 !!')
         print('    Skipping measurement and trying again...')
-        break
+        time.pause(2)
+        continue
     
     try:  # Attempts to acquire and decode the data from the BME280 meteorlogical sensor
         acquireBME280()
     except:
         print('!! Erroneous data record from BME280 !!')
         print('    Skipping measurement and trying again...')
-        break
+        time.pause(2)
+        continue
     
     print('Current time: ', DateTime[-1])
 
@@ -285,33 +304,48 @@ while True:
                    'description':  sensorParameters['description'],
                    'timeInterval': sensorParameters['timeInterval'],
                    'Datetime': DateTime,
-                   'Temp':     T,
-                   'P':        P,
-                   'RH':       RH,
-                   'PM_0_3':   PM_0_3,
-                   'PM_0_5':   PM_0_5,
-                   'PM_1':     PM_1,
-                   'PM_2_5':   PM_2_5,
-                   'PM_5':     PM_5,
-                   'PM_10':    PM_10}
+                   'Temp':           T,
+                   'P':              P,
+                   'RH':             RH,
+                   'PM_0_3':         PM_0_3,
+                   'PM_0_5':         PM_0_5,
+                   'PM_1':           PM_1,
+                   'PM_2_5':         PM_2_5,
+                   'PM_5':           PM_5,
+                   'PM_10':          PM_10,
+                   'PM1_standard':   PM1_standard,
+                   'PM2_5_standard': PM2_5_standard,
+                   'PM10_standard':  PM10_standard,
+                   'PM1_env':        PM1_env,
+                   'PM2_5_env':      PM2_5_env,
+                   'PM10_env':       PM10_env
+                   }
     json.dump(sensor_data, json_file, indent = 2,sort_keys=True)
 
     ### Send single json data packet to cloud
-    Cloud_data = {'name':         sensorParameters['name'],
-                  'ID':           sensorParameters['ID'],
-                  'Type':         sensorParameters['Type'],
-                  'description':  sensorParameters['description'],
-                  'timeInterval': sensorParameters['timeInterval'],
-                  "datetime": DateTime[-1],
-                  "T":        T[-1],
-                  "RH":       RH[-1],
-                  "P":        P[-1],
-                  "PM_0_3":   PM_0_3[-1],
-                  "PM_0_5":   PM_0_5[-1],
-                  "PM_1":     PM_1[-1],
-                  "PM_2_5":   PM_2_5[-1],
-                  "PM_5":     PM_5[-1],
-                  "PM_10":    PM_10[-1]}
+    Cloud_data = {'name':           sensorParameters['name'],
+                  'ID':             sensorParameters['ID'],
+                  'Type':           sensorParameters['Type'],
+                  'description':    sensorParameters['description'],
+                  'timeInterval':   sensorParameters['timeInterval'],
+                  "datetime":       DateTime[-1],
+                  "T":              T[-1],
+                  "RH":             RH[-1],
+                  "P":              P[-1],
+                  "PM_0_3":         PM_0_3[-1],
+                  "PM_0_5":         PM_0_5[-1],
+                  "PM_1":           PM_1[-1],
+                  "PM_2_5":         PM_2_5[-1],
+                  "PM_5":           PM_5[-1],
+                  "PM_10":          PM_10[-1],
+                  'PM1_standard':   PM1_standard[-1],
+                  'PM2_5_standard': PM2_5_standard[-1],
+                  'PM10_standard':  PM10_standard[-1],
+                  'PM1_env':        PM1_env[-1],
+                  'PM2_5_env':      PM2_5_env[-1],
+                  'PM10_env':       PM10_env[-1]
+                  }
+    
     messageJson = json.dumps(Cloud_data) # convert to json
     ucIoTDeviceClient.publish(deviceId, messageJson, 1) 
     print('Published to %s: %s\n' % (deviceId, messageJson)) # print console

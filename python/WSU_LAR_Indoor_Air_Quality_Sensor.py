@@ -252,8 +252,8 @@ while True:
     except:
         print('!! Erroneous data record from PMS5003 !!')
         print('    Skipping measurement and trying again...')
-        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (PMS5003 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
-        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (PMS5003 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
+        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (PMS5003 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor (PMS5003) on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
+        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (PMS5003 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor (PMS5003) on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
         time.sleep(2)
         continue
     
@@ -262,8 +262,8 @@ while True:
     except:
         print('!! Erroneous data record from BME280 !!')
         print('    Skipping measurement and trying again...')
-        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (BME280 data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
-        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor(BME280 data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
+        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (BME280 data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor (BME280) on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
+        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (BME280 data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor (BME280) on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
         time.sleep(2)
         continue
     

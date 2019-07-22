@@ -7,6 +7,22 @@ Contact: Von P. Walden, Washington State University
 Date:    16 July 2019
 '''
 
+def mail_alert(sensor):                           # input sensor type of bad data
+    fromaddr = 'theroadster29@gmail.com'
+    toaddrs  = 'theroadster29@gmail.com'
+    msg = 'Subject: {}\n\n{}'.format('BAD DATA FROM INDOOR AQ SENSOR', 'Erroneous data record from' + '_' + sensor + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'])
+
+# Credentials (if needed)
+    username = 'theroadster29@gmail.com'
+    password = 'msr123iem'
+
+# The actual mail send
+    server = smtplib.SMTP('smtp.gmail.com:587')
+    server.starttls()
+    server.login(username,password)
+    server.sendmail(fromaddr, toaddrs, msg)
+    server.quit()
+
 def acquireBME280():
     T.append(bme280.temperature)
     RH.append(bme280.humidity)
@@ -127,21 +143,22 @@ time.sleep(2)
 # .........................................................................................
 
 # .......................... Connect to each Sensor of the Node ...........................
+
 import board
 import busio
 import serial
 import adafruit_bme280
 import struct
-import os
+#import os
 import json
 import datetime
 import time
-
+import smtplib
 
 #Create JSON file for sensorParameters (just update ID for each sensor)
 
 #name='WSU_LAR_Indoor_Air_Quality_Node'
-#ID='1'
+#ID='PT'
 #Type='WSU LAR Indoor Air Quality Node'
 #description='Indoor air quality sensor package (node) built at Washington State University Laboratory for Atmospheric Research. Sensors include PMS5003 (particulate matter) and BME280 (TPU).'
 #contact='Von P. Walden, Washington State University, v.walden@wsu.edu'
@@ -179,15 +196,28 @@ PM1_env        = []
 PM2_5_env      = []
 PM10_env       = []
 
-#### Create library object using our Bus I2C port
-i2c = busio.I2C(board.SCL, board.SDA)
-bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+#### Initialize Sensors
+
 uart = serial.Serial("/dev/ttyS0", baudrate=9600, timeout=3000)
 buffer = []
- 
-# Set this to the location's approximate pressure (hPa) at sea level
-# (This is needed if we ever want to use bme280.altitude.)
-bme280.sea_level_pressure = 1013.25
+
+i2c = busio.I2C(board.SCL, board.SDA)
+bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+bme280.sea_level_pressure = 1013.25# Set this to the location's approximate pressure (hPa) at sea level (This is needed if we ever want to use bme280.altitude.)
+    
+#def PMS_5003_startup():
+#    uart = serial.Serial("/dev/ttyS0", baudrate=9600, timeout=3000)
+#     buffer = []
+#    return
+
+#def BME_280_startup():
+#   i2c = busio.I2C(board.SCL, board.SDA)
+#   bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+#   bme280.sea_level_pressure = 1013.25                             # Set this to the location's approximate pressure (hPa) at sea level (This is needed if we ever want to use bme280.altitude.)
+#    return
+
+#BME_280_startup()
+#PMS_5003_startup()
 
 # .......................... Acquire and Store Sensor Data ...........................
 while True:
@@ -197,9 +227,6 @@ while True:
         currentDate = currentTime.date()
         filename = sensorParameters['name'] + '_' + sensorParameters['ID'] + '_' +currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
     json_file = open(filename, 'w')
-    
-    # Stores the current time
-    DateTime.append(datetime.datetime.now().isoformat())
 
     try:  # Attempts to acquire and decode the data from the PMS5003 particulate matter sensor
         data = uart.read(32)  # read up to 32 bytes
@@ -235,7 +262,9 @@ while True:
         if check != checksum:
             buffer = []
             continue
-        
+
+        # Stores the current time and data
+        DateTime.append(datetime.datetime.now().isoformat())
         PM_0_3.append(particles_03um)
         PM_0_5.append(particles_05um)
         PM_1.append(particles_10um)
@@ -252,9 +281,17 @@ while True:
     except:
         print('!! Erroneous data record from PMS5003 !!')
         print('    Skipping measurement and trying again...')
-        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (PMS5003 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor (PMS5003) on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
-        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (PMS5003 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor (PMS5003) on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
-        time.sleep(2)
+        #os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (PMS5003 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
+        #os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (PMS5003 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
+        mail_alert('PMS_5003')
+        with open("errors_PMS_5003.txt", "a") as myfile:
+            myfile.write('Erroneous data record from PMS5003' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'] + "\n")
+            myfile.close
+        print(buffer)
+        #PMS_5003_startup()
+        uart = serial.Serial("/dev/ttyS0", baudrate=9600, timeout=3000)
+        buffer = []
+        time.sleep(10)
         continue
     
     try:  # Attempts to acquire and decode the data from the BME280 meteorlogical sensor
@@ -262,9 +299,18 @@ while True:
     except:
         print('!! Erroneous data record from BME280 !!')
         print('    Skipping measurement and trying again...')
-        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (BME280 data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor (BME280) on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
-        os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (BME280 data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor (BME280) on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
-        time.sleep(2)
+        #os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (BME280 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
+        #os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (BME280 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
+        mail_alert('BME_280')
+        with open("errors_PMS_5003.txt", "a") as myfile:
+            myfile.write('Erroneous data record from BME280' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'] + "\n")
+            myfile.close
+        print(buffer)
+        i2c = busio.I2C(board.SCL, board.SDA)
+        bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+        bme280.sea_level_pressure = 1013.25
+        #BME_280_startup()
+        time.sleep(10)
         continue
     
     print('Current time: ', DateTime[-1])
@@ -353,4 +399,3 @@ while True:
     
     # Waits for desired time interval
     time.sleep(sensorParameters['timeInterval'])
-

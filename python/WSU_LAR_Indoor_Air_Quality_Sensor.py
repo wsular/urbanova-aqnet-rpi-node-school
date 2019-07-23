@@ -8,13 +8,13 @@ Date:    16 July 2019
 '''
 
 def mail_alert(sensor):                           # input sensor type of bad data
-    fromaddr = 'theroadster29@gmail.com'
-    toaddrs  = 'theroadster29@gmail.com'
+    fromaddr = email
+    toaddrs  = email
     msg = 'Subject: {}\n\n{}'.format('BAD DATA FROM INDOOR AQ SENSOR', 'Erroneous data record from' + '_' + sensor + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'])
 
 # Credentials (if needed)
-    username = 'theroadster29@gmail.com'
-    password = 'msr123iem'
+    username = email
+    password = pw
 
 # The actual mail send
     server = smtplib.SMTP('smtp.gmail.com:587')
@@ -204,20 +204,12 @@ buffer = []
 i2c = busio.I2C(board.SCL, board.SDA)
 bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
 bme280.sea_level_pressure = 1013.25# Set this to the location's approximate pressure (hPa) at sea level (This is needed if we ever want to use bme280.altitude.)
-    
-#def PMS_5003_startup():
-#    uart = serial.Serial("/dev/ttyS0", baudrate=9600, timeout=3000)
-#     buffer = []
-#    return
 
-#def BME_280_startup():
-#   i2c = busio.I2C(board.SCL, board.SDA)
-#   bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
-#   bme280.sea_level_pressure = 1013.25                             # Set this to the location's approximate pressure (hPa) at sea level (This is needed if we ever want to use bme280.altitude.)
-#    return
+with open('/home/pi/SpokaneSchools/software/Name_1.txt','r') as file:
+    email=file.read()
 
-#BME_280_startup()
-#PMS_5003_startup()
+with open('/home/pi/SpokaneSchools/software/Name_2.txt','r') as file:
+    pw=file.read()
 
 # .......................... Acquire and Store Sensor Data ...........................
 while True:
@@ -226,7 +218,7 @@ while True:
         currentTime = datetime.datetime.now()
         currentDate = currentTime.date()
         filename = sensorParameters['name'] + '_' + sensorParameters['ID'] + '_' +currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
-    json_file = open(filename, 'w')
+    json_file = open('/home/pi/SpokaneSchools/Data/Good_Data/' + filename, 'w')
 
     try:  # Attempts to acquire and decode the data from the PMS5003 particulate matter sensor
         data = uart.read(32)  # read up to 32 bytes
@@ -284,7 +276,7 @@ while True:
         #os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (PMS5003 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
         #os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (PMS5003 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
         mail_alert('PMS_5003')
-        with open("errors_PMS_5003.txt", "a") as myfile:
+        with open("/home/pi/SpokaneSchools/Data/PMS5003_errors/errors_PMS_5003.txt", "a") as myfile:
             myfile.write('Erroneous data record from PMS5003' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'] + "\n")
             myfile.close
         print(buffer)
@@ -302,7 +294,7 @@ while True:
         #os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (BME280 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
         #os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (BME280 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
         mail_alert('BME_280')
-        with open("errors_PMS_5003.txt", "a") as myfile:
+        with open("/home/pi/SpokaneSchools/Data/BME280_errors/errors_PMS_5003.txt", "a") as myfile:
             myfile.write('Erroneous data record from BME280' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'] + "\n")
             myfile.close
         print(buffer)

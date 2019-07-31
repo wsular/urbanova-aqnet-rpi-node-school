@@ -176,6 +176,7 @@ with open('sensorParameters.json') as json_file:
 # Create a unique filename for the current date.
 currentTime = datetime.datetime.now()
 currentDate = currentTime.date()
+#currentDate = datetime.datetime.now().date()
 filename = sensorParameters['name'] + '_' + sensorParameters['ID'] + '_' +currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
 
 ### Initialize variables to store in JSON file.
@@ -197,7 +198,6 @@ PM2_5_env      = []
 PM10_env       = []
 
 #### Initialize Sensors
-
 uart = serial.Serial("/dev/ttyS0", baudrate=9600, timeout=3000)
 buffer = []
 
@@ -217,6 +217,23 @@ while True:
     if (datetime.datetime.now().date() != currentDate):
         currentTime = datetime.datetime.now()
         currentDate = currentTime.date()
+        #currentDate = datetime.datetime.now().date()
+        DateTime       = []
+        T              = []
+        RH             = []
+        P              = []
+        PM_0_3         = []
+        PM_0_5         = []
+        PM_1           = []
+        PM_2_5         = []
+        PM_5           = []
+        PM_10          = []
+        PM1_standard   = []
+        PM2_5_standard = []
+        PM10_standard  = []
+        PM1_env        = []
+        PM2_5_env      = []
+        PM10_env       = []
         filename = sensorParameters['name'] + '_' + sensorParameters['ID'] + '_' +currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
     json_file = open('/home/pi/SpokaneSchools/Data/Good_Data/' + filename, 'w')
 

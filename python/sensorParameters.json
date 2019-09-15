@@ -2,6 +2,8 @@
     "name": "WSU_LAR_Indoor_Air_Quality_Node",
     "ID": 1,
     "type": "WSU LAR Indoor Air Quality Node",
+    "latitude": 47.45,
+    "longitude": -117.342,
     "description": "Indoor air quality sensor package (node) built at Washington State University's Laboratory for Atmospheric Research. Sensors include PMS5003 (particulate matter) and BME280 (TPU).",
     "contact": "Von P. Walden, Washington State University, v.walden@wsu.edu",
     "timeInterval": 120

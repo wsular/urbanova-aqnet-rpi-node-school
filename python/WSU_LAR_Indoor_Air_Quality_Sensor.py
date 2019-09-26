@@ -83,6 +83,21 @@ def writeRPiMonitor():
     
     return
 
+#.............................. Make sure connected to internet before start...............
+import datetime
+import time
+   
+currentTime = datetime.datetime.now()
+
+local_wifi()
+    
+while not local_wifi():
+    print('no wifi connection')
+    with open("/home/pi/SpokaneSchools/Data/wifi_errors/wifi_errors.txt", "a") as myfile:
+        myfile.write('no_wifi' + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + "\n")
+        myfile.close
+    time.sleep(120)
+
 # ............................. Connect to the Urbanova Cloud .............................
 '''
  Copyright Urbanova 2019 | Licensed under the Apache License, Version 2.0 (the "License")
@@ -415,9 +430,9 @@ while True:
     while not local_wifi():
         print('no wifi connection')
         with open("/home/pi/SpokaneSchools/Data/wifi_errors/wifi_errors.txt", "a") as myfile:
-            myfile.write('wifi_drop' + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'] + "\n")
+            myfile.write('no_wifi' + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'] + "\n")
             myfile.close
-    
+        time.sleep(120)
     
     ucIoTDeviceClient.publish(deviceId, messageJson, 1) 
     print('Published to %s: %s\n' % (deviceId, messageJson)) # print console

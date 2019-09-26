@@ -7,6 +7,14 @@ Contact: Von P. Walden, Washington State University
 Date:    16 July 2019
 '''
 
+def local_wifi():
+    local_wifi_arr = check_output("ifconfig").decode('utf-8')
+    connection_test = local_wifi_arr.rfind("inet .....")    # input target IP range here
+    if connection_test > 0:
+        return True
+    else:
+        return False
+
 def mail_alert(sensor):                           # input sensor type of bad data
     fromaddr = email
     toaddrs  = email
@@ -154,7 +162,7 @@ import json
 import datetime
 import time
 import smtplib
-
+from subprocess import check_output
 #Create JSON file for sensorParameters (just update ID for each sensor)
 
 #name='WSU_LAR_Indoor_Air_Quality_Node'
@@ -401,6 +409,16 @@ while True:
                   }
     
     messageJson = json.dumps(Cloud_data) # convert to json
+    
+    local_wifi()
+    
+    while not local_wifi():
+        print('no wifi connection')
+        with open("/home/pi/SpokaneSchools/Data/wifi_errors/wifi_errors.txt", "a") as myfile:
+            myfile.write('wifi_drop' + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'] + "\n")
+            myfile.close
+    
+    
     ucIoTDeviceClient.publish(deviceId, messageJson, 1) 
     print('Published to %s: %s\n' % (deviceId, messageJson)) # print console
     

@@ -6,10 +6,13 @@ sensors in elementary schools in Spokane, Washington.
 Contact: Von P. Walden, Washington State University
 Date:    16 July 2019
 '''
+import os
+
+x=1
 
 def local_wifi():
     local_wifi_arr = check_output("ifconfig").decode('utf-8')
-    connection_test = local_wifi_arr.rfind("inet .....")    # input target IP range here
+    connection_test = local_wifi_arr.rfind("inet 134.121.21.214")
     if connection_test > 0:
         return True
     else:
@@ -19,7 +22,7 @@ def mail_alert(sensor):                           # input sensor type of bad dat
     fromaddr = email
     toaddrs  = email
     msg = 'Subject: {}\n\n{}'.format('BAD DATA FROM INDOOR AQ SENSOR', 'Erroneous data record from' + '_' + sensor + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'])
-
+   
 # Credentials (if needed)
     username = email
     password = pw
@@ -34,7 +37,7 @@ def mail_alert(sensor):                           # input sensor type of bad dat
 def mail_alert2(sensor):                           # input sensor type of bad data
     fromaddr = email
     toaddrs  = email
-    msg = 'Subject: {}\n\n{}'.format('Publishing Error', 'Publishing Error from' + '_' + sensor + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'])
+    msg = 'Subject: {}\n\n{}'.format('Publishing Error', 'Publishing Error From' + '_' + sensor + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'])
 
 # Credentials (if needed)
     username = email
@@ -47,13 +50,6 @@ def mail_alert2(sensor):                           # input sensor type of bad da
     server.sendmail(fromaddr, toaddrs, msg)
     server.quit()
 
-
-def acquireBME280():
-    T.append(bme280.temperature)
-    RH.append(bme280.humidity)
-    P.append(bme280.pressure)
-    return
-
 def writeRPiMonitor():
     '''
     Print single values to files to be used in RPi monitor; 
@@ -62,17 +58,6 @@ def writeRPiMonitor():
     Written by: Matthew Roetcisoender
     Created on: June 2019
     '''
-    file2write=open('/home/pi/SpokaneSchools/software/temperature_data','w')
-    file2write.write(str(T[-1]))
-    file2write.close
-
-    file2write=open('/home/pi/SpokaneSchools/software/humidity_data','w')
-    file2write.write(str(RH[-1]))
-    file2write.close
-
-    file2write=open('/home/pi/SpokaneSchools/software/pressure_data','w')
-    file2write.write(str(P[-1]))
-    file2write.close
 
     file2write=open('/home/pi/SpokaneSchools/software/PM_0_3_data','w')
     file2write.write(str(particles_03um))
@@ -99,22 +84,6 @@ def writeRPiMonitor():
     file2write.close
     
     return
-
-#.............................. Make sure connected to internet before start...............
-import datetime
-import time
-from subprocess import check_output
-   
-currentTime = datetime.datetime.now()
-
-local_wifi()
-    
-while not local_wifi():
-    print('no wifi connection')
-    with open("/home/pi/SpokaneSchools/Data/wifi_errors/wifi_errors.txt", "a") as myfile:
-        myfile.write('no_wifi' + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + "\n")
-        myfile.close
-    time.sleep(120)
 
 # ............................. Connect to the Urbanova Cloud .............................
 '''
@@ -200,6 +169,8 @@ import json
 import datetime
 import time
 import smtplib
+from subprocess import check_output
+
 #Create JSON file for sensorParameters (just update ID for each sensor)
 
 #name='WSU_LAR_Indoor_Air_Quality_Node'
@@ -222,13 +193,10 @@ with open('sensorParameters.json') as json_file:
 currentTime = datetime.datetime.now()
 currentDate = currentTime.date()
 #currentDate = datetime.datetime.now().date()
-filename = sensorParameters['name'] + '_' + sensorParameters['ID'] + '_' +currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
+filename = 'Reset' + '5003_only' + sensorParameters['name'] + '_' + sensorParameters['ID'] + '_' +currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
 
 ### Initialize variables to store in JSON file.
 DateTime       = []
-T              = []
-RH             = []
-P              = []
 PM_0_3         = []
 PM_0_5         = []
 PM_1           = []
@@ -246,10 +214,6 @@ PM10_env       = []
 uart = serial.Serial("/dev/ttyS0", baudrate=9600, timeout=3000)
 buffer = []
 
-i2c = busio.I2C(board.SCL, board.SDA)
-bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
-bme280.sea_level_pressure = 1013.25# Set this to the location's approximate pressure (hPa) at sea level (This is needed if we ever want to use bme280.altitude.)
-
 with open('/home/pi/SpokaneSchools/software/Name_1.txt','r') as file:
     email=file.read()
 
@@ -264,9 +228,6 @@ while True:
         currentDate = currentTime.date()
         #currentDate = datetime.datetime.now().date()
         DateTime       = []
-        T              = []
-        RH             = []
-        P              = []
         PM_0_3         = []
         PM_0_5         = []
         PM_1           = []
@@ -279,7 +240,7 @@ while True:
         PM1_env        = []
         PM2_5_env      = []
         PM10_env       = []
-        filename = sensorParameters['name'] + '_' + sensorParameters['ID'] + '_' +currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
+        filename = 'Reset' + '5003_only' + sensorParameters['name'] + '_' + sensorParameters['ID'] + '_' +currentTime.strftime('%Y%m%d_%H%M%S') + '.json'
     json_file = open('/home/pi/SpokaneSchools/Data/Good_Data/' + filename, 'w')
 
     try:  # Attempts to acquire and decode the data from the PMS5003 particulate matter sensor
@@ -348,30 +309,7 @@ while True:
         time.sleep(10)
         continue
     
-    try:  # Attempts to acquire and decode the data from the BME280 meteorlogical sensor
-        acquireBME280()
-    except:
-        print('!! Erroneous data record from BME280 !!')
-        print('    Skipping measurement and trying again...')
-        #os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (BME280 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" v.walden@wsu.edu')
-        #os.system('echo "ALERT: Problem with WSU LAR Indoor AQ sensor (BME280 Data)" | mail -s "ALERT:  Problem with WSU LAR Indoor AQ sensor on ' + datetime.datetime.utcnow().strftime('%Y%m%d %H') + ':00 UTC" matthew.s.roetcisoe@wsu.edu')
-        mail_alert('BME_280')
-        with open("/home/pi/SpokaneSchools/Data/BME280_errors/errors_PMS_5003.txt", "a") as myfile:
-            myfile.write('Erroneous data record from BME280' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'] + "\n")
-            myfile.close
-        print(buffer)
-        i2c = busio.I2C(board.SCL, board.SDA)
-        bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
-        bme280.sea_level_pressure = 1013.25
-        #BME_280_startup()
-        time.sleep(10)
-        continue
-    
     print('Current time: ', DateTime[-1])
-
-    print("Temperature       = %0.1f C" % T[-1])
-    print("Relative Humidity = %0.1f percent" % RH[-1])
-    print("Pressure          = %0.1f hPa" % P[-1])
 
     #print("Concentration Units (standard)")
     #print("---------------------------------------")
@@ -388,7 +326,7 @@ while True:
     print("Particles > 10 um / 0.1L air:", PM_10[-1])
     print("---------------------------------------")
 
-    writeRPiMonitor()
+    #writeRPiMonitor()
 
     # Store all sensor data on RPI in JSON file
     sensor_data = {'name':           sensorParameters['name'],
@@ -397,12 +335,7 @@ while True:
                    'description':    sensorParameters['description'],
                    'contact':        sensorParameters['contact'],
                    'timeInterval':   sensorParameters['timeInterval'],
-                   'latitude':       sensorParameters['latitude'],
-                   'longitude':      sensorParameters['longitude'],
                    'Datetime':       DateTime,
-                   'Temp':           T,
-                   'P':              P,
-                   'RH':             RH,
                    'PM_0_3':         PM_0_3,
                    'PM_0_5':         PM_0_5,
                    'PM_1':           PM_1,
@@ -425,12 +358,7 @@ while True:
                   'description':    sensorParameters['description'],
                   'contact':        sensorParameters['contact'],
                   'timeInterval':   sensorParameters['timeInterval'],
-                  'latitude':       sensorParameters['latitude'],
-                  'longitude':      sensorParameters['longitude'],
                   "datetime":       DateTime[-1],
-                  "T":              T[-1],
-                  "RH":             RH[-1],
-                  "P":              P[-1],
                   "PM_0_3":         PM_0_3[-1],
                   "PM_0_5":         PM_0_5[-1],
                   "PM_1":           PM_1[-1],
@@ -446,26 +374,32 @@ while True:
                   }
     
     messageJson = json.dumps(Cloud_data) # convert to json
+
+    #local_wifi()
     
-    local_wifi()
-    
-    while not local_wifi():
-        print('no wifi connection')
-        with open("/home/pi/SpokaneSchools/Data/wifi_errors/wifi_errors.txt", "a") as myfile:
-            myfile.write('no_wifi' + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'] + "\n")
-            myfile.close
-        time.sleep(120)
+    #while not local_wifi():
+     #   print('no wifi connection')
+      #  with open("/home/pi/SpokaneSchools/Data/wifi_errors/wifi_errors.txt", "a") as myfile:
+       #     myfile.write('wifi_drop' + '_' + currentTime.strftime('%Y%m%d_%H%M%S') + '_' + 'Sensor' + '_' + sensorParameters['ID'] + "\n")
+        #    myfile.close
+        #time.sleep(5)
     try:
         ucIoTDeviceClient.publish(deviceId, messageJson, 1) 
         print('Published to %s: %s\n' % (deviceId, messageJson)) # print console
     except:
         logger.debug("Error in Publishing", exc_info=True)
+        print('!! Publishing Error !!')
+        print('    Making Another Measurement Loop and trying again...')
+        mail_alert2('Indoor_Unit')
         time.sleep(600)
-        print('1')
-        mail_alert2('Indoor Unit')
-        print('2')
-        time.sleep(600)
-    
+        
+    if x > 9:
+        os.system(r'"/home/pi/SpokaneSchools/Cloud/reset.exe"')
+        x = 0
+    else:
+        x = x +1
+        print(x)
+        
     # Reset data buffer for PMS5003
     buffer = buffer[32:]
     
@@ -474,3 +408,9 @@ while True:
     
     # Waits for desired time interval
     time.sleep(sensorParameters['timeInterval'])
+
+
+
+
+
+

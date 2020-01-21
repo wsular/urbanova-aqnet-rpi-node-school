@@ -15,12 +15,11 @@ from bokeh.plotting import figure
 from glob import glob
 from bokeh.models import Span, Label
 
-    #%%
 # Lab solder smoke test INDOOR SENSOR 7
 #11/13 test WSU_LAR_Indoor_Air_Quality_Node_7_20191113*
 
 import pandas as pd
-
+s#%%
 lab_test = pd.DataFrame({})
 files   = glob('/Users/matthew/Desktop/data/lab_tests/11_20_19/WSU_LAR_Indoor_Air_Quality_Node_7_20191120_155013.json')
 files.sort()
@@ -61,9 +60,6 @@ plume = [pd.to_datetime('2019-11-13T15:20:00Z'),
          pd.to_datetime('2019-11-13T16:40:00Z'),
          pd.to_datetime('2019-11-13T16:50:00Z'),
          ]
-
-#%%
-
 
 
 #%%
@@ -107,3 +103,46 @@ p1.legend.location='top_left'
 tab1 = Panel(child=p1, title="Sensor 7 PM 2.5")
 tabs = Tabs(tabs=[ tab1 ]) 
 show(tabs)
+
+#%%
+
+# Reset Test
+
+reset_test = pd.DataFrame({})
+files   = glob('/Users/matthew/Desktop/data/lab_tests/reset_test/Reset*.json')
+files.sort()
+
+for file in files:
+    reset_test = pd.concat([reset_test, pd.read_json(file)], sort=False)
+reset_test.index = reset_test.Datetime
+
+
+if PlotType=='notebook':
+    output_notebook()
+else:
+    output_file('/Users/matthew/Desktop/data/lab_tests/reset_test/no_reset_test_time_series.html')
+
+p1 = figure(plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m^3)')
+            
+p1.line(reset_test.index,      reset_test.PM2_5_standard,              legend='Lab Reset Test',      color='blue',       line_width=2)
+p1.legend.location='top_left'
+
+tab1 = Panel(child=p1, title="Sensor 7 PM 2.5")
+tabs = Tabs(tabs=[ tab1 ]) 
+show(tabs)
+
+
+
+
+
+
+
+
+
+
+
+

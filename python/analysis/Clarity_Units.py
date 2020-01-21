@@ -86,6 +86,15 @@ for file in files:
     Paccar_All = pd.concat([Paccar_All, pd.read_csv(file)], sort=False)
     
 #%%
+#Read in SRCAA Augusta site BAM data
+
+Augusta_All = pd.DataFrame({})
+files = glob('/Users/matthew/Desktop/data/SRCAA_Augusta_BAM/Spokane_Augusta*.csv')
+files.sort()
+for file in files:
+    Augusta_All = pd.concat([Augusta_All, pd.read_csv(file)], sort=False)
+    
+#%%
 # choose schools to look at (comment out from full list to select schools of interest)
     #make sure that selection and selection names match
     
@@ -131,8 +140,8 @@ selection_names = ['Adams',
                    ]
 #%%
 # Choose dates of interest
-start_time = '2019-11-08 13:30'
-end_time = '2019-12-03 00:00'
+start_time = '2019-12-17 14:00'
+end_time = '2019-12-31 14:00'
 #%%
 #Jefferson Comparison Data for indoor PMS5003 unit and Clarity Unit overlap
     
@@ -174,7 +183,7 @@ p1 = figure(plot_width=900,
         
 p1.line(jefferson.index,     jefferson.PM2_5_standard,  legend='PMS5003',       color='green',     line_width=2)
 p1.line(Paccar.index,        Paccar.PM2_5,              legend='Clarity',       color='blue',      line_width=2) 
-p1.line(Jefferson.index,     Jefferson.PM2_5,           legend='Outside',       color='red',       line_width=2) 
+#p1.line(Jefferson.index,     Jefferson.PM2_5,           legend='Outside',       color='red',       line_width=2) 
 
 
 tab1 = Panel(child=p1, title="PM 2.5")
@@ -216,6 +225,10 @@ tab1 = Panel(child=p1, title="Browne PM 2.5 Paccar Roof")
 tabs = Tabs(tabs=[ tab1])
 
 show(tabs)
+
+
+
+
 #%%
 #create dataframes for selected sensors over desired time range
 

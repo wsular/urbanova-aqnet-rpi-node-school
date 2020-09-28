@@ -19,7 +19,7 @@ from bokeh.models import Span, Label
 #11/13 test WSU_LAR_Indoor_Air_Quality_Node_7_20191113*
 
 import pandas as pd
-s#%%
+#%%
 lab_test = pd.DataFrame({})
 files   = glob('/Users/matthew/Desktop/data/lab_tests/11_20_19/WSU_LAR_Indoor_Air_Quality_Node_7_20191120_155013.json')
 files.sort()
@@ -135,11 +135,45 @@ tab1 = Panel(child=p1, title="Sensor 7 PM 2.5")
 tabs = Tabs(tabs=[ tab1 ]) 
 show(tabs)
 
+#%%
+PlotType = 'HTMLfile'
+
+from bokeh.models import Panel, Tabs
+from bokeh.io import output_notebook, output_file, show
+from bokeh.plotting import figure
+from glob import glob
+from bokeh.models import Span, Label
+import pandas as pd
 
 
+#Apartment Test
+
+if PlotType=='notebook':
+    output_notebook()
+else:
+    output_file('/Users/matthew/Desktop/Sensor_7_Good_Data/apartment/apartment_time_series.html')
+
+apt_test = pd.DataFrame({})
+    
+files = glob('/Users/matthew/Desktop/Sensor_7_Good_Data/apartment/WSU*.json')
+files.sort()
+for file in files:
+    apt_test = pd.concat([apt_test, pd.read_json(file)], sort=False)
+apt_test.index = apt_test.Datetime
 
 
+p1 = figure(plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m^3)')
+            
+p1.line(apt_test.index,      apt_test.PM2_5_standard,              legend='Apartment Test',      color='blue',       line_width=2)
+p1.legend.location='top_left'
 
+tab1 = Panel(child=p1, title="Sensor 7 PM 2.5")
+tabs = Tabs(tabs=[ tab1 ]) 
+show(tabs)
 
 
 

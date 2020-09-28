@@ -13,7 +13,7 @@ from glob import glob
 import numpy as np
 
 
-# Load EBAM Data
+# Load in EBAM Data
 EBAM_data = pd.DataFrame({})
 files = glob('/Users/matthew/Desktop/data/calibration/Reference/EBAM*.csv')
 files.sort()

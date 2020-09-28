@@ -6,11 +6,13 @@ Created on Fri Nov  1 15:17:51 2019
 @author: matthew
 """
 
+###### SOMETIMES THE CHOSEN DATE RANGE CAUSES AN ERROR "cannot reindex a non-unique index with a method or limit"
+
 #%%
 import pandas as pd
 from glob import glob
 
-
+#%%
 #Import entire data set
 
 Audubon_All = pd.DataFrame({})
@@ -140,19 +142,66 @@ selection_names = ['Adams',
                    ]
 #%%
 # Choose dates of interest
-start_time = '2019-12-17 14:00'
-end_time = '2019-12-31 14:00'
+start_time = '2020-02-08 00:00'
+end_time = '2020-02-11 11:00'
 #%%
-#Jefferson Comparison Data for indoor PMS5003 unit and Clarity Unit overlap
-    
-jefferson = pd.DataFrame({})
-files   = glob('/Users/matthew/Desktop/data/urbanova/ramboll/Jefferson/WSU_LAR_Indoor_Air_Quality_Node_8_2019*.json')
+import pandas as pd
+from glob import glob
+# Plot Grant to check how often data frequency is dropping
+
+grant = pd.DataFrame({})
+files = glob('/Users/matthew/Desktop/data/Clarity_Backup/Grant*.csv')
 files.sort()
 for file in files:
-    jefferson = pd.concat([jefferson, pd.read_json(file)], sort=False)
+    grant = pd.concat([grant, pd.read_csv(file)], sort=False)
     
+grant['time'] = pd.to_datetime(grant['time'])
+grant = grant.sort_values('time')
+grant.index = grant.time
+grant = grant.loc[start_time:end_time]
+
+
+
+from bokeh.models import Panel, Tabs
+from bokeh.io import output_notebook, output_file, show
+from bokeh.plotting import figure
+
+PlotType = 'HTMLfile'
+
+if PlotType=='notebook':
+    output_notebook()
+else:
+    output_file('/Users/matthew/Desktop/data/Grant_data_frequency_check.html')
+    
+p1 = figure(plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m3)')
+        
+p1.line(grant.index,     grant.PM2_5,  legend='Grant',       color='green',     line_width=2)
+
+tab1 = Panel(child=p1, title="PM 2.5")
+
+tabs = Tabs(tabs=[ tab1])
+
+show(tabs)
+
+
+#%%
+#Jefferson Comparison Data for indoor PMS5003 unit and Clarity Unit overlap
+interval = '2T'
+
+
+jefferson = pd.DataFrame({})
+files   = glob('/Users/matthew/Desktop/data/urbanova/ramboll/Jefferson/WSU_LAR_Indoor_Air_Quality_Node_8_202002*.csv')
+files.sort()
+for file in files:
+    jefferson = pd.concat([jefferson, pd.read_csv(file)], sort=False)
+jefferson['Datetime'] = pd.to_datetime(jefferson['Datetime'])
+jefferson = jefferson.sort_values('Datetime')
 jefferson.index = jefferson.Datetime
-jefferson = jefferson.loc[start_time:end_time]
+jefferson = jefferson.resample(interval).mean()
 
 Paccar_All['time'] = pd.to_datetime(Paccar_All['time'])
 Paccar_All = Paccar_All.sort_values('time')
@@ -182,8 +231,8 @@ p1 = figure(plot_width=900,
             y_axis_label='PM 2.5 (ug/m3)')
         
 p1.line(jefferson.index,     jefferson.PM2_5_standard,  legend='PMS5003',       color='green',     line_width=2)
-p1.line(Paccar.index,        Paccar.PM2_5,              legend='Clarity',       color='blue',      line_width=2) 
-#p1.line(Jefferson.index,     Jefferson.PM2_5,           legend='Outside',       color='red',       line_width=2) 
+#p1.line(Paccar.index,        Paccar.PM2_5,              legend='Clarity',       color='blue',      line_width=2) 
+p1.line(Jefferson.index,     Jefferson.PM2_5,           legend='Outside',       color='red',       line_width=2) 
 
 
 tab1 = Panel(child=p1, title="PM 2.5")
@@ -191,6 +240,12 @@ tab1 = Panel(child=p1, title="PM 2.5")
 tabs = Tabs(tabs=[ tab1])
 
 show(tabs)
+
+
+#%%
+jefferson.to_csv('/Users/matthew/Desktop/PMS5003_data.csv')
+Paccar.to_csv('/Users/matthew/Desktop/Clarity_unit_indoors_data.csv')
+Jefferson.to_csv('/Users/matthew/Desktop/Clarity_outdoor_data.csv')
 #%%
 
 #plot Browne Unit on paccar roof to determine its status
@@ -279,7 +334,7 @@ Audubon.to_csv('/Users/matthew/Desktop/Audubon.csv', index=False)
 Adams.to_csv('/Users/matthew/Desktop/Adams.csv', index=False)
 Balboa.to_csv('/Users/matthew/Desktop/Balboa.csv', index=False)
 Browne.to_csv('/Users/matthew/Desktop/Browne.csv', index=False)
-Gran.to_csv('/Users/matthew/Desktop/Grant.csv', index=False)
+Grant.to_csv('/Users/matthew/Desktop/Grant.csv', index=False)
 Jefferson.to_csv('/Users/matthew/Desktop/Jefferson.csv', index=False)
 Lidgerwood.to_csv('/Users/matthew/Desktop/Liderwood.csv', index=False)
 Regal.to_csv('/Users/matthew/Desktop/Regal.csv', index=False)
@@ -498,7 +553,8 @@ def heat_map(data, **kwargs):
 #heat_map(corr)    
 heat_map(Combined_data_PM2_5.corr())   
 
-plt.savefig('/Users/matthew/Desktop/11_8_to_12_03_19_PM2_5_corr_matrix.png')
+plt.savefig('/Users/matthew/Desktop/test.png')
+#plt.savefig('/Users/matthew/Desktop/11_8_to_12_03_19_PM2_5_corr_matrix.png')
 #%% 
 corr = Combined_data_PM2_5.corr()
 corr[np.abs(corr)>.99] = 0  
@@ -589,19 +645,7 @@ plt.savefig('/Users/matthew/Desktop/September_PM2_5_corr_matrix.png')
 
 corr_PM2_5 = Combined_data_PM2_5.corr()    
 #corr_PM2_5.style.background_gradient(cmap='coolwarm', axis=None)
-#%%
-import matplotlib.pyplot as plt
 
-#plt.matshow(Combined_data_PM2_5.corr())
-#plt.show()        
-
-f = plt.figure(figsize=(19, 15))
-plt.matshow(Combined_data_PM2_5.corr(), fignum=f.number)
-plt.xticks(range(Combined_data_PM2_5.shape[1]), Combined_data_PM2_5.columns, fontsize=14, rotation=45)
-plt.yticks(range(Combined_data_PM2_5.shape[1]), Combined_data_PM2_5.columns, fontsize=14)
-cb = plt.colorbar()
-cb.ax.tick_params(labelsize=14)
-plt.title('Correlation Matrix', fontsize=16);
 #%%            
             
             
@@ -671,28 +715,6 @@ show(tabs)
 
 
 
-
-#%%
-import matplotlib.pyplot as plt
-import numpy as np
-
-data = np.random.random((10,10))
-labels = Combined_data_PM2_5.columns
-
-fig, ax = plt.subplots()
-im = ax.imshow(data, cmap='gray', interpolation='none')
-fig.colorbar(im)
-
-# Set the major ticks at the centers and minor tick at the edges
-locs = np.arange(len(labels))
-for axis in [ax.xaxis, ax.yaxis]:
-    axis.set_ticks(locs + 0.5, minor=True)
-    axis.set(ticks=locs, ticklabels=labels)
-
-# Turn on the grid for the minor ticks
-ax.grid(True, which='minor')
-
-plt.show()
 
 
 

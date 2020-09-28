@@ -11,7 +11,8 @@ import numpy as np
 import xarray as xr
 import holoviews as hv
 from holoviews import opts
-
+from holoviews.plotting.bokeh.styles import (line_properties, fill_properties, text_properties)
+import datetime
 
 from bokeh.plotting import show
 import geoviews as gv
@@ -43,8 +44,8 @@ def simple_idw(x, y, z, xi, yi):
     zi = np.dot(weights.T, z)
     return zi
 
-hv.extension('bokeh', logo=False)
-gv.extension('bokeh', logo=False)
+hv.extension('bokeh', 'matplotlib', logo=False)
+gv.extension('bokeh', 'matplotlib',logo=False)
 
 #hv.extension('matplotlib', logo=False)
 #gv.extension('matplotlib', logo=False)
@@ -600,7 +601,8 @@ points.opts(size=10, color='PM2_5', cmap='magma', tools=['hover'], colorbar=True
             width=500, height=400, padding=.1)
     
 test = gvts.OSM * points
-    
+hv.save(test, '/Users/matthew/Desktop/IDW_test.png')
+    #%%
 latlngbox_num = list(map(float, latlngbox.split(',')))
 
 lats = np.linspace(latlngbox_num[0], latlngbox_num[2], num=150)
@@ -629,12 +631,12 @@ aqi_ds = gv.Dataset(ds, ['Lon', 'Lat'], 'PM2_5')
 
 background = gvts.OSM * gv.Image(aqi_ds).opts(alpha=0.7, width=500, height=400, 
                    colorbar=True, cmap='magma')
-contour = gvts.CartoEco * aqi_ds.to(gv.FilledContours, 
-        ['Lon', 'Lat']).opts(alpha=0.5, width=500, height=400, 
-        colorbar=True, cmap='magma', levels=10, color_levels=10,
-        tools=['hover'])
+#contour = gvts.CartoEco * aqi_ds.to(gv.FilledContours, 
+#        ['Lon', 'Lat']).opts(alpha=0.5, width=500, height=400, 
+#        colorbar=True, cmap='magma', levels=10, color_levels=10,
+#        tools=['hover'])
 
-test3 = (test + background + contour).cols(2)
+test3 = (test)# + background).cols(2) # + contour
     #print(type(test3))
     # Using bokeh
 
@@ -651,7 +653,7 @@ scatter.opts(color='PM2_5', size=10, padding=.1, tools=['hover'],
              colorbar=True, cmap='magma', width=500, height=400)#,clim=(0, 60))
 print(type(scatter))
 
-hv.save(scatter, '/Users/matthew/Desktop/IDW/IDW_test' + begin.strftime('%Y-%m-%d %H:%M') + '.png')
+hv.save(scatter, '/Users/matthew/Desktop/IDW/IDW_test.png')# + begin.strftime('%Y-%m-%d %H:%M') + '.png')
 show(hv.render(scatter))
 
 #%%
@@ -722,7 +724,7 @@ test3 = (test + background + contour).cols(2)
 
 #hv.renderer('bokeh').save(test3, '/Users/matthew/Desktop/IDW_test.png', fmt='png')
 
-hv.save(hv.render(test3), '/Users/matthew/Desktop/IDW_test.png', fmt='png')
+#hv.save(hv.render(test3), '/Users/matthew/Desktop/IDW_test.png', fmt='png')
 
 show(hv.render(test3))
 #show(hv.render(background))

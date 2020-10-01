@@ -94,8 +94,8 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #end_time = '2020-09-17 07:00'
 
 # Date Range of interest
-start_time = '2020-09-10 07:00'   # was 2/9//20 7:00
-end_time = '2020-09-21 07:00'
+start_time = '2020-09-21 07:00'   # was 2/9//20 7:00
+end_time = '2020-09-28 07:00'
 
 #interval = '2T'    # for plotting indoor/outdoor comparisons
 interval = '60T'
@@ -1045,7 +1045,8 @@ show(tabs)
 # read in data from indoor units for 6 highest schools
 # choose /resample to load in indoor PMS5003 data that has been resampled to 15 min for quicker loading
 # Note that periodically must use /WSU (to get all the new csv files) to update the 15 min resample to get the most current set of data
-# And then make sure to delete any duplicate resample files
+# make sure to move the files in "resample backup" folder back into the "data" urbanova folders when r syncing so don't copy in all files from Rpi's again
+# (and then take out all files that have already been resampled so don't have to spend 2 hours loading all just to cut off by dates and resample)
 
 #date_range = '2_9_to_8_27_20'
 
@@ -1279,7 +1280,7 @@ regal['Location'] = 'Regal'
 #%%
 
 # just used to resample indoor data to lower frequency so doesnt take so long to load in each time
-#date_range = '9_17_to_9_21_20'
+#date_range = '9_21_to_9_28_20'
 
 #audubon.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Audubon/resample_15_min_audubon' + '_' + date_range + '.csv', index=False)
 #adams.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Adams/resample_15_min_adams' + '_' + date_range + '.csv', index=False)

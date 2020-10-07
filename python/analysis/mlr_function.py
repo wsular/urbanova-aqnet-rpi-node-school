@@ -20,7 +20,7 @@ from load_indoor_data import load_indoor
 def mlr_function(mlr_model,location):
 
     X = location[['PM2_5_corrected','Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)  Rel_humid
-    X = X.dropna()
+  #  X = X.dropna()
     X = sm.add_constant(X) ## let's add an intercept (beta_0) to our model
   #  mlr_model = sm.OLS(y, X).fit() ## sm.OLS(output, input)
     # Note the difference in argument order
@@ -31,8 +31,8 @@ def mlr_function(mlr_model,location):
     print(print_model)
     location['PM2_5_corrected'] = predictions
     
-    return location
-
+    return predictions
+    #return location
 
 #%%
     

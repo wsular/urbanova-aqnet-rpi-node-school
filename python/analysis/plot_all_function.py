@@ -11,7 +11,7 @@ from bokeh.models import Panel, Tabs
 from bokeh.plotting import figure
 from bokeh.io import show
 
-def plot_all(Audubon, Adams, Balboa, Browne, Grant, Jefferson, Lidgerwood, Regal, Sheridan, Stevens, Reference, Paccar, Augusta):
+def plot_all(Audubon, Adams, Balboa, Browne, Grant, Jefferson, Lidgerwood, Regal, Sheridan, Stevens, Reference, Paccar, Augusta, Broadway, Greenbluff, Monroe):
     
     p1 = figure(plot_width=900,
             plot_height=450,
@@ -50,7 +50,11 @@ def plot_all(Audubon, Adams, Balboa, Browne, Grant, Jefferson, Lidgerwood, Regal
     p1.line(Augusta.index,    Augusta.PM2_5,               legend='Augusta',        color='gold',        line_width=2)
    # p1.line(Audubon_Adams.index, Audubon_Adams.PM2_5_corrected, legend='Audubon1', color='gold', line_width=2)
     #p1.line(Audubon_Adams.index, Audubon_Adams.location_PM2_5_corrected, legend='Adams1', color='red', line_width=2)
+    p1.line(Broadway.index,    Broadway.PM2_5,              legend='Broadway BAM',  color='black',        muted_color='black', muted_alpha=0.2, line_width=2)
+    p1.line(Greenbluff.index,    Greenbluff.PM2_5,          legend='Greenbluff TEOM',  color='red',       muted_color='red', muted_alpha=0.2, line_width=2)
+    p1.line(Monroe.index,       Monroe.PM2_5,               legend='Monroe Neph',   color='blue',         muted_color='blue', muted_alpha=0.2, line_width=2)
 
+    
     audubon_toggle = 0
     adams_toggle = 0
     balboa_toggle = 0

@@ -107,12 +107,12 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #end_time = '2019-11-08 19:00'
 
 # Complete sampling time
-#start_time = '2020-03-10 07:00'
-#end_time = '2020-09-10 10:00'
+start_time = '2020-03-10 07:00'
+end_time = '2020-09-30 10:00'
 
 # Date Range of interest
-start_time = '2020-09-10 07:00'   # was 2/9//20 7:00
-end_time = '2020-09-21 07:00'
+#start_time = '2020-09-10 07:00'   # was 2/9//20 7:00
+#end_time = '2020-09-21 07:00'
 
 #interval = '2T'    # for plotting indoor/outdoor comparisons
 interval = '60T'
@@ -145,8 +145,6 @@ for file in files:
 #Audubon_All['PM2_5_corrected'] = (Audubon_All['PM2_5']-0.42073)/1.0739
 
 #Audubon_All['PM2_5_corrected'] = np.where((Audubon_All.PM2_5 > 50), (Audubon_All.PM2_5-36.06)/0.55, Audubon_All.PM2_5)  # high calibration adjustment
-Audubon_All['PM2_5_corrected'] = np.where((Audubon_All.PM2_5 > 100), mlr_function_high_cal(mlr_high_audubon, Audubon_All), Audubon_All.PM2_5)  # high calibration adjustment
-Audubon_All['PM2_5_corrected'] = np.where((Audubon_All.PM2_5 < 100), (Audubon_All.PM2_5-0.4207)/1.0739, Audubon_All.PM2_5_corrected)  # Paccar roof adjustment
 
 
 if ModelType == 'linear':
@@ -163,9 +161,6 @@ for file in files:
 #Adams_All['PM2_5_corrected'] = (Adams_All['PM2_5']+0.93)/1.1554
 #Adams_All['PM2_5_corrected'] = np.where((Adams_All.PM2_5 > 50), (Adams_All.PM2_5-36.45)/1.03, Adams_All.PM2_5)  # high calibration adjustment
 
-Adams_All['PM2_5_corrected'] = np.where((Adams_All.PM2_5 > 100), mlr_function_high_cal(mlr_high_adams, Adams_All), Adams_All.PM2_5)  # high calibration adjustment
-Adams_All['PM2_5_corrected'] = np.where((Adams_All.PM2_5 < 100), (Adams_All.PM2_5+0.93)/1.1554, Adams_All.PM2_5_corrected)  # Paccar roof adjustment
-
 
 if ModelType == 'linear':
     Adams_All['PM2_5_corrected'] = (Adams_All['PM2_5_corrected']+0.5693)/1.9712  # From AUGUSTA BAM comparison
@@ -180,9 +175,6 @@ for file in files:
     Balboa_All = pd.concat([Balboa_All, pd.read_csv(file)], sort=False)
 #Balboa_All['PM2_5_corrected'] = (Balboa_All['PM2_5']-0.2878)/1.2457       # works, checked with calculator
 #Balboa_All['PM2_5_corrected'] = np.where((Balboa_All.PM2_5 > 50), (Balboa_All.PM2_5-20.74)/1.41, Balboa_All.PM2_5)  # high calibration adjustment
-
-Balboa_All['PM2_5_corrected'] = np.where((Balboa_All.PM2_5 > 100), mlr_function_high_cal(mlr_high_balboa, Balboa_All), Balboa_All.PM2_5)  # high calibration adjustment
-Balboa_All['PM2_5_corrected'] = np.where((Balboa_All.PM2_5 < 100), (Balboa_All.PM2_5-0.2878)/1.2457, Balboa_All.PM2_5_corrected)  # Paccar roof adjustment
 
 
 if ModelType == 'linear':
@@ -199,16 +191,14 @@ for file in files:
 #Browne_All['PM2_5_corrected'] = (Browne_All['PM2_5']-0.4771)/1.1082       # works, checked with calculator
 #Browne_All['PM2_5_corrected'] = np.where((Browne_All.PM2_5 > 50), (Browne_All.PM2_5-42.09)/0.85, Browne_All.PM2_5)  # high calibration adjustment
 
-Browne_All['PM2_5_corrected'] = np.where((Browne_All.PM2_5 > 100), mlr_function_high_cal(mlr_high_browne, Browne_All), Browne_All.PM2_5)  # high calibration adjustment
-Browne_All['PM2_5_corrected'] = np.where((Browne_All.PM2_5 < 100), (Browne_All.PM2_5-0.4771)/1.1082, Browne_All.PM2_5_corrected)  # Paccar roof adjustment
-
 
 if ModelType == 'linear':
     Browne_All['PM2_5_corrected'] = (Browne_All['PM2_5_corrected']+0.5693)/1.9712
 else:
     pass
 
-Browne_All = Browne_All[Browne_All['PM2_5_corrected'] < 300]
+# drop erroneous data from Nov. 2019 when sensor malfunctioning
+Browne_All = Browne_All[Browne_All['PM2_5'] < 1000]
 
 
 Grant_All = pd.DataFrame({})
@@ -218,9 +208,6 @@ for file in files:
     Grant_All = pd.concat([Grant_All, pd.read_csv(file)], sort=False)
 #Grant_All['PM2_5_corrected'] = (Grant_All['PM2_5']+1.0965)/1.29
 #Grant_All['PM2_5_corrected'] = np.where((Grant_All.PM2_5 > 50), (Grant_All.PM2_5-37.25)/1.16, Grant_All.PM2_5)  # high calibration adjustment
-
-Grant_All['PM2_5_corrected'] = np.where((Grant_All.PM2_5 > 100), mlr_function_high_cal(mlr_high_grant, Grant_All), Grant_All.PM2_5)  # high calibration adjustment
-Grant_All['PM2_5_corrected'] = np.where((Grant_All.PM2_5 < 100), (Grant_All.PM2_5+1.0965)/1.29, Grant_All.PM2_5_corrected)  # Paccar roof adjustment
 
 
 if ModelType == 'linear':
@@ -237,9 +224,6 @@ for file in files:
 #Jefferson_All['PM2_5_corrected'] = (Jefferson_All['PM2_5']+0.7099)/1.1458
 #Jefferson_All['PM2_5_corrected'] = np.where((Jefferson_All.PM2_5 > 50), (Jefferson_All.PM2_5-37.85)/0.96, Jefferson_All.PM2_5)  # high calibration adjustment
 
-Jefferson_All['PM2_5_corrected'] = np.where((Jefferson_All.PM2_5 > 100), mlr_function_high_cal(mlr_high_jefferson, Jefferson_All), Jefferson_All.PM2_5)  # high calibration adjustment
-Jefferson_All['PM2_5_corrected'] = np.where((Jefferson_All.PM2_5 < 100), (Jefferson_All.PM2_5+0.7099)/1.1458, Jefferson_All.PM2_5_corrected)  # Paccar roof adjustment
-
 
 if ModelType == 'linear':
     Jefferson_All['PM2_5_corrected'] = (Jefferson_All['PM2_5_corrected']+0.5693)/1.9712   # From AUGUSTA BAM comparison
@@ -254,9 +238,6 @@ for file in files:
     Lidgerwood_All = pd.concat([Lidgerwood_All, pd.read_csv(file)], sort=False)
 #Lidgerwood_All['PM2_5_corrected'] = (Lidgerwood_All['PM2_5']-1.1306)/0.9566    # works, checked with calculator
 #Lidgerwood_All['PM2_5_corrected'] = np.where((Lidgerwood_All.PM2_5 > 50), (Lidgerwood_All.PM2_5-29.33)/0.95, Lidgerwood_All.PM2_5)  # high calibration adjustment
-
-Lidgerwood_All['PM2_5_corrected'] = np.where((Lidgerwood_All.PM2_5 > 100),  mlr_function_high_cal(mlr_high_lidgerwood, Lidgerwood_All), Lidgerwood_All.PM2_5)  # high calibration adjustment
-Lidgerwood_All['PM2_5_corrected'] = np.where((Lidgerwood_All.PM2_5 < 100), (Lidgerwood_All.PM2_5-1.1306)/0.9566, Lidgerwood_All.PM2_5_corrected)  # Paccar roof adjustment
 
 
 if ModelType == 'linear':
@@ -273,9 +254,6 @@ for file in files:
 #Regal_All['PM2_5_corrected'] = (Regal_All['PM2_5']-0.247)/0.9915          # works, checked with calculator
 #Regal_All['PM2_5_corrected'] = np.where((Regal_All.PM2_5 > 50), (Regal_All.PM2_5-29.86)/0.78, Regal_All.PM2_5)  # high calibration adjustment
 
-Regal_All['PM2_5_corrected'] = np.where((Regal_All.PM2_5 > 100),  mlr_function_high_cal(mlr_high_regal, Regal_All), Regal_All.PM2_5)  # high calibration adjustment
-Regal_All['PM2_5_corrected'] = np.where((Regal_All.PM2_5 < 100), (Regal_All.PM2_5-0.247)/0.9915, Regal_All.PM2_5_corrected)  # Paccar roof adjustment
-
 
 if ModelType == 'linear':
     Regal_All['PM2_5_corrected'] = (Regal_All['PM2_5_corrected']+0.5693)/1.9712
@@ -291,10 +269,6 @@ for file in files:
 #Sheridan_All['PM2_5_corrected'] = (Sheridan_All['PM2_5']+0.6958)/1.1468 
 #Sheridan_All['PM2_5_corrected'] = np.where((Sheridan_All.PM2_5 > 50), (Sheridan_All.PM2_5-42.46)/0.97, Sheridan_All.PM2_5)  # high calibration adjustment
 
-Sheridan_All['PM2_5_corrected'] = np.where((Sheridan_All.PM2_5 > 100), mlr_function_high_cal(mlr_high_sheridan, Sheridan_All), Sheridan_All.PM2_5)  # high calibration adjustment
-Sheridan_All['PM2_5_corrected'] = np.where((Sheridan_All.PM2_5 < 100), (Sheridan_All.PM2_5+0.6958)/1.1468, Sheridan_All.PM2_5_corrected)  # Paccar roof adjustment
-
-
 if ModelType == 'linear':
     Sheridan_All['PM2_5_corrected'] = (Sheridan_All['PM2_5_corrected']+0.5693)/1.9712   # From AUGUSTA BAM comparison
 else:
@@ -308,9 +282,6 @@ for file in files:
     Stevens_All = pd.concat([Stevens_All, pd.read_csv(file)], sort=False)
 #Stevens_All['PM2_5_corrected'] = (Stevens_All['PM2_5']+0.8901)/1.2767
 #Stevens_All['PM2_5_corrected'] = np.where((Stevens_All.PM2_5 > 50), (Stevens_All.PM2_5-39.23)/1.2, Stevens_All.PM2_5)  # high calibration adjustment
-
-Stevens_All['PM2_5_corrected'] = np.where((Stevens_All.PM2_5 > 100), mlr_function_high_cal(mlr_high_stevens, Stevens_All), Stevens_All.PM2_5)  # high calibration adjustment
-Stevens_All['PM2_5_corrected'] = np.where((Stevens_All.PM2_5 < 100), (Stevens_All.PM2_5+0.8901)/1.2767, Stevens_All.PM2_5_corrected)  # Paccar roof adjustment
 
 
 if ModelType == 'linear':
@@ -388,16 +359,7 @@ Greenbluff_All['PM2_5_corrected'] = Greenbluff_All['PM2_5']    # creates column 
 # note that all the constants are the same because the same mlr equation derived from the Clarity reference node at 
 # the Augusta site is being used for this calibration adjustment
 
-Audubon_All['PM2_5_corrected1'] = np.where((Audubon_All.PM2_5 < 100), Audubon_All.PM2_5*0.454-Audubon_All.Rel_humid*0.0483-Audubon_All.temp*0.0774+4.8242, Audubon_All.PM2_5_corrected)  # high calibration adjustment
-Adams_All['PM2_5_corrected'] = np.where((Adams_All.PM2_5 < 100), Adams_All.PM2_5*0.454-Adams_All.Rel_humid*0.0483-Adams_All.temp*0.0774+4.8242, Adams_All.PM2_5_corrected)  # high calibration adjustment
-Balboa_All['PM2_5_corrected'] = np.where((Balboa_All.PM2_5 < 100), Balboa_All.PM2_5*0.454-Balboa_All.Rel_humid*0.0483-Balboa_All.temp*0.0774+4.8242, Balboa_All.PM2_5_corrected)  # high calibration adjustment
-Browne_All['PM2_5_corrected'] = np.where((Browne_All.PM2_5 < 100), Browne_All.PM2_5*0.454-Browne_All.Rel_humid*0.0483-Browne_All.temp*0.0774+4.8242, Browne_All.PM2_5_corrected)  # high calibration adjustment
-Grant_All['PM2_5_corrected'] = np.where((Grant_All.PM2_5 < 100), Grant_All.PM2_5*0.454-Grant_All.Rel_humid*0.0483-Grant_All.temp*0.0774+4.8242, Grant_All.PM2_5_corrected)  # high calibration adjustment
-Jefferson_All['PM2_5_corrected'] = np.where((Jefferson_All.PM2_5 < 100), Jefferson_All.PM2_5*0.454-Jefferson_All.Rel_humid*0.0483-Jefferson_All.temp*0.0774+4.8242, Jefferson_All.PM2_5_corrected)  # high calibration adjustment
-Lidgerwood_All['PM2_5_corrected'] = np.where((Lidgerwood_All.PM2_5 < 100), Lidgerwood_All.PM2_5*0.454-Lidgerwood_All.Rel_humid*0.0483-Lidgerwood_All.temp*0.0774+4.8242, Lidgerwood_All.PM2_5_corrected)  # high calibration adjustment
-Regal_All['PM2_5_corrected'] = np.where((Regal_All.PM2_5 < 100), Regal_All.PM2_5*0.454-Regal_All.Rel_humid*0.0483-Regal_All.temp*0.0774+4.8242, Regal_All.PM2_5_corrected)  # high calibration adjustment
-Sheridan_All['PM2_5_corrected'] = np.where((Sheridan_All.PM2_5 < 100), Sheridan_All.PM2_5*0.454-Sheridan_All.Rel_humid*0.0483-Sheridan_All.temp*0.0774+4.8242, Sheridan_All.PM2_5_corrected)  # high calibration adjustment
-Stevens_All['PM2_5_corrected'] = np.where((Stevens_All.PM2_5 < 100), Stevens_All.PM2_5*0.454-Stevens_All.Rel_humid*0.0483-Stevens_All.temp*0.0774+4.8242, Stevens_All.PM2_5_corrected)  # high calibration adjustment
+
 
 
 # the commented lines below affect the high measurements as well so dont use
@@ -520,6 +482,17 @@ Reference = Reference.resample(interval).mean()
 Paccar = Paccar.resample(interval).mean()
 Augusta = Augusta.resample(interval).mean()
 
+Audubon = Audubon.dropna()
+Adams = Adams.dropna()
+Balboa = Balboa.dropna()
+Browne = Browne.dropna()
+Grant = Grant.dropna()
+Jefferson = Jefferson.dropna()
+Lidgerwood = Lidgerwood.dropna()
+Regal = Regal.dropna()
+Sheridan = Sheridan.dropna()
+Stevens = Stevens.dropna()
+
 Audubon['Location'] = 'Audubon'
 Adams['Location'] = 'Adams'
 Balboa['Location'] = 'Balboa'
@@ -530,6 +503,53 @@ Lidgerwood['Location'] = 'Lidgerwood'
 Regal['Location'] = 'Regal'
 Sheridan['Location'] = 'Sheridan'
 Stevens['Location'] = 'Stevens'
+
+#%%
+
+# Apply calibrations (after hourly resample because the calibrations are based on hourly data)
+# high calibration
+Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 > 51), mlr_function_high_cal(mlr_high_audubon, Audubon), Audubon.PM2_5)  # high calibration adjustment
+# linear adjustement to reference node based on Paccar roof calibration
+Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 < 51), (Audubon.PM2_5-0.4207)/1.0739, Audubon.PM2_5_corrected)  # Paccar roof adjustment
+# apply mlr calibration from Augusta
+Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 < 51), Audubon.PM2_5*0.454-Audubon.Rel_humid*0.0483-Audubon.temp*0.0774+4.8242, Audubon.PM2_5_corrected)  # high calibration adjustment
+
+Adams['PM2_5_corrected'] = np.where((Adams.PM2_5 > 75), mlr_function_high_cal(mlr_high_adams, Adams), Adams.PM2_5)  # high calibration adjustment
+Adams['PM2_5_corrected'] = np.where((Adams.PM2_5 < 75), (Adams.PM2_5+0.93)/1.1554, Adams.PM2_5_corrected)  # Paccar roof adjustment
+Adams['PM2_5_corrected'] = np.where((Adams.PM2_5 < 75), Adams.PM2_5*0.454-Adams.Rel_humid*0.0483-Adams.temp*0.0774+4.8242, Adams.PM2_5_corrected)  # high calibration adjustment
+
+Balboa['PM2_5_corrected'] = np.where((Balboa.PM2_5 > 58), mlr_function_high_cal(mlr_high_balboa, Balboa), Balboa.PM2_5)  # high calibration adjustment
+Balboa['PM2_5_corrected'] = np.where((Balboa.PM2_5 < 58), (Balboa.PM2_5-0.2878)/1.2457, Balboa.PM2_5_corrected)  # Paccar roof adjustment
+Balboa['PM2_5_corrected'] = np.where((Balboa.PM2_5 < 58), Balboa.PM2_5*0.454-Balboa.Rel_humid*0.0483-Balboa.temp*0.0774+4.8242, Balboa.PM2_5_corrected)  # high calibration adjustment
+
+Browne['PM2_5_corrected'] = np.where((Browne.PM2_5 > 74), mlr_function_high_cal(mlr_high_browne, Browne), Browne.PM2_5)  # high calibration adjustment
+Browne['PM2_5_corrected'] = np.where((Browne.PM2_5 < 74), (Browne.PM2_5-0.4771)/1.1082, Browne.PM2_5_corrected)  # Paccar roof adjustment
+Browne['PM2_5_corrected'] = np.where((Browne.PM2_5 < 74), Browne.PM2_5*0.454-Browne.Rel_humid*0.0483-Browne.temp*0.0774+4.8242, Browne.PM2_5_corrected)  # high calibration adjustment
+
+Grant['PM2_5_corrected'] = np.where((Grant.PM2_5 > 77), mlr_function_high_cal(mlr_high_grant, Grant), Grant.PM2_5)  # high calibration adjustment
+Grant['PM2_5_corrected'] = np.where((Grant.PM2_5 < 77), (Grant.PM2_5+1.0965)/1.29, Grant.PM2_5_corrected)  # Paccar roof adjustment
+Grant['PM2_5_corrected'] = np.where((Grant.PM2_5 < 77), Grant.PM2_5*0.454-Grant.Rel_humid*0.0483-Grant.temp*0.0774+4.8242, Grant.PM2_5_corrected)  # high calibration adjustment
+
+Jefferson['PM2_5_corrected'] = np.where((Jefferson.PM2_5 > 73), mlr_function_high_cal(mlr_high_jefferson, Jefferson), Jefferson.PM2_5)  # high calibration adjustment
+Jefferson['PM2_5_corrected'] = np.where((Jefferson.PM2_5 < 73), (Jefferson.PM2_5+0.7099)/1.1458, Jefferson.PM2_5_corrected)  # Paccar roof adjustment
+Jefferson['PM2_5_corrected'] = np.where((Jefferson.PM2_5 < 73), Jefferson.PM2_5*0.454-Jefferson.Rel_humid*0.0483-Jefferson.temp*0.0774+4.8242, Jefferson.PM2_5_corrected)  # high calibration adjustment
+
+Lidgerwood['PM2_5_corrected'] = np.where((Lidgerwood.PM2_5 > 66),  mlr_function_high_cal(mlr_high_lidgerwood, Lidgerwood), Lidgerwood.PM2_5)  # high calibration adjustment
+Lidgerwood['PM2_5_corrected'] = np.where((Lidgerwood.PM2_5 < 66), (Lidgerwood.PM2_5-1.1306)/0.9566, Lidgerwood.PM2_5_corrected)  # Paccar roof adjustment
+Lidgerwood['PM2_5_corrected'] = np.where((Lidgerwood.PM2_5 < 66), Lidgerwood.PM2_5*0.454-Lidgerwood.Rel_humid*0.0483-Lidgerwood.temp*0.0774+4.8242, Lidgerwood.PM2_5_corrected)  # high calibration adjustment
+
+Regal['PM2_5_corrected'] = np.where((Regal.PM2_5 > 54),  mlr_function_high_cal(mlr_high_regal, Regal), Regal.PM2_5)  # high calibration adjustment
+Regal['PM2_5_corrected'] = np.where((Regal.PM2_5 < 54), (Regal.PM2_5-0.247)/0.9915, Regal.PM2_5_corrected)  # Paccar roof adjustment
+Regal['PM2_5_corrected'] = np.where((Regal.PM2_5 < 54), Regal.PM2_5*0.454-Regal.Rel_humid*0.0483-Regal.temp*0.0774+4.8242, Regal.PM2_5_corrected)  # high calibration adjustment
+
+Sheridan['PM2_5_corrected'] = np.where((Sheridan.PM2_5 > 82), mlr_function_high_cal(mlr_high_sheridan, Sheridan), Sheridan.PM2_5)  # high calibration adjustment
+Sheridan['PM2_5_corrected'] = np.where((Sheridan.PM2_5 < 82), (Sheridan.PM2_5+0.6958)/1.1468, Sheridan.PM2_5_corrected)  # Paccar roof adjustment
+Sheridan['PM2_5_corrected'] = np.where((Sheridan.PM2_5 < 82), Sheridan.PM2_5*0.454-Sheridan.Rel_humid*0.0483-Sheridan.temp*0.0774+4.8242, Sheridan.PM2_5_corrected)  # high calibration adjustment
+
+Stevens['PM2_5_corrected'] = np.where((Stevens.PM2_5 > 86), mlr_function_high_cal(mlr_high_stevens, Stevens), Stevens.PM2_5)  # high calibration adjustment
+Stevens['PM2_5_corrected'] = np.where((Stevens.PM2_5 < 86), (Stevens.PM2_5+0.8901)/1.2767, Stevens.PM2_5_corrected)  # Paccar roof adjustment
+Stevens['PM2_5_corrected'] = np.where((Stevens.PM2_5 < 86), Stevens.PM2_5*0.454-Stevens.Rel_humid*0.0483-Stevens.temp*0.0774+4.8242, Stevens.PM2_5_corrected)  # high calibration adjustment
+
 
 #unit_1 = Reference
 #unit_2 = Paccar
@@ -545,7 +565,6 @@ print(radiosonde.dtypes)
 
 radiosonde['date_obj'] =  pd.to_datetime(radiosonde['datetime'])#, format='Y-%m-%dT%H:%M%:%SZ')
 print(radiosonde.dtypes)
-
 radiosonde['iso_date'] = radiosonde['date_obj'].apply(lambda x: x.isoformat())
 radiosonde.index = radiosonde.iso_date
 radiosonde['adams_PM2_5_corr'] = Adams['PM2_5_corrected']
@@ -2484,3 +2503,5 @@ unit_1.to_csv('/Users/matthew/Desktop/Clarity_data/unit_1.csv', index=False , da
 unit_2.to_csv('/Users/matthew/Desktop/Clarity_data/unit_2.csv', index=False , date_format='%Y-%m-%d %H:%M:%S')
 
 
+#%%
+print(mlr_high_sheridan.summary())

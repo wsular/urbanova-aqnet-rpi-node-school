@@ -358,7 +358,8 @@ calibration_df['Stevens_linear_cal'] = (calibration_df['Stevens']-39.23)/1.2
 
 #%%
 
-# mlr calibration
+# mlr calibration # need to fix this, I had modified the mlr_function_high_cal function to run in the plot_all script,
+# I must have deleted the one that was used in the below function calls, I need to remake the function for below
 
 calibration_df['Adams_mlr'] = mlr_function_high_cal(calibration_df, 'Adams')
 calibration_df['Audubon_mlr'] = mlr_function_high_cal(calibration_df, 'Audubon')

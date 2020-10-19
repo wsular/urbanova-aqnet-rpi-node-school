@@ -29,7 +29,6 @@ def high_cal_setup():
     calibration_df = calibration_df.dropna()
 
 
-    
     return(calibration_df)
 
 

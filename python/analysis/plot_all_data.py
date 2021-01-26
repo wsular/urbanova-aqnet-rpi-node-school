@@ -65,6 +65,10 @@ from gaussian_fit_function import gaussian_fit
 from indoor_shift_outdoor_residuals import in_out_histogram
 from high_cal_mlr_function_generator import high_cal_setup, generate_mlr_function_high_cal
 from high_cal_mlr_function import mlr_function_high_cal
+from indoor_cal_low import indoor_cal_low
+from indoor_cal_smoke import indoor_cal_smoke
+from outdoor_low_cal import outdoor_cal_low
+from outdoor_cal_smoke import outdoor_cal_smoke
 #%%
 
 # initiate dataframe for high calibration data used to generate high calibration mlr functions for each location
@@ -106,13 +110,30 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #start_time = '2019-10-31 07:00'
 #end_time = '2019-11-08 19:00'
 
+# students in schools
+start_time = '2020-02-15 07:00'
+end_time = '2020-03-10 19:00'
+
+# empty schools till smoke
+#start_time = '2020-03-10 07:00'
+#end_time = '2020-09-10 19:00'
+
+# smoke event
+
+#start_time = '2020-09-10 07:00'
+#end_time = '2020-09-21 19:00'
+
 # Complete sampling time
-start_time = '2020-03-10 07:00'
-end_time = '2020-09-30 10:00'
+#start_time = '2020-03-10 07:00'
+#end_time = '2020-09-10 07:00'
+
+# indoor calibration period (not the times of the chamber test but the overall time period at Von's house)
+#start_time = '2020-11-04 00:00'
+#end_time = '2020-12-07 23:00'
 
 # Date Range of interest
-#start_time = '2020-09-10 07:00'   # was 2/9//20 7:00
-#end_time = '2020-09-21 07:00'
+#start_time = '2021-01-06 07:00'   # was 2/9//20 7:00
+#end_time = '2021-01-08 07:00'
 
 #interval = '2T'    # for plotting indoor/outdoor comparisons
 interval = '60T'
@@ -381,7 +402,6 @@ Audubon_All = Audubon_All.sort_values('time')
 Audubon_All.index = Audubon_All.time
 Audubon = Audubon_All.loc[start_time:end_time]
 
-
 Adams_All['time'] = pd.to_datetime(Adams_All['time'])
 Adams_All = Adams_All.sort_values('time')
 Adams_All.index = Adams_All.time
@@ -506,49 +526,111 @@ Stevens['Location'] = 'Stevens'
 
 #%%
 
+# apply calibration for lower values during the winter using the calibration from SRCAA overlap
+
+Audubon_low = outdoor_cal_low(Audubon, 'Audubon')
+Adams_low = outdoor_cal_low(Adams, 'Adams')
+Balboa_low = outdoor_cal_low(Balboa, 'Balboa')
+Browne_low = outdoor_cal_low(Browne, 'Browne')
+Grant_low = outdoor_cal_low(Grant, 'Grant')
+Jefferson_low = outdoor_cal_low(Jefferson, 'Jefferson')
+Lidgerwood_low= outdoor_cal_low(Lidgerwood, 'Lidgerwood')
+Regal_low =  outdoor_cal_low(Regal, 'Regal')
+Sheridan_low = outdoor_cal_low(Sheridan, 'Sheridan')
+Stevens_low = outdoor_cal_low(Stevens, 'Stevens')
+
+#%%
+# apply calibration during the smoke of september 2020
+Audubon_smoke = outdoor_cal_smoke(Audubon, 'Audubon', mlr_high_audubon)
+Adams_smoke = outdoor_cal_smoke(Adams, 'Adams', mlr_high_adams)
+Balboa_smoke = outdoor_cal_smoke(Balboa, 'Balboa', mlr_high_balboa)
+Browne_smoke = outdoor_cal_smoke(Browne, 'Browne', mlr_high_browne)
+Grant_smoke = outdoor_cal_smoke(Grant, 'Grant', mlr_high_grant)
+Jefferson_smoke = outdoor_cal_smoke(Jefferson, 'Jefferson', mlr_high_jefferson)
+Lidgerwood_smoke = outdoor_cal_smoke(Lidgerwood, 'Lidgerwood', mlr_high_lidgerwood)
+Regal_smoke = outdoor_cal_smoke(Regal, 'Regal', mlr_high_regal)
+Sheridan_smoke = outdoor_cal_smoke(Sheridan, 'Sheridan', mlr_high_sheridan)
+Stevens_smoke = outdoor_cal_smoke(Stevens, 'Stevens', mlr_high_stevens)
+
+#%%
+
+Audubon = Audubon_low.append(Audubon_smoke)
+Adams = Adams_low.append(Adams_smoke)
+Balboa = Balboa_low.append(Balboa_smoke)
+Browne = Browne_low.append(Browne_smoke)
+Grant = Grant_low.append(Grant_smoke)
+Jefferson = Jefferson_low.append(Jefferson_smoke)
+Lidgerwood = Lidgerwood_low.append(Lidgerwood_smoke)
+Regal = Regal_low.append(Regal_smoke)
+Sheridan = Sheridan_low.append(Sheridan_smoke)
+Stevens = Stevens_low.append(Stevens_smoke)
+#%%
+
+# originally had adjustments in 3 lines, combined into one line per location
+
 # Apply calibrations (after hourly resample because the calibrations are based on hourly data)
 # high calibration
-Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 > 51), mlr_function_high_cal(mlr_high_audubon, Audubon), Audubon.PM2_5)  # high calibration adjustment
+#Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 > 51), mlr_function_high_cal(mlr_high_audubon, Audubon),  # high calibration adjustment
+#                                       ((Audubon.PM2_5-0.4207)/1.0739)                               # Paccar roof adjustment
+#                                       *0.454-Audubon.Rel_humid*0.0483-Audubon.temp*0.0774+4.8242)   # high calibration adjustment
 # linear adjustement to reference node based on Paccar roof calibration
-Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 < 51), (Audubon.PM2_5-0.4207)/1.0739, Audubon.PM2_5_corrected)  # Paccar roof adjustment
+#Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 < 51), (Audubon.PM2_5-0.4207)/1.0739, Audubon.PM2_5_corrected)  # Paccar roof adjustment
 # apply mlr calibration from Augusta
-Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 < 51), Audubon.PM2_5*0.454-Audubon.Rel_humid*0.0483-Audubon.temp*0.0774+4.8242, Audubon.PM2_5_corrected)  # high calibration adjustment
+#Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 < 51), Audubon.PM2_5*0.454-Audubon.Rel_humid*0.0483-Audubon.temp*0.0774+4.8242, Audubon.PM2_5_corrected)  # high calibration adjustment
 
-Adams['PM2_5_corrected'] = np.where((Adams.PM2_5 > 75), mlr_function_high_cal(mlr_high_adams, Adams), Adams.PM2_5)  # high calibration adjustment
-Adams['PM2_5_corrected'] = np.where((Adams.PM2_5 < 75), (Adams.PM2_5+0.93)/1.1554, Adams.PM2_5_corrected)  # Paccar roof adjustment
-Adams['PM2_5_corrected'] = np.where((Adams.PM2_5 < 75), Adams.PM2_5*0.454-Adams.Rel_humid*0.0483-Adams.temp*0.0774+4.8242, Adams.PM2_5_corrected)  # high calibration adjustment
+#Adams['PM2_5_corrected'] = np.where((Adams.PM2_5 > 75), mlr_function_high_cal(mlr_high_adams, Adams),  # high calibration adjustment
+#                                    ((Adams.PM2_5+0.93)/1.1554)                             # Paccar roof adjustment
+#                                    *0.454-Adams.Rel_humid*0.0483-Adams.temp*0.0774+4.8242)   # high calibration adjustment
+#Adams['PM2_5_corrected'] = np.where((Adams.PM2_5 < 75), (Adams.PM2_5+0.93)/1.1554, Adams.PM2_5_corrected)  # Paccar roof adjustment
+#Adams['PM2_5_corrected'] = np.where((Adams.PM2_5 < 75), Adams.PM2_5*0.454-Adams.Rel_humid*0.0483-Adams.temp*0.0774+4.8242, Adams.PM2_5_corrected)  # high calibration adjustment
 
-Balboa['PM2_5_corrected'] = np.where((Balboa.PM2_5 > 58), mlr_function_high_cal(mlr_high_balboa, Balboa), Balboa.PM2_5)  # high calibration adjustment
-Balboa['PM2_5_corrected'] = np.where((Balboa.PM2_5 < 58), (Balboa.PM2_5-0.2878)/1.2457, Balboa.PM2_5_corrected)  # Paccar roof adjustment
-Balboa['PM2_5_corrected'] = np.where((Balboa.PM2_5 < 58), Balboa.PM2_5*0.454-Balboa.Rel_humid*0.0483-Balboa.temp*0.0774+4.8242, Balboa.PM2_5_corrected)  # high calibration adjustment
+#Balboa['PM2_5_corrected'] = np.where((Balboa.PM2_5 > 58), mlr_function_high_cal(mlr_high_balboa, Balboa), 
+#                                     ((Balboa.PM2_5-0.2878)/1.2457)  #  Paccar roof adjustment
+#                                     *0.454-Balboa.Rel_humid*0.0483-Balboa.temp*0.0774+4.8242)  # high calibration adjustment
+#Balboa['PM2_5_corrected'] = np.where((Balboa.PM2_5 < 58), (Balboa.PM2_5-0.2878)/1.2457, Balboa.PM2_5_corrected)  # Paccar roof adjustment
+#Balboa['PM2_5_corrected'] = np.where((Balboa.PM2_5 < 58), Balboa.PM2_5*0.454-Balboa.Rel_humid*0.0483-Balboa.temp*0.0774+4.8242, Balboa.PM2_5_corrected)  # high calibration adjustment
 
-Browne['PM2_5_corrected'] = np.where((Browne.PM2_5 > 74), mlr_function_high_cal(mlr_high_browne, Browne), Browne.PM2_5)  # high calibration adjustment
-Browne['PM2_5_corrected'] = np.where((Browne.PM2_5 < 74), (Browne.PM2_5-0.4771)/1.1082, Browne.PM2_5_corrected)  # Paccar roof adjustment
-Browne['PM2_5_corrected'] = np.where((Browne.PM2_5 < 74), Browne.PM2_5*0.454-Browne.Rel_humid*0.0483-Browne.temp*0.0774+4.8242, Browne.PM2_5_corrected)  # high calibration adjustment
+#Browne['PM2_5_corrected'] = np.where((Browne.PM2_5 > 74), mlr_function_high_cal(mlr_high_browne, Browne),   # high calibration adjustment
+#                                     ((Browne.PM2_5-0.4771)/1.1082)                               # Paccar roof adjustment
+#                                     *0.454-Browne.Rel_humid*0.0483-Browne.temp*0.0774+4.8242)    # high calibration adjustment
+#Browne['PM2_5_corrected'] = np.where((Browne.PM2_5 < 74), (Browne.PM2_5-0.4771)/1.1082, Browne.PM2_5_corrected)  # Paccar roof adjustment
+#Browne['PM2_5_corrected'] = np.where((Browne.PM2_5 < 74), Browne.PM2_5*0.454-Browne.Rel_humid*0.0483-Browne.temp*0.0774+4.8242, Browne.PM2_5_corrected)  # high calibration adjustment
 
-Grant['PM2_5_corrected'] = np.where((Grant.PM2_5 > 77), mlr_function_high_cal(mlr_high_grant, Grant), Grant.PM2_5)  # high calibration adjustment
-Grant['PM2_5_corrected'] = np.where((Grant.PM2_5 < 77), (Grant.PM2_5+1.0965)/1.29, Grant.PM2_5_corrected)  # Paccar roof adjustment
-Grant['PM2_5_corrected'] = np.where((Grant.PM2_5 < 77), Grant.PM2_5*0.454-Grant.Rel_humid*0.0483-Grant.temp*0.0774+4.8242, Grant.PM2_5_corrected)  # high calibration adjustment
+#Grant['PM2_5_corrected'] = np.where((Grant.PM2_5 > 77), mlr_function_high_cal(mlr_high_grant, Grant),  # high calibration adjustment
+#                                    ((Grant.PM2_5+1.0965)/1.29)                              # Paccar roof adjustment
+#                                    *0.454-Grant.Rel_humid*0.0483-Grant.temp*0.0774+4.8242)  # high calibration adjustment
+#Grant['PM2_5_corrected'] = np.where((Grant.PM2_5 < 77), (Grant.PM2_5+1.0965)/1.29, Grant.PM2_5_corrected)  # Paccar roof adjustment
+#Grant['PM2_5_corrected'] = np.where((Grant.PM2_5 < 77), Grant.PM2_5*0.454-Grant.Rel_humid*0.0483-Grant.temp*0.0774+4.8242, Grant.PM2_5_corrected)  # high calibration adjustment
 
-Jefferson['PM2_5_corrected'] = np.where((Jefferson.PM2_5 > 73), mlr_function_high_cal(mlr_high_jefferson, Jefferson), Jefferson.PM2_5)  # high calibration adjustment
-Jefferson['PM2_5_corrected'] = np.where((Jefferson.PM2_5 < 73), (Jefferson.PM2_5+0.7099)/1.1458, Jefferson.PM2_5_corrected)  # Paccar roof adjustment
-Jefferson['PM2_5_corrected'] = np.where((Jefferson.PM2_5 < 73), Jefferson.PM2_5*0.454-Jefferson.Rel_humid*0.0483-Jefferson.temp*0.0774+4.8242, Jefferson.PM2_5_corrected)  # high calibration adjustment
+#Jefferson['PM2_5_corrected'] = np.where((Jefferson.PM2_5 > 73), mlr_function_high_cal(mlr_high_jefferson, Jefferson),  # high calibration adjustment
+#                                        ((Jefferson.PM2_5+0.7099)/1.1458)                                # Paccar roof adjustment
+#                                        *0.454-Jefferson.Rel_humid*0.0483-Jefferson.temp*0.0774+4.8242)  # high calibration adjustment
+#Jefferson['PM2_5_corrected'] = np.where((Jefferson.PM2_5 < 73), (Jefferson.PM2_5+0.7099)/1.1458, Jefferson.PM2_5_corrected)  # Paccar roof adjustment
+#Jefferson['PM2_5_corrected'] = np.where((Jefferson.PM2_5 < 73), Jefferson.PM2_5*0.454-Jefferson.Rel_humid*0.0483-Jefferson.temp*0.0774+4.8242, Jefferson.PM2_5_corrected)  # high calibration adjustment
 
-Lidgerwood['PM2_5_corrected'] = np.where((Lidgerwood.PM2_5 > 66),  mlr_function_high_cal(mlr_high_lidgerwood, Lidgerwood), Lidgerwood.PM2_5)  # high calibration adjustment
-Lidgerwood['PM2_5_corrected'] = np.where((Lidgerwood.PM2_5 < 66), (Lidgerwood.PM2_5-1.1306)/0.9566, Lidgerwood.PM2_5_corrected)  # Paccar roof adjustment
-Lidgerwood['PM2_5_corrected'] = np.where((Lidgerwood.PM2_5 < 66), Lidgerwood.PM2_5*0.454-Lidgerwood.Rel_humid*0.0483-Lidgerwood.temp*0.0774+4.8242, Lidgerwood.PM2_5_corrected)  # high calibration adjustment
+#Lidgerwood['PM2_5_corrected'] = np.where((Lidgerwood.PM2_5 > 66),  mlr_function_high_cal(mlr_high_lidgerwood, Lidgerwood),   # high calibration adjustment
+#                                         (Lidgerwood.PM2_5-1.1306)/0.9566                                    # Paccar roof adjustment
+#                                         *0.454-Lidgerwood.Rel_humid*0.0483-Lidgerwood.temp*0.0774+4.8242)  # high calibration adjustment
+#Lidgerwood['PM2_5_corrected'] = np.where((Lidgerwood.PM2_5 < 66), (Lidgerwood.PM2_5-1.1306)/0.9566, Lidgerwood.PM2_5_corrected)  # Paccar roof adjustment
+#Lidgerwood['PM2_5_corrected'] = np.where((Lidgerwood.PM2_5 < 66), Lidgerwood.PM2_5*0.454-Lidgerwood.Rel_humid*0.0483-Lidgerwood.temp*0.0774+4.8242, Lidgerwood.PM2_5_corrected)  # high calibration adjustment
 
-Regal['PM2_5_corrected'] = np.where((Regal.PM2_5 > 54),  mlr_function_high_cal(mlr_high_regal, Regal), Regal.PM2_5)  # high calibration adjustment
-Regal['PM2_5_corrected'] = np.where((Regal.PM2_5 < 54), (Regal.PM2_5-0.247)/0.9915, Regal.PM2_5_corrected)  # Paccar roof adjustment
-Regal['PM2_5_corrected'] = np.where((Regal.PM2_5 < 54), Regal.PM2_5*0.454-Regal.Rel_humid*0.0483-Regal.temp*0.0774+4.8242, Regal.PM2_5_corrected)  # high calibration adjustment
+#Regal['PM2_5_corrected'] = np.where((Regal.PM2_5 > 54),  mlr_function_high_cal(mlr_high_regal, Regal),   # high calibration adjustment
+#                                    ((Regal.PM2_5-0.247)/0.9915)                                    # Paccar roof adjustment
+#                                    *0.454-Regal.Rel_humid*0.0483-Regal.temp*0.0774+4.8242)         # high calibration adjustment
+#Regal['PM2_5_corrected'] = np.where((Regal.PM2_5 < 54), (Regal.PM2_5-0.247)/0.9915, Regal.PM2_5_corrected)  # Paccar roof adjustment
+#Regal['PM2_5_corrected'] = np.where((Regal.PM2_5 < 54), Regal.PM2_5*0.454-Regal.Rel_humid*0.0483-Regal.temp*0.0774+4.8242, Regal.PM2_5_corrected)  # high calibration adjustment
 
-Sheridan['PM2_5_corrected'] = np.where((Sheridan.PM2_5 > 82), mlr_function_high_cal(mlr_high_sheridan, Sheridan), Sheridan.PM2_5)  # high calibration adjustment
-Sheridan['PM2_5_corrected'] = np.where((Sheridan.PM2_5 < 82), (Sheridan.PM2_5+0.6958)/1.1468, Sheridan.PM2_5_corrected)  # Paccar roof adjustment
-Sheridan['PM2_5_corrected'] = np.where((Sheridan.PM2_5 < 82), Sheridan.PM2_5*0.454-Sheridan.Rel_humid*0.0483-Sheridan.temp*0.0774+4.8242, Sheridan.PM2_5_corrected)  # high calibration adjustment
+#Sheridan['PM2_5_corrected'] = np.where((Sheridan.PM2_5 > 82), mlr_function_high_cal(mlr_high_sheridan, Sheridan),  # high calibration adjustment
+#                                       ((Sheridan.PM2_5+0.6958)/1.1468)                             # Paccar roof adjustment
+#                                       *0.454-Sheridan.Rel_humid*0.0483-Sheridan.temp*0.0774+4.8242)  # high calibration adjustment
+#Sheridan['PM2_5_corrected'] = np.where((Sheridan.PM2_5 < 82), (Sheridan.PM2_5+0.6958)/1.1468, Sheridan.PM2_5_corrected)  # Paccar roof adjustment
+#Sheridan['PM2_5_corrected'] = np.where((Sheridan.PM2_5 < 82), Sheridan.PM2_5*0.454-Sheridan.Rel_humid*0.0483-Sheridan.temp*0.0774+4.8242, Sheridan.PM2_5_corrected)  # high calibration adjustment
 
-Stevens['PM2_5_corrected'] = np.where((Stevens.PM2_5 > 86), mlr_function_high_cal(mlr_high_stevens, Stevens), Stevens.PM2_5)  # high calibration adjustment
-Stevens['PM2_5_corrected'] = np.where((Stevens.PM2_5 < 86), (Stevens.PM2_5+0.8901)/1.2767, Stevens.PM2_5_corrected)  # Paccar roof adjustment
-Stevens['PM2_5_corrected'] = np.where((Stevens.PM2_5 < 86), Stevens.PM2_5*0.454-Stevens.Rel_humid*0.0483-Stevens.temp*0.0774+4.8242, Stevens.PM2_5_corrected)  # high calibration adjustment
+#Stevens['PM2_5_corrected'] = np.where((Stevens.PM2_5 > 86), mlr_function_high_cal(mlr_high_stevens, Stevens),   # high calibration adjustment
+#                                      ((Stevens.PM2_5+0.8901)/1.2767)                                 # Paccar roof adjustment
+#                                      *0.454-Stevens.Rel_humid*0.0483-Stevens.temp*0.0774+4.8242)     # high calibration adjustment
+#Stevens['PM2_5_corrected'] = np.where((Stevens.PM2_5 < 86), (Stevens.PM2_5+0.8901)/1.2767, Stevens.PM2_5_corrected)  # Paccar roof adjustment
+#Stevens['PM2_5_corrected'] = np.where((Stevens.PM2_5 < 86), Stevens.PM2_5*0.454-Stevens.Rel_humid*0.0483-Stevens.temp*0.0774+4.8242, Stevens.PM2_5_corrected)  # high calibration adjustment
 
 
 #unit_1 = Reference
@@ -567,6 +649,7 @@ radiosonde['date_obj'] =  pd.to_datetime(radiosonde['datetime'])#, format='Y-%m-
 print(radiosonde.dtypes)
 radiosonde['iso_date'] = radiosonde['date_obj'].apply(lambda x: x.isoformat())
 radiosonde.index = radiosonde.iso_date
+
 radiosonde['adams_PM2_5_corr'] = Adams['PM2_5_corrected']
 radiosonde['adams_temp'] = Adams['temp']
 
@@ -1075,7 +1158,7 @@ p1.line(Broadway.index,    Broadway.PM2_5,              legend='Broadway BAM',  
 p1.line(Greenbluff.index,    Greenbluff.PM2_5,          legend='Greenbluff TEOM',  color='red',       muted_color='red', muted_alpha=0.2, line_width=2)
 p1.line(Monroe.index,       Monroe.PM2_5,               legend='Monroe Neph',   color='blue',         muted_color='blue', muted_alpha=0.2, line_width=2)
 
-p1.legend.click_policy="mute"
+p1.legend.click_policy="hide"
 
 tab1 = Panel(child=p1, title="Calibrated PM 2.5")
 
@@ -1174,7 +1257,7 @@ show(tabs)
 # make sure to move the files in "resample backup" folder back into the "data" urbanova folders when r syncing so don't copy in all files from Rpi's again
 # (and then take out all files that have already been resampled so don't have to spend 2 hours loading all just to cut off by dates and resample)
 
-#date_range = '2_9_to_8_27_20'
+#date_range = '1_6_to_1_8_20'
 
 grant = pd.DataFrame({})
 files   = glob('/Users/matthew/Desktop/data/urbanova/ramboll/Grant/resample*.csv')
@@ -1248,6 +1331,83 @@ for file in files:
     regal = pd.concat([regal, pd.read_csv(file)], sort=False)
 
 
+#%%
+
+# plot indoor PM2.5
+# Plot all Clarity Temp using interactive legend (mute)
+adams['Datetime'] = pd.to_datetime(adams['Datetime'])
+audubon['Datetime'] = pd.to_datetime(audubon['Datetime'])
+balboa['Datetime'] = pd.to_datetime(balboa['Datetime'])
+browne['Datetime'] = pd.to_datetime(browne['Datetime'])
+grant['Datetime'] = pd.to_datetime(grant['Datetime'])
+jefferson['Datetime'] = pd.to_datetime(jefferson['Datetime'])
+lidgerwood['Datetime'] = pd.to_datetime(lidgerwood['Datetime'])
+regal['Datetime'] = pd.to_datetime(regal['Datetime'])
+sheridan['Datetime'] = pd.to_datetime(sheridan['Datetime'])
+stevens['Datetime'] = pd.to_datetime(stevens['Datetime'])
+
+adams = adams.sort_values('Datetime')
+audubon = audubon.sort_values('Datetime')
+balboa = balboa.sort_values('Datetime')
+browne = browne.sort_values('Datetime')
+grant = grant.sort_values('Datetime')
+jefferson = jefferson.sort_values('Datetime')
+lidgerwood = lidgerwood.sort_values('Datetime')
+regal = regal.sort_values('Datetime')
+sheridan = sheridan.sort_values('Datetime')
+stevens = stevens.sort_values('Datetime')
+
+
+adams.index = adams.Datetime
+audubon.index = audubon.Datetime
+balboa.index = balboa.Datetime
+browne.index = browne.Datetime
+grant.index = grant.Datetime
+jefferson.index = jefferson.Datetime
+lidgerwood.index = lidgerwood.Datetime
+regal.index = regal.Datetime
+sheridan.index = sheridan.Datetime
+stevens.index = stevens.Datetime
+#%%
+if PlotType=='notebook':
+    output_notebook()
+else:
+    output_file('/Users/matthew/Desktop/clarity_PM2.5_time_series_legend_mute.html')
+
+p1 = figure(plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM2.5 (ug/m^3)')
+
+p1.title.text = 'Indoor PM2.5'
+
+p1.line(audubon.index,     audubon.PM2_5_env,     legend='audubon',        color='green',             line_width=2, muted_color='green', muted_alpha=0.2)
+p1.line(adams.index,       adams.PM2_5_env,       legend='adams',        color='blue',              line_width=2, muted_color='blue', muted_alpha=0.2)
+p1.line(balboa.index,      balboa.PM2_5_env,      legend='balboa',        color='red',               line_width=2, muted_color='red', muted_alpha=0.2)
+p1.line(browne.index,      browne.PM2_5_env,      legend='browne',        color='black',             line_width=2, muted_color='black', muted_alpha=0.2)
+p1.line(grant.index,       grant.PM2_5_env,       legend='grant',        color='purple',            line_width=2, muted_color='purple', muted_alpha=0.2)
+p1.line(jefferson.index,   jefferson.PM2_5_env,   legend='jefferson',        color='brown',             line_width=2, muted_color='brown', muted_alpha=0.2)
+p1.line(lidgerwood.index,  lidgerwood.PM2_5_env,  legend='lidgerwood',        color='orange',            line_width=2, muted_color='orange', muted_alpha=0.2)
+p1.line(regal.index,       regal.PM2_5_env,       legend='regal',        color='khaki',             line_width=2, muted_color='khaki', muted_alpha=0.2)
+p1.line(sheridan.index,    sheridan.PM2_5_env,    legend='sheridan',        color='deepskyblue',       line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
+p1.line(stevens.index,     stevens.PM2_5_env,     legend='stevens',       color='grey',              line_width=2, muted_color='grey', muted_alpha=0.2)
+
+
+
+p1.legend.click_policy="mute"
+
+tab1 = Panel(child=p1, title="Indoor PM 2.5")
+
+tabs = Tabs(tabs=[ tab1])
+
+show(tabs)    
+    
+    
+    
+    
+    
+    
 #%%
 
 # only used to resample indoor data to lower frequency so doesnt take so long to load in each time
@@ -1406,18 +1566,18 @@ regal['Location'] = 'Regal'
 #%%
 
 # just used to resample indoor data to lower frequency so doesnt take so long to load in each time
-#date_range = '9_21_to_9_28_20'
+date_range = '1_14_to_1_14_21_install_day'
 
-#audubon.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Audubon/resample_15_min_audubon' + '_' + date_range + '.csv', index=False)
-#adams.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Adams/resample_15_min_adams' + '_' + date_range + '.csv', index=False)
-#balboa.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Balboa/resample_15_min_balboa' + '_' + date_range + '.csv', index=False)
-#browne.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Browne/resample_15_min_browne' + '_' + date_range + '.csv', index=False)
-#grant.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Grant/resample_15_min_grant' + '_' + date_range + '.csv', index=False)
-#jefferson.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Jefferson/resample_15_min_jefferson' + '_' + date_range + '.csv', index=False)
-#lidgerwood.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Lidgerwood/resample_15_min_lidgerwood' + '_' + date_range + '.csv', index=False)
-#regal.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Regal/resample_15_min_regal' + '_' + date_range + '.csv', index=False)
-#sheridan.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Sheridan/resample_15_min_sheridan' + '_' + date_range + '.csv', index=False)
-#stevens.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Stevens/resample_15_stevens' + '_' + date_range + '.csv', index=False)
+audubon.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Audubon/resample_15_min_audubon' + '_' + date_range + '.csv', index=False)
+adams.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Adams/resample_15_min_adams' + '_' + date_range + '.csv', index=False)
+balboa.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Balboa/resample_15_min_balboa' + '_' + date_range + '.csv', index=False)
+browne.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Browne/resample_15_min_browne' + '_' + date_range + '.csv', index=False)
+grant.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Grant/resample_15_min_grant' + '_' + date_range + '.csv', index=False)
+jefferson.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Jefferson/resample_15_min_jefferson' + '_' + date_range + '.csv', index=False)
+lidgerwood.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Lidgerwood/resample_15_min_lidgerwood' + '_' + date_range + '.csv', index=False)
+regal.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Regal/resample_15_min_regal' + '_' + date_range + '.csv', index=False)
+sheridan.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Sheridan/resample_15_min_sheridan' + '_' + date_range + '.csv', index=False)
+stevens.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Stevens/resample_15_stevens' + '_' + date_range + '.csv', index=False)
 
 
 #%%
@@ -1684,55 +1844,93 @@ regal['Location'] = 'Regal'
 sheridan['Location'] = 'Sheridan'
 stevens['Location'] = 'Stevens'
 
+#%%
+# add indoor calibration - use low calibration for all data except defined smoke event
+
+audubon_low = indoor_cal_low(audubon, 'Audubon')
+adams_low = indoor_cal_low(adams, 'Adams')
+balboa_low = indoor_cal_low(balboa, 'Balboa')
+browne_low = indoor_cal_low(browne, 'Browne')
+grant_low = indoor_cal_low(grant, 'Grant')
+jefferson_low = indoor_cal_low(jefferson, 'Jefferson')
+lidgerwood_low = indoor_cal_low(lidgerwood, 'Lidgerwood')
+regal_low = indoor_cal_low(regal, 'Regal')
+sheridan_low = indoor_cal_low(sheridan, 'Sheridan')
+stevens_low = indoor_cal_low(stevens, 'Stevens')
 
 #%%
+audubon_smoke = indoor_cal_smoke(audubon, 'Audubon')
+adams_smoke = indoor_cal_smoke(adams, 'Adams')
+balboa_smoke = indoor_cal_smoke(balboa, 'Balboa')
+browne_smoke = indoor_cal_smoke(browne, 'Browne')
+grant_smoke = indoor_cal_smoke(grant, 'Grant')
+jefferson_smoke = indoor_cal_smoke(jefferson, 'Jefferson')
+lidgerwood_smoke = indoor_cal_smoke(lidgerwood, 'Lidgerwood')
+regal_smoke = indoor_cal_smoke(regal, 'Regal')
+sheridan_smoke = indoor_cal_smoke(sheridan, 'Sheridan')
+stevens_smoke = indoor_cal_smoke(stevens, 'Stevens')
+#%%
 
+audubon = audubon_low.append(audubon_smoke)
+adams = adams_low.append(adams_smoke)
+balboa = balboa_low.append(balboa_smoke)
+browne = browne_low.append(browne_smoke)
+grant = grant_low.append(grant_smoke)
+jefferson = jefferson_low.append(jefferson_smoke)
+lidgerwood = lidgerwood_low.append(lidgerwood_smoke)
+regal = regal_low.append(regal_smoke)
+sheridan = sheridan_low.append(sheridan_smoke)
+stevens = stevens_low.append(stevens_smoke)
+
+
+#%%
+########## This was used before the indoor calibration test was performed in Nov - Dec 2020, now use the linear adjustments instead
 # Add specific humidity to indoor units so can use in MLR calibration
 # Note that Jefferson, Grant, and Lidgerwood are using other locations (extremely close Pressure values though) because of missing data for when their BME's weren't running
     # This doesn't actually do anything because Jefferson and Grant was missing PM 2.5 data during that time and Lidgerwood is still missing temp and rh data which isn't as similar to other sites...
-spec_humid(audubon_bme, audubon_bme_json, audubon)
-spec_humid(adams_bme, adams_bme_json, adams)
-spec_humid(balboa_bme, balboa_bme_json, balboa)
-spec_humid(browne_bme, browne_bme_json, browne)
-spec_humid(regal_bme, regal_bme_json, grant)             # note Grant using Regal BME
-spec_humid(adams_bme, adams_bme_json, jefferson)              # note Jefferson using Adams BME
-spec_humid(balboa_bme, balboa_bme_json, lidgerwood)  # note Lidgerwood using Balboa BME
-spec_humid(regal_bme, regal_bme_json, regal)
-spec_humid(sheridan_bme, sheridan_bme_json, sheridan)
-spec_humid(stevens_bme, stevens_bme_json, stevens)
+#spec_humid(audubon_bme, audubon_bme_json, audubon)
+#spec_humid(adams_bme, adams_bme_json, adams)
+#spec_humid(balboa_bme, balboa_bme_json, balboa)
+#spec_humid(browne_bme, browne_bme_json, browne)
+#spec_humid(regal_bme, regal_bme_json, grant)             # note Grant using Regal BME
+#spec_humid(adams_bme, adams_bme_json, jefferson)              # note Jefferson using Adams BME
+#spec_humid(balboa_bme, balboa_bme_json, lidgerwood)  # note Lidgerwood using Balboa BME
+#spec_humid(regal_bme, regal_bme_json, regal)
+#spec_humid(sheridan_bme, sheridan_bme_json, sheridan)
+#spec_humid(stevens_bme, stevens_bme_json, stevens)
 
-#%%
+
 # apply mlr calibration from Augusta
 
-mlr_function(mlr_model, adams)
-mlr_function(mlr_model, audubon)
-mlr_function(mlr_model, balboa)
-mlr_function(mlr_model, browne)
-mlr_function(mlr_model, grant)
-mlr_function(mlr_model, jefferson)
-mlr_function(mlr_model, lidgerwood)
-mlr_function(mlr_model, regal)
-mlr_function(mlr_model, sheridan)
-mlr_function(mlr_model, stevens)
+#mlr_function(mlr_model, adams)
+#mlr_function(mlr_model, audubon)
+#mlr_function(mlr_model, balboa)
+#mlr_function(mlr_model, browne)
+#mlr_function(mlr_model, grant)
+#mlr_function(mlr_model, jefferson)
+#mlr_function(mlr_model, lidgerwood)
+#mlr_function(mlr_model, regal)
+#mlr_function(mlr_model, sheridan)
+#mlr_function(mlr_model, stevens)
 
 
-#%%
+
 
 # add uncertainty bars
 
-indoor_mlr_uncertainty(stdev_number,audubon)
-indoor_mlr_uncertainty(stdev_number,adams)
-indoor_mlr_uncertainty(stdev_number,balboa)
-indoor_mlr_uncertainty(stdev_number,browne)
-indoor_mlr_uncertainty(stdev_number,grant)
-indoor_mlr_uncertainty(stdev_number,jefferson)
-indoor_mlr_uncertainty(stdev_number,lidgerwood)
-indoor_mlr_uncertainty(stdev_number,regal)
-indoor_mlr_uncertainty(stdev_number,sheridan)
-indoor_mlr_uncertainty(stdev_number,stevens)
+#indoor_mlr_uncertainty(stdev_number,audubon)
+#indoor_mlr_uncertainty(stdev_number,adams)
+#indoor_mlr_uncertainty(stdev_number,balboa)
+#indoor_mlr_uncertainty(stdev_number,browne)
+#indoor_mlr_uncertainty(stdev_number,grant)
+#indoor_mlr_uncertainty(stdev_number,jefferson)
+#indoor_mlr_uncertainty(stdev_number,lidgerwood)
+#indoor_mlr_uncertainty(stdev_number,regal)
+#indoor_mlr_uncertainty(stdev_number,sheridan)
+#indoor_mlr_uncertainty(stdev_number,stevens)
 
 
-#%%
+#%
 #checking function output
 #balboa['out_PM2_5_corrected'] = Balboa['PM2_5_corrected']
 #balboa['PM2_5_corrected'] = balboa['PM2_5_corrected'].shift(-1)
@@ -1826,17 +2024,724 @@ df_list = in_out_histogram(stevens, Stevens, df_list)
 indoor_outdoor_plot(adams, Adams)
 #%%
 indoor_outdoor_plot(audubon, Audubon)
+#%%
 indoor_outdoor_plot(balboa, Balboa)
+#%%
 indoor_outdoor_plot(browne, Browne)
+#%%
 indoor_outdoor_plot(grant, Grant)
+#%%
 indoor_outdoor_plot(jefferson, Jefferson)
+#%%
 indoor_outdoor_plot(lidgerwood, Lidgerwood)
+#%%
 indoor_outdoor_plot(regal, Regal)
+#%%
 indoor_outdoor_plot(sheridan, Sheridan)
+#%%
 indoor_outdoor_plot(stevens, Stevens)
 
+#%%
 
 
+
+def hourly_normalized_bin_distributions(df_select):
+    
+    df_select = df_select.copy()
+    # calculate individual bin sizes (initially reported as cumulative sum)
+    
+    df_select['PM_0_3_to_PM_0_5'] = df_select['PM_0_3'] - df_select['PM_0_5'] - df_select['PM_1'] - df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+    df_select['PM_0_5_to_PM_1'] = df_select['PM_0_5'] - df_select['PM_1'] - df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+    df_select['PM_1_to_PM_2_5'] = df_select['PM_1'] - df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+    df_select['PM_2_5_to_PM_5'] = df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+    df_select['PM_5_to_PM_10'] = df_select['PM_5'] - df_select['PM_10']
+    print(df_select['PM_5_to_PM_10'])
+    # calculate equivalent cross sectional area of bin - start with just taking middle of bin, then look at using upper and lower boundaries to create range of cross sectional areas
+    df_select['PM_0_4_cx_area'] = df_select['PM_0_3_to_PM_0_5']*((0.4/2)**2)*3.14   # assumes that all particles counted in this bin have diameter of 0.4 microns
+    df_select['PM_0_75_cx_area'] = df_select['PM_0_5_to_PM_1']*((0.75/2)**2)*3.14    # assumes that all particles counted in this bin have diameter of 0.75 microns
+    df_select['PM_1_75_cx_area'] = df_select['PM_1_to_PM_2_5']*((1.75/2)**2)*3.14    # assumes that all particles counted in this bin have diameter of 1.75 microns
+    df_select['PM_3_75_cx_area'] = df_select['PM_2_5_to_PM_5']*((3.75/2)**2)*3.14    # assumes that all particles counted in this bin have diameter of 3.75 microns
+    df_select['PM_7_5_cx_area'] = df_select['PM_5_to_PM_10']*((7.5/2)**2)*3.14    # assumes that all particles counted in this bin have diameter of 7.5 microns
+    df_select['PM_10_cx_area'] = df_select['PM_10']*((10/2)**2)*3.14    # assumes that all particles counted in this bin have diameter of 10 microns (even though this bin is all particles greater than or equal to 10 um)
+
+
+   # df_select = df_select.resample(interval).mean()  # has already been resampled to 1 hour when read in
+    
+    df_select['hourly_sum_total'] = df_select[['PM_0_4_cx_area', 'PM_0_75_cx_area', 'PM_1_75_cx_area', 
+                                               'PM_3_75_cx_area', 'PM_7_5_cx_area', 'PM_10_cx_area']].sum(axis=1)
+    
+    df_select['hourly_normalized_1'] = df_select['PM_0_4_cx_area']/df_select['hourly_sum_total']
+    df_select['hourly_normalized_2'] = df_select['PM_0_75_cx_area']/df_select['hourly_sum_total']
+    df_select['hourly_normalized_3'] = df_select['PM_1_75_cx_area']/df_select['hourly_sum_total']
+    df_select['hourly_normalized_4'] = df_select['PM_3_75_cx_area']/df_select['hourly_sum_total']
+    df_select['hourly_normalized_5'] = df_select['PM_7_5_cx_area']/df_select['hourly_sum_total']     # can't do next one because dont know upper limit of bin
+    df_select['hourly_normalized_6'] = df_select['PM_10_cx_area']/df_select['hourly_sum_total']
+    
+    return df_select
+
+def plot_hourly_normalized_diameters_binned(df_select, name):
+    
+    if PlotType=='notebook':
+        output_notebook()
+    else:
+        output_file('/Users/matthew/Desktop/diameters_hour_average' + name + '.html')
+    
+    p1 = figure(plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='Normalized Cross Sectional Area (%)')
+
+    p1.title.text = 'Cross Sectional Area Distributions - ' + name
+
+    p1.line(df_select.index,     df_select.hourly_normalized_1,     legend='0.4 um (0.3-0.5 um)',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
+    p1.line(df_select.index,       df_select.hourly_normalized_2,       legend='0.75 um (0.5-0.1 um)',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
+    p1.line(df_select.index,      df_select.hourly_normalized_3,      legend='1.75 um (1-2.5 um)',        color='red',         line_width=2, muted_color='red', muted_alpha=0.2)
+    p1.line(df_select.index,      df_select.hourly_normalized_4,      legend='3.75 um (2.5-5 um)',        color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
+    p1.line(df_select.index,       df_select.hourly_normalized_5,       legend='7.5 um (5-10 um)',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
+    p1.line(df_select.index,   df_select.hourly_normalized_6,   legend='10 um ( > 10 um)',     color='brown',       line_width=2, muted_color='brown', muted_alpha=0.2)
+    
+    p1.legend.click_policy="mute"
+    
+    tab1 = Panel(child=p1, title="Calibrated PM 2.5")
+    
+    tabs = Tabs(tabs=[ tab1])
+    
+    show(tabs)
+
+ 
+#%%
+    
+adams = hourly_normalized_bin_distributions(adams)
+audubon = hourly_normalized_bin_distributions(audubon)
+balboa = hourly_normalized_bin_distributions(balboa)
+browne = hourly_normalized_bin_distributions(browne)
+grant = hourly_normalized_bin_distributions(grant)
+jefferson = hourly_normalized_bin_distributions(jefferson)
+lidgerwood = hourly_normalized_bin_distributions(lidgerwood)
+regal = hourly_normalized_bin_distributions(regal)
+sheridan = hourly_normalized_bin_distributions(sheridan)
+stevens = hourly_normalized_bin_distributions(stevens)
+
+
+plot_hourly_normalized_diameters_binned(adams, 'Adams')
+plot_hourly_normalized_diameters_binned(audubon, 'Audubon')
+plot_hourly_normalized_diameters_binned(balboa, 'Balboa')
+plot_hourly_normalized_diameters_binned(browne, 'Browne')
+plot_hourly_normalized_diameters_binned(grant, 'Grant')
+plot_hourly_normalized_diameters_binned(jefferson, 'Jefferson')
+plot_hourly_normalized_diameters_binned(lidgerwood, ' Lidgerwood')
+plot_hourly_normalized_diameters_binned(regal,'Regal')
+plot_hourly_normalized_diameters_binned(sheridan, 'Sheridan')
+plot_hourly_normalized_diameters_binned(stevens, 'Stevens')
+
+
+#%%
+
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# all winter (ie during the time that we had overlap data at Augusta for the Clarity node calibration and the indoor units were functioning)
+start_winter = '2020-02-09 00:00'
+stop_winter = '2020-03-05 00:00'
+
+# septmber smoke event
+start_sept = '2020-09-12 00:00'
+stop_sept = '2020-09-19 00:00'
+
+# period of time when the indoor units were at Von's house
+start_indoor_cal = '2020-11-21 00:00'
+stop_indoor_cal = '2020-12-07 23:00'
+
+def non_intuitive_normalization(df_select, date_range, df_name,fig,ax):
+    
+            df_select['PM_0_3_to_PM_0_5'] = df_select['PM_0_3'] - df_select['PM_0_5'] - df_select['PM_1'] - df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+            df_select['PM_0_5_to_PM_1'] = df_select['PM_0_5'] - df_select['PM_1'] - df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+            df_select['PM_1_to_PM_2_5'] = df_select['PM_1'] - df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+            df_select['PM_2_5_to_PM_5'] = df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+            df_select['PM_5_to_PM_10'] = df_select['PM_5'] - df_select['PM_10']
+            
+            sum_1 = df_select.PM_0_3_to_PM_0_5.sum()
+            sum_2 = df_select.PM_0_5_to_PM_1.sum()
+            sum_3 = df_select.PM_1_to_PM_2_5.sum()
+            sum_4 = df_select.PM_2_5_to_PM_5.sum()
+            sum_5 = df_select.PM_5_to_PM_10.sum()
+            sum_6 = df_select.PM_10.sum()
+            sum_total = sum_1 + sum_2 + sum_3 + sum_4 + sum_5 + sum_6
+            
+            normalized_1 = round((sum_1/(sum_total*0.2)), 2)    # o.2 is the width of the 0.3 to 0.5 um bin
+            normalized_2 = round((sum_2/(sum_total*0.5)), 2)
+            normalized_3 = round((sum_3/(sum_total*1.5)), 2)
+            normalized_4 = round((sum_4/(sum_total*2.5)), 2)
+            normalized_5 = round((sum_5/(sum_total*5)), 2)     # can't do next one because dont know upper limit of bin
+            
+           # data = [normalized_1, normalized_2, normalized_3, normalized_4, normalized_5]
+    #        print(data)
+          #  widths = [0.2, 0.5, 1.5, 2.5, 5]
+          #  left = [0.3, 0.5, 1, 2.5, 5]
+          #  plt.bar(left, data, width = widths, color=('orange', 'green', 'blue', 'red', 'black'),
+          #          alpha = 0.6, align = 'edge', edgecolor = 'k', linewidth = 2)
+
+            data = [normalized_1, normalized_2, normalized_3, normalized_4, normalized_5]
+            freq_series = pd.Series(data)
+    
+
+            x_labels = ['0.3 - 0.5', '0.5 - 1', '1 - 2.5', '2.5 - 5', '5 - 10']
+            
+            # Plot the figure.
+            #plt.figure(figsize=(12, 8))
+            ax = freq_series.plot(kind='bar')
+            ax.set_title('Particle Distribution \n' + date_range + df_name + ' *', fontsize=16)
+            ax.set_xlabel('Bin Diameters (um)', fontsize=16)
+            ax.set_ylabel('Normalized Frequency', fontsize=16)
+            ax.set_xticklabels(x_labels, fontsize=16)
+            
+            rects = ax.patches
+            
+            # Make some labels.
+            labels = [normalized_1, normalized_2, normalized_3, normalized_4, normalized_5]
+            
+            for rect, label in zip(rects, labels):
+                height = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width() / 2, height + 0, label,
+                        ha='center', va='bottom')
+
+
+# inputs: df_select = the indoor df, date_range = a string for plot labeling, df_name = a string for plot labeling
+
+def intuitive_normalization(df_select,date_range,df_name,fig, ax):
+    
+    df_select['PM_0_3_to_PM_0_5'] = df_select['PM_0_3'] - df_select['PM_0_5'] - df_select['PM_1'] - df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+    df_select['PM_0_5_to_PM_1'] = df_select['PM_0_5'] - df_select['PM_1'] - df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+    df_select['PM_1_to_PM_2_5'] = df_select['PM_1'] - df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+    df_select['PM_2_5_to_PM_5'] = df_select['PM_2_5'] - df_select['PM_5'] - df_select['PM_10']
+    df_select['PM_5_to_PM_10'] = df_select['PM_5'] - df_select['PM_10']
+    
+    
+    # start cross sectional area
+    ########### For looking at the estimated normalized cross sectional area of each bin
+    ########### Note that the column names are still bin ranges but the actual calcs are for assumed diameters
+    ########### This is just so the code can be used with either one, but make sure to change the plot x labels to reflect whether you 
+    ########### are using the bin widths or assumed cross sectional area
+   # df_select['PM_0_4_cx_area'] = df_select['PM_0_3_to_PM_0_5']*((0.4/2)**2)*3.14   # assumes that all particles counted in this bin have diameter of 0.4 microns
+   # df_select['PM_0_75_cx_area'] = df_select['PM_0_5_to_PM_1']*((0.75/2)**2)*3.14    # assumes that all particles counted in this bin have diameter of 0.75 microns
+   # df_select['PM_1_75_cx_area'] = df_select['PM_1_to_PM_2_5']*((1.75/2)**2)*3.14    # assumes that all particles counted in this bin have diameter of 1.75 microns
+   # df_select['PM_3_75_cx_area'] = df_select['PM_2_5_to_PM_5']*((3.75/2)**2)*3.14    # assumes that all particles counted in this bin have diameter of 3.75 microns
+   # df_select['PM_7_5_cx_area'] = df_select['PM_5_to_PM_10']*((7.5/2)**2)*3.14    # assumes that all particles counted in this bin have diameter of 7.5 microns
+   # df_select['PM_10_cx_area'] = df_select['PM_10']*((10/2)**2)*3.14    # assumes that all particles counted in this bin have diameter of 10 microns (even though this bin is all particles greater than or equal to 10 um)
+
+
+   # df_select['hourly_sum_total'] = df_select[['PM_0_4_cx_area', 'PM_0_75_cx_area', 'PM_1_75_cx_area', 
+   #                                            'PM_3_75_cx_area', 'PM_7_5_cx_area', 'PM_10_cx_area']].sum(axis=1)
+    
+   # df_select['hourly_normalized_1'] = df_select['PM_0_4_cx_area']/df_select['hourly_sum_total']
+   # df_select['hourly_normalized_2'] = df_select['PM_0_75_cx_area']/df_select['hourly_sum_total']
+   # df_select['hourly_normalized_3'] = df_select['PM_1_75_cx_area']/df_select['hourly_sum_total']
+   # df_select['hourly_normalized_4'] = df_select['PM_3_75_cx_area']/df_select['hourly_sum_total']
+   # df_select['hourly_normalized_5'] = df_select['PM_7_5_cx_area']/df_select['hourly_sum_total']     # can't do next one because dont know upper limit of bin
+   # df_select['hourly_normalized_6'] = df_select['PM_10_cx_area']/df_select['hourly_sum_total']
+    
+   # data = [df_select.hourly_normalized_1, df_select.hourly_normalized_2, df_select.hourly_normalized_3, 
+   #           df_select.hourly_normalized_4, df_select.hourly_normalized_5, df_select.hourly_normalized_6]
+   # x_labels = ['0.4', '0.75', '1.75', '3.75', '7.5', '10']
+   # labels = [df_select.hourly_normalized_1, df_select.hourly_normalized_2, df_select.hourly_normalized_3, 
+   #           df_select.hourly_normalized_4, df_select.hourly_normalized_5, df_select.hourly_normalized_6]
+    ##########
+    # end cross sectional area
+    
+    
+    
+    
+    sum_1 = (df_select['PM_0_3_to_PM_0_5']*((0.4/2)**2)*3.14).sum()
+    print('sum PM 0.3 to PM 0.5 = ', round(sum_1, 2))
+    sum_2 = (df_select['PM_0_5_to_PM_1']*((0.75/2)**2)*3.14).sum()
+    print('sum PM 0.5 to PM 1 = ', round(sum_2, 2))
+    sum_3 = (df_select['PM_1_to_PM_2_5']*((1.75/2)**2)*3.14).sum()
+    print('sum of PM 2 to PM 2.5 = ', round(sum_3, 2))
+    sum_4 = (df_select['PM_2_5_to_PM_5']*((3.75/2)**2)*3.14).sum()
+    print('sum of PM 2.5 to PM 5 = ', round(sum_4, 2))
+    sum_5 = (df_select['PM_5_to_PM_10']*((7.5/2)**2)*3.14).sum()
+    print('sum of PM 5 to PM 10 = ', round(sum_5, 2))
+    sum_6 = (df_select['PM_10']*((10/2)**2)*3.14).sum()
+    print('sum of PM 10 = ', round(sum_6, 2))
+    sum_total = sum_1 + sum_2 + sum_3 + sum_4 + sum_5 + sum_6
+    print('total sum PM count = ', round(sum_total, 2))
+    print('\n')
+    # to normalize, just divide by total number of counted particles, not including the bin width
+    
+    normalized_1 = round((sum_1/(sum_total)), 2)
+   # print('normalized bin 1 = ', normalized_1)    
+    normalized_2 = round((sum_2/(sum_total)), 2)
+   # print('normalized bin 2 = ', normalized_2)
+    normalized_3 = round((sum_3/(sum_total)), 2)
+   # print('normalized bin 3 = ', normalized_3)
+    normalized_4 = round((sum_4/(sum_total)), 2)
+   # print('normalized bin 4 = ', normalized_4)
+    normalized_5 = round((sum_5/(sum_total)), 2)     # can't do next one because dont know upper limit of bin
+   # print('normalized bin 5 = ', normalized_5)
+    normalized_6 = round((sum_6/(sum_total)), 2)
+   # print('normalized bin 6 = ', normalized_6, 2)
+    
+    data = [normalized_1, normalized_2, normalized_3, normalized_4, normalized_5, normalized_6]
+    labels = [normalized_1, normalized_2, normalized_3, normalized_4, normalized_5, normalized_6]
+    x_labels = ['0.4', '0.75', '1.75', '3.75', '7.5', '10']
+    
+    
+    
+    ###### start basic normalization
+   # sum_1 = df_select.PM_0_3_to_PM_0_5.sum()
+   # print('sum PM 0.3 to PM 0.5 = ', round(sum_1, 2))
+   # sum_2 = df_select.PM_0_5_to_PM_1.sum()
+   # print('sum PM 0.5 to PM 1 = ', round(sum_2, 2))
+   # sum_3 = df_select.PM_1_to_PM_2_5.sum()
+   # print('sum of PM 2 to PM 2.5 = ', round(sum_3, 2))
+   # sum_4 = df_select.PM_2_5_to_PM_5.sum()
+   # print('sum of PM 2.5 to PM 5 = ', round(sum_4, 2))
+   # sum_5 = df_select.PM_5_to_PM_10.sum()
+   # print('sum of PM 5 to PM 10 = ', round(sum_5, 2))
+   # sum_6 = df_select.PM_10.sum()
+   # print('sum of PM 10 = ', round(sum_6, 2))
+   # sum_total = sum_1 + sum_2 + sum_3 + sum_4 + sum_5 + sum_6
+   # print('total sum PM count = ', round(sum_total, 2))
+   # print('\n')
+    # to normalize, just divide by total number of counted particles, not including the bin width
+    
+   # normalized_1 = round((sum_1/(sum_total)), 2)
+   # print('normalized bin 1 = ', normalized_1)    
+   # normalized_2 = round((sum_2/(sum_total)), 2)
+   # print('normalized bin 2 = ', normalized_2)
+   # normalized_3 = round((sum_3/(sum_total)), 2)
+   # print('normalized bin 3 = ', normalized_3)
+   # normalized_4 = round((sum_4/(sum_total)), 2)
+   # print('normalized bin 4 = ', normalized_4)
+   # normalized_5 = round((sum_5/(sum_total)), 2)     # can't do next one because dont know upper limit of bin
+   # print('normalized bin 5 = ', normalized_5)
+    
+   # data = [normalized_1, normalized_2, normalized_3, normalized_4, normalized_5]
+   # labels = [normalized_1, normalized_2, normalized_3, normalized_4, normalized_5]
+   # x_labels = ['0.3 - 0.5', '0.5 - 1', '1 - 2.5', '2.5 - 5', '5 - 10']
+    ####### end basic normalization
+    
+    
+    
+    freq_series = pd.Series(data)
+    
+    # choose which labels to use depending on whether have cross sectional area or simple normalization commented out above
+    
+    
+    
+    
+    # Plot the figure.
+   # plt.figure(figsize=(12, 8))
+    ax = freq_series.plot(kind='bar')
+    ax.set_title('Particle Distribution \n' + date_range + df_name, fontsize=16)
+    #ax.set_xlabel('Bin Diameters (um)', fontsize=16)
+    ax.set_xlabel('Particle Diameters (um)', fontsize=16)
+    ax.set_ylabel('Normalized Frequency', fontsize=16)
+    ax.set_xticklabels(x_labels, fontsize=16)
+    
+    rects = ax.patches
+
+  
+    for rect, label in zip(rects, labels):
+                height = rect.get_height()
+                ax.text(rect.get_x() + rect.get_width() / 2, height + 0, label,
+                        ha='center', va='bottom')
+
+# variable inputs: df = indoor unit of interest, start = start time, stop = stop time, time_of_day = 'morning', 'evening', or all depending on what is of interest
+                    # normalize_type = 'intuitive' - height of bar represents proportion of data in each class or 'non_intuitive' - divide by bin width so integral of all bars sums to 1
+                    # df_name = name of indoor unit location (useful for plotting)
+                    # time_period = 'winter' or 'sept' and determines which set of start and stop times to use
+
+def particle_distribution(df,start_winter,stop_winter,
+                          start_sept,stop_sept,start_indoor_cal,stop_indoor_cal,
+                          time_of_day,normalize_type, df_name, time_period):
+
+    fig = plt.figure(figsize=(14,6))
+    
+    for df, start_winter, stop_winter, start_sept, stop_sept, start_indoor_cal, stop_indoor_cal, time_of_day, normalize_type, df_name, time_period in zip(df, start_winter, stop_winter, 
+                                                                                                        start_indoor_cal, stop_indoor_cal, start_sept, stop_sept, time_of_day, 
+                                                                                                        normalize_type, df_name, time_period):
+    
+        if time_period == 'winter':
+            
+            df_select = df.copy()
+            df_select = df_select.loc[start_winter:stop_winter]
+            
+            
+            if normalize_type == 'non_intuitive':
+    
+            
+                if time_of_day == 'all':
+                    print('winter, all, non_intuitive')
+                    date_range = '2/8/19 - 3/5/19 at '
+                    ax1 = fig.add_subplot(1,3,1)
+                    non_intuitive_normalization(df_select, date_range, df_name, fig, ax1)
+                    print('\n')
+                    
+                elif time_of_day == 'morning':            
+                    df_select = df_select.between_time('07:00', '10:00')
+                    print('winter, morning, non_intuitive')
+                    date_range = 'Mornings at '
+                    #  print(df_select)
+                    ax2 = fig.add_subplot(1,3,2)
+                    non_intuitive_normalization(df_select, date_range, df_name, fig, ax2)
+                    print('\n')
+                
+                elif time_of_day == 'evening':            
+                    df_select = df_select.between_time('17:00', '22:00')
+                    print('winter, evening, non_intuitive')
+                    date_range = 'Evenings at '
+                    #  print(df_select)
+                    ax3 = fig.add_subplot(1,3,3)
+                    non_intuitive_normalization(df_select, date_range, df_name, fig, ax3)
+                    plt.tight_layout()
+                    print('\n')
+                    print('resetting figure \n')
+                    fig = plt.figure(figsize=(14,6))
+                
+                else:
+                    pass
+            
+            elif normalize_type == 'intuitive':
+        
+                if time_of_day == 'all':
+                    date_range = '2/8/19 - 3/5/19 at '
+                    print('winter, all, intuitive')
+                    ax1 = fig.add_subplot(1,3,1)
+                    intuitive_normalization(df_select, date_range, df_name, fig, ax1)
+                    print('\n')
+            
+                elif time_of_day == 'morning':
+                    df_select = df_select.between_time('07:00', '10:00')
+                    print('winter, morning, intuitive')
+                    #print(df_select)
+                    date_range = 'Mornings at '
+                    #print(date_range)
+                    ax2 = fig.add_subplot(1,3,2)
+                    intuitive_normalization(df_select, date_range, df_name, fig, ax2)
+                    print('\n')
+            
+                elif time_of_day == 'evening':
+                    df_select = df_select.between_time('17:00', '22:00')
+                    print('winter, evening, intuitive')
+                    #  print(df_select)
+                    date_range = 'Evenings at '
+                    ax3 = fig.add_subplot(1,3,3)
+                    intuitive_normalization(df_select, date_range, df_name, fig, ax3)
+                    plt.tight_layout()
+                    print('\n')
+                    print('resetting figure \n')
+                    fig = plt.figure(figsize=(14,6))
+    
+        elif time_period == 'sept':
+            df_select = df.copy()
+            df_select = df_select.loc[start_sept:stop_sept]
+        
+            if normalize_type == 'non_intuitive':
+    
+                if time_of_day == 'all':
+                    print('sept, all, non_intuitive')
+                    date_range = '9/12/20 - 9/19/20 at '
+                    ax1 = fig.add_subplot(1,3,1)
+                    non_intuitive_normalization(df_select, date_range, df_name, fig, ax1)
+                    print('\n')
+                    
+                elif time_of_day == 'morning':            
+                    df_select = df_select.between_time('07:00', '10:00')
+                    print('sept, morning, non_intuitive')
+                    date_range = 'Mornings at '
+                    #  print(df_select)
+                    ax2 = fig.add_subplot(1,3,2)
+                    non_intuitive_normalization(df_select, date_range, df_name, fig, ax2)
+                    print('\n')
+                
+                elif time_of_day == 'evening':            
+                    df_select = df_select.between_time('17:00', '22:00')
+                    print('sept, evening, non_intuitive')
+                    date_range = 'Evenings at '
+                    ax3 = fig.add_subplot(1,3,3)
+                    #  print(df_select)
+                    non_intuitive_normalization(df_select, date_range, df_name, fig, ax3)
+                    plt.tight_layout()
+                    print('\n')
+                    print('resetting figure \n')
+                    fig = plt.figure(figsize=(14,6))
+                
+                else:
+                    pass
+            
+            elif normalize_type == 'intuitive':
+        
+                if time_of_day == 'all':
+                    date_range = '9/12/20 - 9/19/20 at '
+                    ax1 = fig.add_subplot(1,3,1)
+                    print('sept, all, intuitive')
+                    intuitive_normalization(df_select, date_range, df_name, fig, ax1)
+                    print('\n')
+            
+                elif time_of_day == 'morning':
+                    df_select = df_select.between_time('07:00', '10:00')
+                    print('sept, morning, intuitive')
+                    #print(df_select)
+                    date_range = 'Mornings at '
+                    ax2 = fig.add_subplot(1,3,2)
+                    #print(date_range)
+                    intuitive_normalization(df_select, date_range, df_name, fig, ax2)
+                    print('\n')
+            
+                elif time_of_day == 'evening':
+                    df_select = df_select.between_time('17:00', '22:00')
+                    print('sept, evening, intuitive')
+                    #  print(df_select)
+                    date_range = 'Evenings at '
+                    ax3 = fig.add_subplot(1,3,3)
+                    intuitive_normalization(df_select, date_range, df_name, fig, ax3)
+                    plt.tight_layout()
+                    print('\n')
+                    print('resetting figure \n')
+                    fig = plt.figure(figsize=(14,6))
+
+
+        elif time_period == 'indoor_cal':
+            df_select = df.copy()
+            df_select = df_select.loc[start_indoor_cal:stop_indoor_cal]
+        
+            if normalize_type == 'non_intuitive':
+    
+                if time_of_day == 'all':
+                    print('Indoor_cal, all, non_intuitive')
+                    date_range = '11/21/20 - 12/07/20 at '
+                    ax1 = fig.add_subplot(1,3,1)
+                    non_intuitive_normalization(df_select, date_range, df_name, fig, ax1)
+                    print('\n')
+                    
+                elif time_of_day == 'morning':            
+                    df_select = df_select.between_time('07:00', '10:00')
+                    print('Indoor_cal, morning, non_intuitive')
+                    date_range = 'Mornings at '
+                    #  print(df_select)
+                    ax2 = fig.add_subplot(1,3,2)
+                    non_intuitive_normalization(df_select, date_range, df_name, fig, ax2)
+                    print('\n')
+                
+                elif time_of_day == 'evening':            
+                    df_select = df_select.between_time('17:00', '22:00')
+                    print('Indoor_cal, evening, non_intuitive')
+                    date_range = 'Evenings at '
+                    ax3 = fig.add_subplot(1,3,3)
+                    #  print(df_select)
+                    non_intuitive_normalization(df_select, date_range, df_name, fig, ax3)
+                    plt.tight_layout()
+                    print('\n')
+                    print('resetting figure \n')
+                    fig = plt.figure(figsize=(14,6))
+                
+                else:
+                    pass
+            
+            elif normalize_type == 'intuitive':
+        
+                if time_of_day == 'all':
+                    date_range = '11/21/20 - 12/07/20 at '
+                    ax1 = fig.add_subplot(1,3,1)
+                    print('Indoor_cal, all, intuitive')
+                    intuitive_normalization(df_select, date_range, df_name, fig, ax1)
+                    print('\n')
+            
+                elif time_of_day == 'morning':
+                    df_select = df_select.between_time('07:00', '10:00')
+                    print('Indoor_cal, morning, intuitive')
+                    #print(df_select)
+                    date_range = 'Mornings at '
+                    ax2 = fig.add_subplot(1,3,2)
+                    #print(date_range)
+                    intuitive_normalization(df_select, date_range, df_name, fig, ax2)
+                    print('\n')
+            
+                elif time_of_day == 'evening':
+                    df_select = df_select.between_time('17:00', '22:00')
+                    print('Indoor_cal, evening, intuitive')
+                    #  print(df_select)
+                    date_range = 'Evenings at '
+                    ax3 = fig.add_subplot(1,3,3)
+                    intuitive_normalization(df_select, date_range, df_name, fig, ax3)
+                    plt.tight_layout()
+                    print('\n')
+
+
+#%%
+
+param_1 = [start_winter,start_winter,start_winter,
+           start_winter,start_winter,start_winter,
+           start_winter,start_winter,start_winter,
+           start_winter,start_winter,start_winter,
+           start_winter,start_winter,start_winter,
+           start_winter,start_winter,start_winter]
+
+param_2 = [stop_winter, stop_winter, stop_winter,
+           stop_winter, stop_winter, stop_winter,
+           stop_winter, stop_winter, stop_winter,
+           stop_winter, stop_winter, stop_winter,
+           stop_winter, stop_winter, stop_winter,
+           stop_winter, stop_winter, stop_winter]
+
+param_3 = [start_sept,start_sept,start_sept,
+           start_sept,start_sept,start_sept,
+           start_sept,start_sept,start_sept,
+           start_sept,start_sept,start_sept,
+           start_sept,start_sept,start_sept,
+           start_sept,start_sept,start_sept]
+
+param_4 = [stop_sept,stop_sept,stop_sept,
+           stop_sept,stop_sept,stop_sept,
+           stop_sept,stop_sept,stop_sept,
+           stop_sept,stop_sept,stop_sept,
+           stop_sept,stop_sept,stop_sept,
+           stop_sept,stop_sept,stop_sept]
+
+param_5 = [start_indoor_cal,start_indoor_cal,start_indoor_cal,
+           start_indoor_cal,start_indoor_cal,start_indoor_cal,
+           start_indoor_cal,start_indoor_cal,start_indoor_cal,
+           start_indoor_cal,start_indoor_cal,start_indoor_cal,
+           start_indoor_cal,start_indoor_cal,start_indoor_cal,
+           start_indoor_cal,start_indoor_cal,start_indoor_cal]
+
+param_6 = [stop_indoor_cal,stop_indoor_cal,stop_indoor_cal,
+           stop_indoor_cal,stop_indoor_cal,stop_indoor_cal,
+           stop_indoor_cal,stop_indoor_cal,stop_indoor_cal,
+           stop_indoor_cal,stop_indoor_cal,stop_indoor_cal,
+           stop_indoor_cal,stop_indoor_cal,stop_indoor_cal,
+           stop_indoor_cal,stop_indoor_cal,stop_indoor_cal]
+
+
+param_7 = ['all', 'morning', 'evening',
+           'all', 'morning', 'evening',
+           'all', 'morning', 'evening',
+           'all', 'morning', 'evening',
+           'all', 'morning', 'evening',
+           'all', 'morning', 'evening']
+
+param_8 = ['non_intuitive', 'non_intuitive', 'non_intuitive',
+           'intuitive', 'intuitive', 'intuitive',
+           'non_intuitive', 'non_intuitive', 'non_intuitive',
+           'intuitive', 'intuitive', 'intuitive',
+           'non_intuitive', 'non_intuitive', 'non_intuitive',
+           'intuitive', 'intuitive', 'intuitive']
+
+param_9 = ['winter', 'winter', 'winter',
+           'winter', 'winter', 'winter',
+           'sept', 'sept', 'sept',
+           'sept', 'sept', 'sept',
+           'indoor_cal', 'indoor_cal', 'indoor_cal',
+           'indoor_cal', 'indoor_cal', 'indoor_cal']
+
+particle_distribution_func_params = pd.DataFrame({'start_winter':param_1, 'stop_winter': param_2, 'start_sept': param_3,
+                                                  'stop_sept': param_4, 'start_indoor_cal': param_5, 'stop_indoor_cal':param_6,
+                                                  'time_of_day': param_7, 'normalization_type': param_8,'time_period': param_9})
+#%%
+
+Adams_df_list = [adams, adams, adams, adams, adams, adams,
+                 adams, adams, adams, adams, adams, adams,
+                 adams, adams, adams, adams, adams, adams]
+Adams_name_list = ['Adams', 'Adams', 'Adams', 'Adams', 'Adams', 'Adams',
+                   'Adams', 'Adams', 'Adams', 'Adams', 'Adams', 'Adams',
+                   'Adams', 'Adams', 'Adams', 'Adams', 'Adams', 'Adams']
+
+Audubon_df_list = [audubon, audubon, audubon, audubon, audubon, audubon,
+                 audubon, audubon, audubon, audubon, audubon, audubon,
+                 audubon, audubon, audubon, audubon, audubon, audubon]
+
+Audubon_name_list = ['Audubon', 'Audubon', 'Audubon', 'Audubon', 'Audubon', 'Audubon',
+                   'Audubon', 'Audubon', 'Audubon', 'Audubon', 'Audubon', 'Audubon',
+                   'Audubon', 'Audubon', 'Audubon', 'Audubon', 'Audubon', 'Audubon']
+
+Balboa_df_list = [balboa, balboa, balboa, balboa, balboa, balboa,
+                 balboa, balboa, balboa, balboa, balboa, balboa,
+                 balboa, balboa, balboa, balboa, balboa, balboa]
+
+Balboa_name_list = ['Balboa', 'Balboa', 'Balboa', 'Balboa', 'Balboa', 'Balboa',
+                   'Balboa', 'Balboa', 'Balboa', 'Balboa', 'Balboa', 'Balboa',
+                   'Balboa', 'Balboa', 'Balboa', 'Balboa', 'Balboa', 'Balboa']
+
+Browne_df_list = [browne, browne, browne, browne, browne, browne,
+                 browne, browne, browne, browne, browne, browne,
+                 browne, browne, browne, browne, browne, browne]
+
+Browne_name_list = ['Browne', 'Browne', 'Browne', 'Browne', 'Browne', 'Browne',
+                   'Browne', 'Browne', 'Browne', 'Browne', 'Browne', 'Browne',
+                   'Browne', 'Browne', 'Browne', 'Browne', 'Browne', 'Browne']
+
+Grant_df_list = [grant, grant, grant, grant, grant, grant,
+                 grant, grant, grant, grant, grant, grant,
+                 grant, grant, grant, grant, grant, grant]
+
+Grant_name_list = ['Grant', 'Grant', 'Grant', 'Grant', 'Grant', 'Grant',
+                   'Grant', 'Grant', 'Grant', 'Grant', 'Grant', 'Grant',
+                   'Grant', 'Grant', 'Grant', 'Grant', 'Grant', 'Grant']
+
+Jefferson_df_list = [jefferson, jefferson, jefferson, jefferson, jefferson, jefferson,
+                 jefferson, jefferson, jefferson, jefferson, jefferson, jefferson,
+                 jefferson, jefferson, jefferson, jefferson, jefferson, jefferson]
+
+Jefferson_name_list = ['Jefferson', 'Jefferson', 'Jefferson', 'Jefferson', 'Jefferson', 'Jefferson',
+                   'Jefferson', 'Jefferson', 'Jefferson', 'Jefferson', 'Jefferson', 'Jefferson',
+                   'Jefferson', 'Jefferson', 'Jefferson', 'Jefferson', 'Jefferson', 'Jefferson']
+
+Lidgerwood_df_list = [lidgerwood, lidgerwood, lidgerwood, lidgerwood, lidgerwood, lidgerwood,
+                 lidgerwood, lidgerwood, lidgerwood, lidgerwood, lidgerwood, lidgerwood,
+                 lidgerwood, lidgerwood, lidgerwood, lidgerwood, lidgerwood, lidgerwood]
+
+Lidgerwood_name_list = ['Lidgerwood', 'Lidgerwood', 'Lidgerwood', 'Lidgerwood', 'Lidgerwood', 'Lidgerwood',
+                   'Lidgerwood', 'Lidgerwood', 'Lidgerwood', 'Lidgerwood', 'Lidgerwood', 'Lidgerwood',
+                   'Lidgerwood', 'Lidgerwood', 'Lidgerwood', 'Lidgerwood', 'Lidgerwood', 'Lidgerwood']
+
+Regal_df_list = [regal, regal, regal, regal, regal, regal,
+                 regal, regal, regal, regal, regal, regal,
+                 regal, regal, regal, regal, regal, regal]
+
+Regal_name_list = ['Regal', 'Regal', 'Regal', 'Regal', 'Regal', 'Regal',
+                   'Regal', 'Regal', 'Regal', 'Regal', 'Regal', 'Regal',
+                   'Regal', 'Regal', 'Regal', 'Regal', 'Regal', 'Regal']
+
+Sheridan_df_list = [sheridan, sheridan, sheridan, sheridan, sheridan, sheridan,
+                 sheridan, sheridan, sheridan, sheridan, sheridan, sheridan,
+                 sheridan, sheridan, sheridan, sheridan, sheridan, sheridan]
+
+Sheridan_name_list = ['Sheridan', 'Sheridan', 'Sheridan', 'Sheridan', 'Sheridan', 'Sheridan',
+                   'Sheridan', 'Sheridan', 'Sheridan', 'Sheridan', 'Sheridan', 'Sheridan',
+                   'Sheridan', 'Sheridan', 'Sheridan', 'Sheridan', 'Sheridan', 'Sheridan']
+
+Stevens_df_list = [stevens, stevens, stevens, stevens, stevens, stevens,
+                 stevens, stevens, stevens, stevens, stevens, stevens,
+                 stevens, stevens, stevens, stevens, stevens, stevens]
+
+Stevens_name_list = ['Stevens', 'Stevens', 'Stevens', 'Stevens', 'Stevens', 'Stevens',
+                   'Stevens', 'Stevens', 'Stevens', 'Stevens', 'Stevens', 'Stevens',
+                   'Stevens', 'Stevens', 'Stevens', 'Stevens', 'Stevens', 'Stevens']
+
+#%%
+
+particle_distribution(Adams_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Adams_name_list, param_9)
+#%%
+particle_distribution(Audubon_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Audubon_name_list, param_9)
+#%%
+particle_distribution(Balboa_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Balboa_name_list, param_9)
+#%%
+particle_distribution(Browne_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Browne_name_list, param_9)
+#%%
+particle_distribution(Grant_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Grant_name_list, param_9)
+#%%
+particle_distribution(Jefferson_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Jefferson_name_list, param_9)
+#%%
+particle_distribution(Lidgerwood_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Lidgerwood_name_list, param_9)
+#%%
+particle_distribution(Regal_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Regal_name_list, param_9)
+#%%
+particle_distribution(Sheridan_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Sheridan_name_list, param_9)
+#%%
+particle_distribution(Stevens_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Stevens_name_list, param_9)
 #%%
 
 p1 = figure(title = 'Grant',
@@ -2505,3 +3410,35 @@ unit_2.to_csv('/Users/matthew/Desktop/Clarity_data/unit_2.csv', index=False , da
 
 #%%
 print(mlr_high_sheridan.summary())
+
+#%%
+# Bring some raw data.
+frequencies = [6, 16, 75, 160, 244, 260, 145, 73, 16, 4, 1]
+# In my original code I create a series and run on that, 
+# so for consistency I create a series from the list.
+freq_series = pd.Series(frequencies)
+
+
+x_labels = ['1 to 2', 110540.0, 112780.0, 115020.0, 117260.0, 119500.0,
+            121740.0, 123980.0, 126220.0, 128460.0, 130700.0]
+
+# Plot the figure.
+plt.figure(figsize=(12, 8))
+ax = freq_series.plot(kind='bar')
+ax.set_title('Amount Frequency')
+ax.set_xlabel('Amount ($)')
+ax.set_ylabel('Frequency')
+ax.set_xticklabels(x_labels)
+
+rects = ax.patches
+
+# Make some labels.
+labels = ["label%d" % i for i in range(len(rects))]
+
+for rect, label in zip(rects, labels):
+    height = rect.get_height()
+    ax.text(rect.get_x() + rect.get_width() / 2, height + 5, label,
+            ha='center', va='bottom')
+    
+    
+#%%

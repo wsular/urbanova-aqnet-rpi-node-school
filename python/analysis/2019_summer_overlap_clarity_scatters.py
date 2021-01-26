@@ -493,11 +493,11 @@ p1 = figure(plot_width=900,
 
 p1.line(Paccar.index,     Paccar.PM2_5,  legend='Wired 2',       color='blue',     line_width=2)             # Paccar
 p1.line(Reference.index,     Reference.PM2_5,  legend='Reference',       color='red',     line_width=2)     # Reference
-p1.line(Audubon.index,     Audubon.PM2_5,  legend='#1',       color='yellow',     line_width=2)        # Audubon
-p1.line(Balboa.index,     Balboa.PM2_5,  legend='#2',       color='green',     line_width=2)            # Balboa
-p1.line(Browne.index,     Browne.PM2_5,  legend='#3',       color='purple',     line_width=2)           # Browne
-p1.line(Lidgerwood.index,     Lidgerwood.PM2_5,  legend='#4',       color='orange',     line_width=2) # Regal
-p1.line(Regal.index,     Regal.PM2_5,  legend='#5',       color='brown',     line_width=2)
+p1.line(Audubon.index,     Audubon.PM2_5,  legend='Audubon',       color='yellow',     line_width=2)        # 1
+p1.line(Balboa.index,     Balboa.PM2_5,  legend='Balboa',       color='green',     line_width=2)            # 2
+p1.line(Browne.index,     Browne.PM2_5,  legend='Browne',       color='purple',     line_width=2)           # 3
+p1.line(Lidgerwood.index,     Lidgerwood.PM2_5,  legend='Lidgerwood',       color='orange',     line_width=2) # 4
+p1.line(Regal.index,     Regal.PM2_5,  legend='Regal',       color='brown',     line_width=2)            # 5
 
 p1.legend.location = 'top_left'
 tab1 = Panel(child=p1, title="Clarity Comparison")
@@ -1210,7 +1210,7 @@ p20 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Clarity Reference (ug/m^3)',
             y_axis_label='#5 Calibrated PM 2.5 (ug/m3)',
-            title = 'Clarity Reference vs #5')
+            title = 'Clarity Reference vs Regal')
 
 p20.circle(Regal.Ref_PM2_5, Regal.Predictions, size = 3, color = 'gray')#, legend = 'Paccar Adjusted Residuals')
 #p20.line(x,y_predicted,color='red',legend='y='+str(round(slope,2))+'x+'+str(round(intercept,2)))

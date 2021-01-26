@@ -19,7 +19,7 @@ from bokeh.models import Label
 
 
 
-def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines):
+def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
 
     PlotType = 'HTMLfile'
     
@@ -82,7 +82,23 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines):
     mae = (abs(x-y).sum())/(x.count())
         
     print(unit_name + ' mean absolute error =', mae, '\n')
-
+    
+    
+    residuals_check = kwargs.get('residuals_check', None)
+    
+    if residuals_check == 1:
+        residuals = kwargs.get('residuals', None)
+        res_over_5 = abs(residuals).values
+        res_over_5 = res_over_5[res_over_5 >= 5]
+        
+        count_over_5 = len(res_over_5)
+        
+        total_count = len(residuals)
+        
+        fraction_over = count_over_5/total_count
+        fraction_under = 1 - fraction_over
+        print(unit_name + ' Percentage of residuals over 5 ug/m3 = ', fraction_over)
+        print(unit_name + ' Percentage of residuals under 5ug/m3 = ', fraction_under)
 
     # plot it
     p1 = figure(plot_width=900,

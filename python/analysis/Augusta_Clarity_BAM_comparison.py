@@ -150,7 +150,7 @@ Reference.to_csv('/Users/matthew/Desktop/Reference_clarity_adj.csv',  index=True
 Paccar['Augusta_PM2_5'] = Augusta['PM2_5']
 
 Paccar = Paccar.dropna()
-X = Paccar[['PM2_5','spec_humid_unitless', 'temp']] ## X usually means our input variables (or independent variables)
+X = Paccar[['PM2_5','Rel_humid', 'temp']] ##'spec_humid_unitless X usually means our input variables (or independent variables)
 ###X = Paccar[['Augusta_PM2_5']] ###
 #X = X.dropna()
 ###y = Paccar['PM2_5'] ## Y usually means our output/dependent variable ###
@@ -166,7 +166,7 @@ print_model = model.summary()
 print(print_model)
 #%%
 # Multiple linear Regression
-Paccar['mlrPredictions'] = predictions
+#Paccar['mlrPredictions'] = predictions
 
 # Clarity calibrations
 #Paccar['mlrPredictions'] = (Paccar['PM2_5']*0.32 + 2.166)   # overall Reference Clarity correction (to check if they got switched on accident)
@@ -190,7 +190,7 @@ Paccar['mlrPredictions'] = predictions
 #Paccar['mlrPredictions'] = (Paccar['PM2_5'] + 3.962)/2.271           # for Feb data set
 
 # our Calibration
-#Paccar['mlrPredictions'] = (Paccar['PM2_5'] + 0.8256)/1.9127        # (Paccar['PM2_5'] + 0.5693)/1.9712         ### ACTUAL CORRECTION(Paccar['PM2_5'] + 0.8256)/1.9127 
+Paccar['mlrPredictions'] = (Paccar['PM2_5'] + 0.8256)/1.9127        # (Paccar['PM2_5'] + 0.5693)/1.9712         ### ACTUAL CORRECTION(Paccar['PM2_5'] + 0.8256)/1.9127 
 Paccar['residuals'] = Paccar['Augusta_PM2_5'] - Paccar['PM2_5']
 Paccar['prediction_residuals'] = Paccar['Augusta_PM2_5'] - Paccar['mlrPredictions']
 #Paccar['predictions_check'] = Paccar['PM2_5']*0.405178+1.2128
@@ -245,7 +245,7 @@ gaussian_fit(Paccar)
 
 Reference['Augusta_PM2_5'] = Augusta['PM2_5']
 Reference = Reference.dropna()
-X = Reference[['PM2_5','spec_humid_unitless', 'temp']] ## X usually means our input variables (or independent variables)
+X = Reference[['PM2_5','Rel_humid', 'temp']] ##'spec_humid_unitless' X usually means our input variables (or independent variables)
 ###X = Reference[['Augusta_PM2_5']]
 ###X = X.dropna()
 ###y = Reference['PM2_5'] ## Y usually means our output/dependent variable
@@ -265,7 +265,7 @@ print(print_model)
 #%%
 
 # Multiple Linear Regression 
-Reference['mlrPredictions'] = predictions
+#Reference['mlrPredictions'] = predictions
 
 # Claritys calibrations
 #Reference['mlrPredictions'] = (Reference['PM2_5']*0.48 + 0.95)       # the Paccar overall Clarity Calibration (to check if they got reversed on accident)
@@ -285,7 +285,7 @@ Reference['mlrPredictions'] = predictions
 
 # Our Calibration
 
-#Reference['mlrPredictions'] = (Reference['PM2_5'] + 0.6232)/1.7588       # Actual Calibration
+Reference['mlrPredictions'] = (Reference['PM2_5'] + 0.6232)/1.7588       # Actual Calibration
 Reference['residuals'] = Reference['Augusta_PM2_5'] - Reference['PM2_5']
 Reference['prediction_residuals'] = Reference['Augusta_PM2_5'] - Reference['mlrPredictions']
 Reference['Location'] = 'Reference'

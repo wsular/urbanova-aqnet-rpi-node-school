@@ -497,9 +497,9 @@ p1.line(Paccar.index,     Paccar.PM2_5,  legend='Paccar',       color='blue',   
 p1.line(Reference.index,     Reference.PM2_5,  legend='Reference',       color='red',     line_width=2)
 p1.line(Adams.index,     Adams.PM2_5,  legend='Adams',       color='yellow',     line_width=2)
 p1.line(Grant.index,     Grant.PM2_5,  legend='Grant',       color='green',     line_width=2)
-p1.line(Jefferson.index,     Jefferson.PM2_5,  legend='Browne',       color='purple',     line_width=2)
-p1.line(Sheridan.index,     Sheridan.PM2_5,  legend='Lidgerwood',       color='orange',     line_width=2)
-p1.line(Stevens.index,     Stevens.PM2_5,  legend='Regal',       color='brown',     line_width=2)
+p1.line(Jefferson.index,     Jefferson.PM2_5,  legend='Jefferson',       color='purple',     line_width=2)
+p1.line(Sheridan.index,     Sheridan.PM2_5,  legend='Sheridan',       color='orange',     line_width=2)
+p1.line(Stevens.index,     Stevens.PM2_5,  legend='Stevens',       color='brown',     line_width=2)
 
 p1.legend.location='top_left'
 p1.toolbar.logo = None

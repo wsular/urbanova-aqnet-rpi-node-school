@@ -227,9 +227,9 @@ Paccar1['BAM'] = Augusta['PM2_5']
 
 
 Paccar = Paccar1
-### Paccar['wind_dir'] = Augusta['Wind_dir_deg']   ###
-### Paccar = Paccar[Paccar['ws'].notna()]          ###
-### Paccar = Paccar[Paccar['wind_dir'].notna()]    ###
+###Paccar['wind_dir'] = Augusta['Wind_dir_deg']   ###
+###Paccar = Paccar[Paccar['ws'].notna()]          ###
+###Paccar = Paccar[Paccar['wind_dir'].notna()]    ###
 ###Paccar = Paccar[Paccar['inv_height'].notna()]
 
 Reference_All['time'] = pd.to_datetime(Reference_All['time'])
@@ -238,7 +238,7 @@ Reference_All.index = Reference_All.time
 Reference1 = Reference_All.loc[start_time:end_time]
 Reference1 = Reference1.resample(interval).mean()
 Reference1['BAM'] = Augusta['PM2_5']
-###Reference1['ws'] = Augusta['Wind_speed_mph']   ###
+Reference1['ws'] = Augusta['Wind_speed_mph']   ###
 
 # Merge with inversion dataframe
 #Reference2=pd.merge(Reference1,inv_df, how='outer', left_index=True, right_index=True)     # use how='inner' to only get matching indices (no NA's)
@@ -254,9 +254,9 @@ Reference1['BAM'] = Augusta['PM2_5']
 
 
 Reference = Reference1
-###Reference['wind_dir'] = Augusta['Wind_dir_deg']   ###
-###Reference = Reference[Reference['ws'].notna()]          ###
-###Reference = Reference[Reference['wind_dir'].notna()]    ###
+Reference['wind_dir'] = Augusta['Wind_dir_deg']   ###
+Reference = Reference[Reference['ws'].notna()]          ###
+Reference = Reference[Reference['wind_dir'].notna()]    ###
 ###Reference = Reference[Reference['inv_height'].notna()]
 
 #%%
@@ -273,8 +273,8 @@ spec_humid(stevens_bme, stevens_bme_json, Reference)
 # https://machinelearningmastery.com/random-forest-ensemble-in-python/
 # k-fold cross validation
 
-###features = Paccar
-###features['datetime'] = Paccar.index
+###features = Paccar                 ###
+###features['datetime'] = Paccar.index   ###
 
 features = Reference
 features['datetime'] = Reference.index
@@ -306,8 +306,8 @@ train_features1, test_features1, train_labels, test_labels = train_test_split(fe
 
 ## #### MAKE SURE THE FOLLOWING DELETED COLUMNS ACTUALLY MATCH UP WITH DATETIME (Might be different based on the number of features used)
 
-train_features = np.delete(train_features1, 3, 1)  # delete datetime column from train_features
-test_features = np.delete(test_features1, 3, 1)  # delete datetime column from test_features
+train_features = np.delete(train_features1, 5, 1)  # delete datetime column from train_features
+test_features = np.delete(test_features1, 5, 1)  # delete datetime column from test_features
 #features = Paccar
 #features['datetime'] = Paccar.index
 # Descriptive statistics for each column

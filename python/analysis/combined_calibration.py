@@ -25,6 +25,15 @@ from linear_plot_function import linear_plot
 from high_cal_mlr_function import mlr_function_high_cal
 from high_cal_mlr_function_generator import high_cal_setup, generate_mlr_function_high_cal
 from mlr_function_for_combined_data import mlr_function_general
+# Import curve fitting package from scipy
+from scipy.optimize import curve_fit
+
+
+# Function to calculate the power-law with constants a and b
+def power_law(x, a, b):
+    return a*np.power(x, b)
+def power_law_cal(y, a , b):
+    return (y/a)**(1/b)
 
 PlotType = 'HTMLfile'
 
@@ -87,6 +96,9 @@ Augusta = Augusta.resample(interval).mean()
 
 calibration_df = pd.DataFrame()
 
+# create df with applying the reverse Paccar roof calibration to the reference node for each of the Clarity nodes to approximate 
+# what their raw data readings would have been (just for the winter SRCAA overlap data) - I double checked and the below equations were
+# only applied to the winter data not the high cal data
 
 #Adams_All['PM2_5_corrected'] = (Adams_All['PM2_5']+0.93)/1.1554
 calibration_df['Adams'] = Reference['PM2_5']*1.1554-0.93
@@ -357,7 +369,58 @@ p1.legend.click_policy="mute"
 
 tab1 = Panel(child=p1, title="Combined Cal Raw Data")
 
-tabs = Tabs(tabs=[ tab1])
+# Plot scatter of combined Browne data and fit power function (test to see if works and then turn into function call for other locations)
+
+p2 = figure(plot_width=900,
+            plot_height=450,
+            #x_axis_type='datetime',
+            x_axis_label='Reference (ug/m3)',
+            y_axis_label='Browne (ug/m3)')
+
+p2.title.text = 'Browne Combined PM 2.5'
+
+Browne_df = pd.DataFrame()
+Browne_df['ref_avg'] = calibration_df.ref_avg
+Browne_df['Browne'] = calibration_df.Browne
+Browne_df = Browne_df[Browne_df['ref_avg'] > 0]
+Browne_df.to_csv('/Users/matthew/Desktop/Browne_power_cal.csv', index=False)
+
+xdata = Browne_df[['ref_avg']].to_numpy()
+xdata = xdata[:, 0]
+print(type(xdata))
+ydata = Browne_df[['Browne']].to_numpy()
+ydata = ydata[:, 0]
+
+
+# Fit the dummy power-law data
+pars, cov = curve_fit(f=power_law, xdata=xdata, ydata=ydata, p0=[0, 0], bounds=(-np.inf, np.inf))
+# Get the standard deviations of the parameters (square roots of the # diagonal of the covariance)
+stdevs = np.sqrt(np.diag(cov))
+# Calculate the power calibrated data
+Browne_df['Browne_power_fit'] = power_law_cal(ydata, *pars)
+
+
+# plot combined calibration data
+p2.scatter(xdata,     ydata,     legend='Browne',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
+p2.scatter(xdata, power_law(xdata, *pars), legend='Power fit',       color='black',       line_width=2, muted_color='green', muted_alpha=0.2)
+tab2 = Panel(child=p2, title="Combined Browne Raw Data")
+
+
+p3 = figure(plot_width=900,
+            plot_height=450,
+            #x_axis_type='datetime',
+            x_axis_label='Reference (ug/m3)',
+            y_axis_label='Calibrated PM 2.5 (ug/m3)')
+
+p3.title.text = 'Browne Combined Power Cal PM 2.5'
+
+# plot combined calibration data
+p3.scatter(Browne_df.ref_avg,    Browne_df.Browne_power_fit,     legend='Browne',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
+p3.scatter(Browne_df.ref_avg,    Browne_df.ref_avg,     legend='1 to 1 line',       color='red',       line_width=2, muted_color='green', muted_alpha=0.2)
+
+tab3 = Panel(child=p3, title="Combined Browne Calibrated Data")
+
+tabs = Tabs(tabs=[ tab1, tab2, tab3])
 
 show(tabs)
 
@@ -467,5 +530,40 @@ point_of_intersection = int_pt.x, int_pt.y
 
 print(point_of_intersection)
 
+#%%
+
+# Generate dummy dataset
+x_dummy = np.linspace(start=1, stop=1000, num=100)
+print(type(x_dummy))
+y_dummy = power_law(x_dummy, 1, 0.5)
+# Add noise from a Gaussian distribution
+noise = 1.5*np.random.normal(size=y_dummy.size)
+y_dummy = y_dummy + noise
 
 
+
+# Fit the dummy power-law data
+pars, cov = curve_fit(f=power_law, xdata=x_dummy, ydata=y_dummy, p0=[0, 0], bounds=(-np.inf, np.inf))
+# Get the standard deviations of the parameters (square roots of the # diagonal of the covariance)
+stdevs = np.sqrt(np.diag(cov))
+# Calculate the residuals
+res = y_dummy - power_law(x_dummy, *pars)
+
+
+#%%
+
+
+
+xdata = calibration_df[['ref_avg']].to_numpy()
+xdata = xdata[:, 0]
+print(type(xdata))
+ydata = calibration_df[['Browne']].to_numpy()
+ydata = ydata[:, 0]
+
+
+# Fit the dummy power-law data
+pars, cov = curve_fit(f=power_law, xdata=xdata, ydata=ydata, p0=[0, 0], bounds=(-np.inf, np.inf))
+# Get the standard deviations of the parameters (square roots of the # diagonal of the covariance)
+stdevs = np.sqrt(np.diag(cov))
+# Calculate the residuals
+calibration_df['Browne_power_fit'] = power_law(xdata, *pars)

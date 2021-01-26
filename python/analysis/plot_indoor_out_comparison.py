@@ -37,7 +37,7 @@ def indoor_outdoor_plot(indoor, outdoor):
     #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
     #)
 
-    source_error_indoor = ColumnDataSource(data=dict(base=indoor.index, lower=indoor.lower_uncertainty, upper=indoor.upper_uncertainty))
+   # source_error_indoor = ColumnDataSource(data=dict(base=indoor.index, lower=indoor.lower_uncertainty, upper=indoor.upper_uncertainty))
 
     #p1.add_layout(
     #    Whisker(source=source_error_indoor, base="base", upper="upper", lower="lower")

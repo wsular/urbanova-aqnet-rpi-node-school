@@ -171,6 +171,9 @@ def mlr_uncertainty(stdev_number,location):
         slope_sigma_Augusta = 2.1
         sigma_i_BAM = 3.48
         
+    
+    
+    
     sensor['lower_uncertainty'] = sensor['PM2_5_corrected']-(sensor['PM2_5_corrected']*((((((sigma_i_summer/sensor['PM2_5_corrected'])*100))**2+(((sigma_i_Augusta/sensor['PM2_5_corrected'])*100))**2+(((sigma_i_BAM/sensor['PM2_5_corrected'])*100))**2)**0.5)/100))
     sensor['upper_uncertainty'] = sensor['PM2_5_corrected']+(sensor['PM2_5_corrected']*((((((sigma_i_summer/sensor['PM2_5_corrected'])*100))**2+(((sigma_i_Augusta/sensor['PM2_5_corrected'])*100))**2+(((sigma_i_BAM/sensor['PM2_5_corrected'])*100))**2)**0.5)/100))
 

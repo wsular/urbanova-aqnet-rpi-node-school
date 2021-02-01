@@ -69,6 +69,8 @@ from indoor_cal_low import indoor_cal_low
 from indoor_cal_smoke import indoor_cal_smoke
 from outdoor_low_cal import outdoor_cal_low
 from outdoor_cal_smoke import outdoor_cal_smoke
+from outdoor_low_uncertainty import outdoor_low_uncertainty
+from outdoor_smoke_uncertainty import outdoor_smoke_uncertainty
 #%%
 
 # initiate dataframe for high calibration data used to generate high calibration mlr functions for each location
@@ -111,8 +113,8 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #end_time = '2019-11-08 19:00'
 
 # students in schools
-start_time = '2020-02-15 07:00'
-end_time = '2020-03-10 19:00'
+#start_time = '2020-02-15 07:00'
+#end_time = '2020-03-10 19:00'
 
 # empty schools till smoke
 #start_time = '2020-03-10 07:00'
@@ -123,9 +125,13 @@ end_time = '2020-03-10 19:00'
 #start_time = '2020-09-10 07:00'
 #end_time = '2020-09-21 19:00'
 
-# Complete sampling time
-#start_time = '2020-03-10 07:00'
-#end_time = '2020-09-10 07:00'
+# Complete sampling time for outdoor
+#start_time = '2019-09-01 07:00'
+#end_time = '2021-01-27 07:00'
+
+# Complete sampling time for indoor/outdoor
+start_time = '2020-02-15 07:00'
+end_time = '2020-10-22 07:00'
 
 # indoor calibration period (not the times of the chamber test but the overall time period at Von's house)
 #start_time = '2020-11-04 00:00'
@@ -219,6 +225,7 @@ else:
     pass
 
 # drop erroneous data from Nov. 2019 when sensor malfunctioning
+Adams_All
 Browne_All = Browne_All[Browne_All['PM2_5'] < 1000]
 
 
@@ -539,6 +546,16 @@ Regal_low =  outdoor_cal_low(Regal, 'Regal')
 Sheridan_low = outdoor_cal_low(Sheridan, 'Sheridan')
 Stevens_low = outdoor_cal_low(Stevens, 'Stevens')
 
+outdoor_low_uncertainty(2, Audubon_low)
+outdoor_low_uncertainty(2, Adams_low)
+outdoor_low_uncertainty(2, Balboa_low)
+outdoor_low_uncertainty(2, Browne_low)
+outdoor_low_uncertainty(2, Grant_low)
+outdoor_low_uncertainty(2, Jefferson_low)
+outdoor_low_uncertainty(2, Lidgerwood_low)
+outdoor_low_uncertainty(2, Regal_low)
+outdoor_low_uncertainty(2, Sheridan_low)
+outdoor_low_uncertainty(2, Stevens_low)
 #%%
 # apply calibration during the smoke of september 2020
 Audubon_smoke = outdoor_cal_smoke(Audubon, 'Audubon', mlr_high_audubon)
@@ -551,7 +568,18 @@ Lidgerwood_smoke = outdoor_cal_smoke(Lidgerwood, 'Lidgerwood', mlr_high_lidgerwo
 Regal_smoke = outdoor_cal_smoke(Regal, 'Regal', mlr_high_regal)
 Sheridan_smoke = outdoor_cal_smoke(Sheridan, 'Sheridan', mlr_high_sheridan)
 Stevens_smoke = outdoor_cal_smoke(Stevens, 'Stevens', mlr_high_stevens)
-
+#%%
+# only use this if the time period includes the smoke period (otherwise will get error)
+outdoor_smoke_uncertainty(2, Audubon_smoke)
+outdoor_smoke_uncertainty(2, Adams_smoke)
+outdoor_smoke_uncertainty(2, Balboa_smoke)
+outdoor_smoke_uncertainty(2, Browne_smoke)
+outdoor_smoke_uncertainty(2, Grant_smoke)
+outdoor_smoke_uncertainty(2, Jefferson_smoke)
+outdoor_smoke_uncertainty(2, Lidgerwood_smoke)
+outdoor_smoke_uncertainty(2, Regal_smoke)
+outdoor_smoke_uncertainty(2, Sheridan_smoke)
+outdoor_smoke_uncertainty(2, Stevens_smoke)
 #%%
 
 Audubon = Audubon_low.append(Audubon_smoke)
@@ -712,146 +740,146 @@ spec_humid(stevens_bme, stevens_bme_json, Stevens)
 #%%
 
 # this was used for testing different calibration methods
-# as of 10/5/20, using the mlr calibrations above so don't run this cell
+# as of 10/5/20, using the outdoor_smoke_cal and outdoor_low_cal  above so don't run this cell
 
 # Use RF calibration 
 
-if ModelType=='rf' and interval=='60T':
-    evaluate_model(rf, Audubon)
-    evaluate_model(rf, Adams)
-    evaluate_model(rf, Balboa)
-    evaluate_model(rf, Browne)
-    evaluate_model(rf, Grant) 
-    evaluate_model(rf, Jefferson)
-    evaluate_model(rf, Lidgerwood)
-    evaluate_model(rf, Regal)
-    evaluate_model(rf, Sheridan)
-    evaluate_model(rf, Stevens)
+#if ModelType=='rf' and interval=='60T':
+#    evaluate_model(rf, Audubon)
+#    evaluate_model(rf, Adams)
+#    evaluate_model(rf, Balboa)
+#    evaluate_model(rf, Browne)
+#    evaluate_model(rf, Grant) 
+#    evaluate_model(rf, Jefferson)
+#    evaluate_model(rf, Lidgerwood)
+#    evaluate_model(rf, Regal)
+#    evaluate_model(rf, Sheridan)
+#    evaluate_model(rf, Stevens)
     
-else:
-    pass
+#else:
+#    pass
 
-if ModelType=='rf' and interval=='24H':
-    daily_random_forest(daily_rf, Audubon)
-    daily_random_forest(daily_rf, Adams)
-    daily_random_forest(daily_rf, Balboa)
-    daily_random_forest(daily_rf, Browne)
-    daily_random_forest(daily_rf, Grant) 
-    daily_random_forest(daily_rf, Jefferson)
-    daily_random_forest(daily_rf, Lidgerwood)
-    daily_random_forest(daily_rf, Regal)
-    daily_random_forest(daily_rf, Sheridan)
-    daily_random_forest(daily_rf, Stevens)
+#if ModelType=='rf' and interval=='24H':
+#    daily_random_forest(daily_rf, Audubon)
+#    daily_random_forest(daily_rf, Adams)
+#    daily_random_forest(daily_rf, Balboa)
+#    daily_random_forest(daily_rf, Browne)
+#    daily_random_forest(daily_rf, Grant) 
+#    daily_random_forest(daily_rf, Jefferson)
+#    daily_random_forest(daily_rf, Lidgerwood)
+#    daily_random_forest(daily_rf, Regal)
+#    daily_random_forest(daily_rf, Sheridan)
+ #   daily_random_forest(daily_rf, Stevens)
     
-else:
-    pass
+#else:
+#    pass
 
 # Use mlr calibration
 
 
-if ModelType=='mlr' and interval=='60T':
+#if ModelType=='mlr' and interval=='60T':
+#
+#
+#    mlr_function(mlr_model, Audubon)
+#    mlr_function(mlr_model, Adams)
+#    mlr_function(mlr_model, Balboa)
+#    mlr_function(mlr_model, Browne)
+#    mlr_function(mlr_model, Grant) 
+#    mlr_function(mlr_model, Jefferson)
+#    mlr_function(mlr_model, Lidgerwood)
+##    mlr_function(mlr_model, Regal)
+ #   mlr_function(mlr_model, Sheridan)
+ #   mlr_function(mlr_model, Stevens)
+#else:
+#    pass
 
-
-    mlr_function(mlr_model, Audubon)
-    mlr_function(mlr_model, Adams)
-    mlr_function(mlr_model, Balboa)
-    mlr_function(mlr_model, Browne)
-    mlr_function(mlr_model, Grant) 
-    mlr_function(mlr_model, Jefferson)
-    mlr_function(mlr_model, Lidgerwood)
-    mlr_function(mlr_model, Regal)
-    mlr_function(mlr_model, Sheridan)
-    mlr_function(mlr_model, Stevens)
-else:
-    pass
-
-if ModelType=='mlr' and interval=='24H':
-    daily_mlr_function(daily_mlr_model, Audubon)
-    daily_mlr_function(daily_mlr_model, Adams)
-    daily_mlr_function(daily_mlr_model, Balboa)
-    daily_mlr_function(daily_mlr_model, Browne)
-    daily_mlr_function(daily_mlr_model, Grant) 
-    daily_mlr_function(daily_mlr_model, Jefferson)
-    daily_mlr_function(daily_mlr_model, Lidgerwood)
-    daily_mlr_function(daily_mlr_model, Regal)
-    daily_mlr_function(daily_mlr_model, Sheridan)
-    daily_mlr_function(daily_mlr_model, Stevens)
-else:
-    pass
+#if ModelType=='mlr' and interval=='24H':
+#    daily_mlr_function(daily_mlr_model, Audubon)
+#    daily_mlr_function(daily_mlr_model, Adams)
+#    daily_mlr_function(daily_mlr_model, Balboa)
+#    daily_mlr_function(daily_mlr_model, Browne)
+#    daily_mlr_function(daily_mlr_model, Grant) 
+#    daily_mlr_function(daily_mlr_model, Jefferson)
+#    daily_mlr_function(daily_mlr_model, Lidgerwood)
+#    daily_mlr_function(daily_mlr_model, Regal)
+#    daily_mlr_function(daily_mlr_model, Sheridan)
+#    daily_mlr_function(daily_mlr_model, Stevens)
+#else:
+#    pass
 # Use hybrid calibration 
     
-if ModelType=='hybrid' and interval=='60T':
-    Audubon_All = hybrid_function(rf, mlr_model, Audubon)
-    Adams_All = hybrid_function(rf, mlr_model, Adams)
-    Balboa_All = hybrid_function(rf, mlr_model, Balboa)
-    Browne_All = hybrid_function(rf, mlr_model, Browne)
-    Grant_All = hybrid_function(rf, mlr_model, Grant) 
-    Jefferson_All = hybrid_function(rf, mlr_model, Jefferson)
-    Lidgerwood_All = hybrid_function(rf, mlr_model, Lidgerwood)
-    Regal_All = hybrid_function(rf ,mlr_model, Regal)
-    Sheridan_All = hybrid_function(rf, mlr_model, Sheridan)
-    Stevens_All =  hybrid_function(rf, mlr_model, Stevens)
-else:
-    pass
+#if ModelType=='hybrid' and interval=='60T':
+#    Audubon_All = hybrid_function(rf, mlr_model, Audubon)
+#    Adams_All = hybrid_function(rf, mlr_model, Adams)
+#    Balboa_All = hybrid_function(rf, mlr_model, Balboa)
+#    Browne_All = hybrid_function(rf, mlr_model, Browne)
+#    Grant_All = hybrid_function(rf, mlr_model, Grant) 
+#    Jefferson_All = hybrid_function(rf, mlr_model, Jefferson)
+##    Lidgerwood_All = hybrid_function(rf, mlr_model, Lidgerwood)
+ #   Regal_All = hybrid_function(rf ,mlr_model, Regal)
+ #   Sheridan_All = hybrid_function(rf, mlr_model, Sheridan)
+ #   Stevens_All =  hybrid_function(rf, mlr_model, Stevens)
+#else:
+#    pass
 #%%
 
 # Add uncertainty bounds
     
-if ModelType=='rf' and interval=='60T':
-    rf_uncertainty(stdev_number,Audubon)
-    rf_uncertainty(stdev_number,Adams)
-    rf_uncertainty(stdev_number,Balboa)
-    rf_uncertainty(stdev_number,Browne)
-    rf_uncertainty(stdev_number,Grant)
-    rf_uncertainty(stdev_number,Jefferson)
-    rf_uncertainty(stdev_number,Lidgerwood)
-    rf_uncertainty(stdev_number,Regal)
-    rf_uncertainty(stdev_number,Sheridan)
-    rf_uncertainty(stdev_number,Stevens)
-else:
-    pass
+#if ModelType=='rf' and interval=='60T':
+#    rf_uncertainty(stdev_number,Audubon)
+#    rf_uncertainty(stdev_number,Adams)
+#    rf_uncertainty(stdev_number,Balboa)
+#    rf_uncertainty(stdev_number,Browne)
+#    rf_uncertainty(stdev_number,Grant)
+#    rf_uncertainty(stdev_number,Jefferson)
+#    rf_uncertainty(stdev_number,Lidgerwood)
+#    rf_uncertainty(stdev_number,Regal)
+#    rf_uncertainty(stdev_number,Sheridan)
+#    rf_uncertainty(stdev_number,Stevens)
+#else:
+#    pass
 
-if ModelType=='mlr' and interval=='60T':
-    mlr_uncertainty(stdev_number,Audubon)
-    mlr_uncertainty(stdev_number,Adams)
-    mlr_uncertainty(stdev_number,Balboa)
-    mlr_uncertainty(stdev_number,Browne)
-    mlr_uncertainty(stdev_number,Grant)
-    mlr_uncertainty(stdev_number,Jefferson)
-    mlr_uncertainty(stdev_number,Lidgerwood)
-    mlr_uncertainty(stdev_number,Regal)
-    mlr_uncertainty(stdev_number,Sheridan)
-    mlr_uncertainty(stdev_number,Stevens)
-else:
-    pass
+#if ModelType=='mlr' and interval=='60T':
+#    mlr_uncertainty(stdev_number,Audubon)
+#    mlr_uncertainty(stdev_number,Adams)
+#    mlr_uncertainty(stdev_number,Balboa)
+#    mlr_uncertainty(stdev_number,Browne)
+#    mlr_uncertainty(stdev_number,Grant)
+#    mlr_uncertainty(stdev_number,Jefferson)
+#    mlr_uncertainty(stdev_number,Lidgerwood)
+#    mlr_uncertainty(stdev_number,Regal)
+#    mlr_uncertainty(stdev_number,Sheridan)
+#    mlr_uncertainty(stdev_number,Stevens)
+#else:
+#    pass
 
-if ModelType=='rf' and interval=='24H':
-    daily_rf_uncertainty(stdev_number,Audubon)
-    daily_rf_uncertainty(stdev_number,Adams)
-    daily_rf_uncertainty(stdev_number,Balboa)
-    daily_rf_uncertainty(stdev_number,Browne)
-    daily_rf_uncertainty(stdev_number,Grant)
-    daily_rf_uncertainty(stdev_number,Jefferson)
-    daily_rf_uncertainty(stdev_number,Lidgerwood)
-    daily_rf_uncertainty(stdev_number,Regal)
-    daily_rf_uncertainty(stdev_number,Sheridan)
-    daily_rf_uncertainty(stdev_number,Stevens)
-else:
-    pass
+#if ModelType=='rf' and interval=='24H':
+#    daily_rf_uncertainty(stdev_number,Audubon)
+#    daily_rf_uncertainty(stdev_number,Adams)
+ #   daily_rf_uncertainty(stdev_number,Balboa)
+ #   daily_rf_uncertainty(stdev_number,Browne)
+ #   daily_rf_uncertainty(stdev_number,Grant)
+ #   daily_rf_uncertainty(stdev_number,Jefferson)
+ #   daily_rf_uncertainty(stdev_number,Lidgerwood)
+ #   daily_rf_uncertainty(stdev_number,Regal)
+ #   daily_rf_uncertainty(stdev_number,Sheridan)
+ #   daily_rf_uncertainty(stdev_number,Stevens)
+#else:
+#    pass
 
-if ModelType=='mlr' and interval=='24H':
-    daily_mlr_uncertainty(stdev_number,Audubon)
-    daily_mlr_uncertainty(stdev_number,Adams)
-    daily_mlr_uncertainty(stdev_number,Balboa)
-    daily_mlr_uncertainty(stdev_number,Browne)
-    daily_mlr_uncertainty(stdev_number,Grant)
-    daily_mlr_uncertainty(stdev_number,Jefferson)
-    daily_mlr_uncertainty(stdev_number,Lidgerwood)
-    daily_mlr_uncertainty(stdev_number,Regal)
-    daily_mlr_uncertainty(stdev_number,Sheridan)
-    daily_mlr_uncertainty(stdev_number,Stevens)
-else:
-    pass
+#if ModelType=='mlr' and interval=='24H':
+#    daily_mlr_uncertainty(stdev_number,Audubon)
+#    daily_mlr_uncertainty(stdev_number,Adams)
+#    daily_mlr_uncertainty(stdev_number,Balboa)
+#    daily_mlr_uncertainty(stdev_number,Browne)
+#    daily_mlr_uncertainty(stdev_number,Grant)
+#    daily_mlr_uncertainty(stdev_number,Jefferson)
+#    daily_mlr_uncertainty(stdev_number,Lidgerwood)
+#    daily_mlr_uncertainty(stdev_number,Regal)
+#    daily_mlr_uncertainty(stdev_number,Sheridan)
+#    daily_mlr_uncertainty(stdev_number,Stevens)
+#else:
+#    pass
 #%%
 #Audubon_All['lower_uncertainty'] = Audubon_All['PM2_5_corrected']-(Audubon_All['PM2_5_corrected']*((((2*(((sigma_i/Audubon_All['PM2_5_corrected'])*100))**2+slope_sigma1**2+slope_sigma2**2))**0.5)/100))
 #Audubon_All['upper_uncertainty'] = Audubon_All['PM2_5_corrected']+(Audubon_All['PM2_5_corrected']*((((2*(((sigma_i/Audubon_All['PM2_5_corrected'])*100))**2+slope_sigma1**2+slope_sigma2**2))**0.5)/100))
@@ -1953,7 +1981,28 @@ in_out_corr(corr_df, lidgerwood, Lidgerwood)
 in_out_corr(corr_df, regal, Regal)
 in_out_corr(corr_df, sheridan, Sheridan)
 in_out_corr(corr_df, stevens, Stevens)
+#%%
+# use if want to sort corr df by the maxium correlation
+#order_list = pd.DataFrame({'Audubon': corr_df['Audubon'].max(),
+#                           'Adams': corr_df['Adams'].max(),
+#                           'Balboa': corr_df['Balboa'].max(),
+#                           'Browne': corr_df['Browne'].max(),
+#                           'Grant': corr_df['Grant'].max(),
+#                           'Jefferson': corr_df['Jefferson'].max(),
+#                           'Lidgerwood': corr_df['Lidgerwood'].max(),
+#                           'Regal': corr_df['Regal'].max(),
+#                           'Sheridan': corr_df['Sheridan'].max(),
+#                           'Stevens': corr_df['Stevens'].max()}, index = [0])
 
+#sorted_order_list = order_list.sort_values(order_list.last_valid_index(), axis = 1, ascending=False)
+#sorted_order_list = list(sorted_order_list.columns.values)
+#sorted_order_list.append('offset')
+#%%
+# this sorts the corr df by project and non-project schools
+sorted_order_list = ['offset','Adams', 'Browne', 'Balboa', 'Jefferson', 'Lidgerwood', # non project schools
+                     'Audubon', 'Grant', 'Regal', 'Sheridan', 'Stevens']
+
+corr_df = corr_df[sorted_order_list]
 #%%
 
 # shift indoor units according to their optimal r value
@@ -1995,9 +2044,7 @@ for i in df_list:
 
 #%%
 # plot histogram of calibrated indoor PM2.5 - shifted calibrated indoor PM2.5
-# Note that if using threshold of 0, 5, 10 ,15, Adams and Audubon error out on the 15 threshold because they dont have any outdoor values above 15
-
-# So for Audubon and Adams, only use up to df_threshold_3, and go into in_out_histogram functiona and limit to 2 thresholds
+# Note that if using threshold of 0, 5, 10 ,15
 
 df_list = in_out_histogram(audubon, Audubon, df_list)
 #%%
@@ -3244,7 +3291,9 @@ stats_table_adj['median'] = median_adj
 stats_table_adj['var'] = var_adj
 stats_table_adj['stdev'] = stdev_adj
 stats_table_adj['std_err'] = std_err_adj
-stats_table_adj = stats_table_adj.sort_values('location')
+#%%
+stats_table_adj = stats_table_adj.sort_values('avg', ascending=False)
+#%%
 stats_table_adj = stats_table_adj.reset_index(drop=True)
 
 stats_table_adj.to_csv('/Users/matthew/Desktop//stats.csv', index=False)

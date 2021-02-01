@@ -16,6 +16,8 @@ import scipy
 from bokeh.layouts import row
 from bokeh.layouts import gridplot
 from gaussian_fit_function import gaussian_fit
+from linear_plot_function import linear_plot
+#%%
 
 
 Audubon_All = pd.DataFrame({})
@@ -172,7 +174,7 @@ predictions = model.predict(X)
 print_model = model.summary()
 print(print_model)
 
-Audubon['Predictions'] = (Audubon['PM2_5']-0.4207)/1.0739
+Audubon['Predictions'] = (Audubon['PM2_5']-0.36)/1.09
 Audubon['residuals'] = Audubon['Ref_PM2_5'] - Audubon['PM2_5']
 Audubon['prediction_residuals'] = Audubon['Ref_PM2_5'] - Audubon['Predictions']
 
@@ -1250,7 +1252,18 @@ export_png(p16, filename="/Users/matthew/Desktop/data/calibration/Clarity_batch_
 export_png(p22, filename="/Users/matthew/Desktop/data/calibration/Clarity_batch_1_residuals_and_predictions_2.png")  
     
     
-    
+#%%
+
+#def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
+linear_plot(Audubon.Ref_PM2_5, Audubon.Predictions, Audubon.Ref_PM2_5, Audubon.Predictions, 'Audubon', 1)
+#%%
+linear_plot(Balboa.Ref_PM2_5, Balboa.Predictions, Balboa.Ref_PM2_5, Balboa.Predictions, 'Balboa', 1)
+#%%
+linear_plot(Browne.Ref_PM2_5, Browne.Predictions, Browne.Ref_PM2_5, Browne.Predictions, 'Browne', 1)
+#%%
+linear_plot(Lidgerwood.Ref_PM2_5, Lidgerwood.Predictions, Lidgerwood.Ref_PM2_5, Lidgerwood.Predictions, 'Lidgerwood', 1)
+#%%
+linear_plot(Regal.Ref_PM2_5, Regal.Predictions, Regal.Ref_PM2_5, Regal.Predictions, 'Regal', 1)
     
     
     

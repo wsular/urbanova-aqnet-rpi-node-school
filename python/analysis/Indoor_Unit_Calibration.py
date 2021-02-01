@@ -349,7 +349,9 @@ Reference_All = Reference_All.sort_values('time')
 Reference_All.index = Reference_All.time
 Reference = Reference_All.loc[start_time:end_time]
 
-Reference['PM2_5_corrected'] = (Reference['PM2_5'] + 0.6232)/1.7588   # From AUGUSTA BAM comparison
+#originally ran indoor calibration with Reference node data just linearly calibrated, redone with the Augusta MLR calibration
+#Reference['PM2_5_corrected'] = (Reference['PM2_5'] + 0.6232)/1.7588   # From AUGUSTA BAM comparison
+Reference['PM2_5_corrected'] = (Reference['PM2_5']*0.454-Reference.Rel_humid*0.0483-Reference.temp*0.0774+4.8242)
 
 Browne_All = pd.DataFrame({})
 files = glob('/Users/matthew/Desktop/data/Clarity_Backup/Browne*.csv')
@@ -1044,30 +1046,95 @@ stevens.index = stevens.time
 #%%
 # remove extreme outliers (determined by plotting final df's and looking at threshold of outliers)
 audubon = audubon[audubon['indoor'] < 800]
+audubon = audubon[audubon['indoor'].round(2) !=141.71]
+audubon = audubon[audubon['indoor'].round(2) !=65.86]
+audubon = audubon[audubon['indoor'].round(2) !=139.63]
+
 adams = adams[adams['indoor'] < 800]
+adams = adams[adams['indoor'].round(2) !=156.25]
 
 balboa = balboa[balboa['indoor'] < 1000]
 balboa = balboa[balboa['indoor'].round(2) !=899.90]
+balboa = balboa[balboa['indoor'].round(2) !=136.33]
 
 browne = browne[browne['indoor'] < 1100]
 browne = browne[browne['indoor'].round(2) !=988.22]
+browne = browne[browne['indoor'].round(2) !=133.91]
+browne = browne[browne['indoor'].round(2) !=118.11]
 
 grant = grant[grant['indoor'] < 1000]
 grant = grant[grant['indoor'].round(2) !=853.85]
+grant = grant[grant['indoor'].round(2) !=142.17]
 
 jefferson = jefferson[jefferson['indoor'] < 1000]
 jefferson = jefferson[jefferson['indoor'].round(2) !=759.28]
+jefferson = jefferson[jefferson['indoor'].round(2) !=162.32]
+jefferson = jefferson[jefferson['indoor'].round(2) !=133.42]
 
 lidgerwood = lidgerwood[lidgerwood['indoor'] < 1100]
 lidgerwood = lidgerwood[lidgerwood['indoor'].round(2) !=939.66]
+lidgerwood = lidgerwood[lidgerwood['indoor'].round(2) !=129.66]
+lidgerwood = lidgerwood[lidgerwood['indoor'].round(2) !=142.41]
 
 regal = regal[regal['indoor'] < 1000]
+regal = regal[regal['indoor'].round(2) !=178.42]
+regal = regal[regal['indoor'].round(2) !=146.32]
 
 sheridan = sheridan[sheridan['indoor'] < 1100]
 sheridan = sheridan[sheridan['indoor'].round(2) !=819.49]
+sheridan = sheridan[sheridan['indoor'].round(2) !=127.28]
+sheridan = sheridan[sheridan['indoor'].round(2) !=155.98]
+sheridan = sheridan[sheridan['indoor'].round(2) !=121.67]
+sheridan = sheridan[sheridan['indoor'].round(2) !=69.49]
 
 stevens = stevens[stevens['indoor'] < 1000]
 stevens = stevens[stevens['indoor'].round(2) !=894.05]
+stevens = stevens[stevens['indoor'].round(2) !=150.32]
+#%%
+# drop data between 70 and 120 due to lack of good calibration in this range
+# note the -100 is just a placeholder to be droppped
+
+audubon['indoor_remaining'] = np.where(audubon.ref_value > 120, audubon.ref_value, 
+         (np.where(audubon.ref_value < 70, audubon.ref_value, -100)))
+
+adams['indoor_remaining'] = np.where(adams.ref_value > 120, adams.ref_value, 
+         (np.where(adams.ref_value < 70, adams.ref_value, -100)))
+
+balboa['indoor_remaining'] = np.where(balboa.ref_value > 120, balboa.ref_value, 
+         (np.where(balboa.ref_value < 70, balboa.ref_value, -100)))
+
+browne['indoor_remaining'] = np.where(browne.ref_value > 120, browne.ref_value, 
+         (np.where(browne.ref_value < 70, browne.ref_value, -100)))
+
+grant['indoor_remaining'] = np.where(grant.ref_value > 120, grant.ref_value, 
+         (np.where(grant.ref_value < 70, grant.ref_value, -100)))
+
+jefferson['indoor_remaining'] = np.where(jefferson.ref_value > 120, jefferson.ref_value, 
+         (np.where(jefferson.ref_value < 70, jefferson.ref_value, -100)))
+
+lidgerwood['indoor_remaining'] = np.where(lidgerwood.ref_value > 120, lidgerwood.ref_value, 
+         (np.where(lidgerwood.ref_value < 70, lidgerwood.ref_value, -100)))
+
+regal['indoor_remaining'] = np.where(regal.ref_value > 120, regal.ref_value, 
+         (np.where(regal.ref_value < 70, regal.ref_value, -100)))
+
+sheridan['indoor_remaining'] = np.where(sheridan.ref_value > 120, sheridan.ref_value, 
+         (np.where(sheridan.ref_value < 70, sheridan.ref_value, -100)))
+
+stevens['indoor_remaining'] = np.where(stevens.ref_value > 120, stevens.ref_value, 
+         (np.where(stevens.ref_value < 70, stevens.ref_value, -100)))
+#%%
+audubon = audubon[audubon['indoor_remaining'] != -100]
+adams = adams[adams['indoor_remaining'] != -100]
+balboa = balboa[balboa['indoor_remaining'] != -100]
+browne = browne[browne['indoor_remaining'] != -100]
+grant = grant[grant['indoor_remaining'] != -100]
+jefferson = jefferson[jefferson['indoor_remaining'] != -100]
+lidgerwood = lidgerwood[lidgerwood['indoor_remaining'] != -100]
+regal = regal[regal['indoor_remaining'] != -100]
+sheridan = sheridan[sheridan['indoor_remaining'] != -100]
+stevens = stevens[stevens['indoor_remaining'] != -100]
+
 #%%
 
 
@@ -1103,66 +1170,145 @@ tabs = Tabs(tabs=[ tab1])
 
 show(tabs)    
 #%%
+# this is the original code used to calibrate data, keep to show how got the 70 - 120 data range where there is no good calibration
+# note that this to generate the calibrations for the data where the ref measurement was not 70 -120, the column used was ['ref_value'] and the threshold was 68
+# (because the 70-120 range was already dropped, using 68 as the threshold accomplished the same thing)
+# this was just changed so could plot the indoor and outdoor corrected data easier to match up with the plot_indoor function - also plotted using the entirety of the data as well
+# when plotting corrected data, make sure to apply this cell after running the calibration (using the 'indoor' column will make sure that the correct data is dropped as it is unaffected by the calibration)
 
-audubon_low = audubon[audubon['ref_value'] < 68]
-audubon_high = audubon[audubon['ref_value'] > 68]
+audubon_low = audubon[audubon['indoor'] < 70]
+audubon_high = audubon[audubon['indoor'] > 120]
 
-adams_low = adams[adams['ref_value'] < 68]
-adams_high = adams[adams['ref_value'] > 68]
+adams_low = adams[adams['indoor'] < 70]
+adams_high = adams[adams['indoor'] > 120]
 
-balboa_low = balboa[balboa['ref_value'] < 68]
-balboa_high = balboa[balboa['ref_value'] > 68]
+balboa_low = balboa[balboa['indoor'] < 70]
+balboa_high = balboa[balboa['indoor'] > 120]
 
-browne_low = browne[browne['ref_value'] < 68]
-browne_high = browne[browne['ref_value'] > 68]
+browne_low = browne[browne['indoor'] < 70]
+browne_high = browne[browne['indoor'] > 120]
 
-grant_low = grant[grant['ref_value'] < 68]
-grant_high = grant[grant['ref_value'] > 68]
+grant_low = grant[grant['indoor'] < 70]
+grant_high = grant[grant['indoor'] > 120]
 
-jefferson_low = jefferson[jefferson['ref_value'] < 68]
-jefferson_high = jefferson[jefferson['ref_value'] > 68]
+jefferson_low = jefferson[jefferson['indoor'] < 70]
+jefferson_high = jefferson[jefferson['indoor'] > 120]
 
-lidgerwood_low = lidgerwood[lidgerwood['ref_value'] < 68]
-lidgerwood_high = lidgerwood[lidgerwood['ref_value'] > 68]
+lidgerwood_low = lidgerwood[lidgerwood['indoor'] < 70]
+lidgerwood_high = lidgerwood[lidgerwood['indoor'] > 120]
 
-regal_low = regal[regal['ref_value'] < 68]
-regal_high = regal[regal['ref_value'] > 68]
+regal_low = regal[regal['indoor'] < 70]
+regal_high = regal[regal['indoor'] > 120]
 
-sheridan_low = sheridan[sheridan['ref_value'] < 68]
-sheridan_high = sheridan[sheridan['ref_value'] > 68]
+sheridan_low = sheridan[sheridan['indoor'] < 70]
+sheridan_high = sheridan[sheridan['indoor'] > 120]
 
-stevens_low = stevens[stevens['ref_value'] < 68]
-stevens_high = stevens[stevens['ref_value'] > 68]
+stevens_low = stevens[stevens['indoor'] < 70]
+stevens_high = stevens[stevens['indoor'] > 120]
+#%%
+# resulting calibrations when using the mlr calibration from Augusta to calibrate the reference node first (note that high calibration doesnt change, just the low one compared to the cell below)
+audubon['indoor_corrected'] = np.where(audubon.indoor > 120, (audubon.indoor-34.4)*(1/0.61), 
+         (np.where(audubon.indoor < 68, (audubon.indoor+2.27)/2.35, -100)))
 
-audubon['indoor_corrected'] = np.where(audubon.indoor > 68, (audubon.indoor-0.6)*(1/0.66), 
-         (np.where(audubon.indoor < 68, (audubon.indoor-1.49)/2.04, audubon.indoor)))
+adams['indoor_corrected'] = np.where(adams.indoor > 120, (adams.indoor-15.8)*(1/0.65), 
+         (np.where(adams.indoor < 68, (adams.indoor+1.92)/2.51, -100)))
 
-adams['indoor_corrected'] = np.where(adams.indoor > 68, (adams.indoor-9)*(1/0.63), 
-         (np.where(adams.indoor < 68, (adams.indoor-0.97)/1.9, adams.indoor)))
+balboa['indoor_corrected'] = np.where(balboa.indoor > 120, (balboa.indoor+11.9)*(1/0.82), 
+         (np.where(balboa.indoor < 68, (balboa.indoor-2.33)/2.52, -100)))
 
-balboa['indoor_corrected'] = np.where(balboa.indoor > 68, (balboa.indoor+18.16)*(1/0.83), 
-         (np.where(balboa.indoor < 68, (balboa.indoor-1.25)/2.02, balboa.indoor)))
+browne['indoor_corrected'] = np.where(browne.indoor > 120, (browne.indoor+4.86)*(1/0.91), 
+         (np.where(browne.indoor < 68, (browne.indoor+3.31)/2.61, -100)))
 
-browne['indoor_corrected'] = np.where(browne.indoor > 68, (browne.indoor+27.43)*(1/0.94), 
-         (np.where(browne.indoor < 68, (browne.indoor-0.36)/2.09, browne.indoor)))
+grant['indoor_corrected'] = np.where(grant.indoor > 120, (grant.indoor-25.84)*(1/0.8), 
+         (np.where(grant.indoor < 68, (grant.indoor+2.87)/2.66, -100)))
 
-grant['indoor_corrected'] = np.where(grant.indoor > 68, (grant.indoor+7.68)*(1/0.85), 
-         (np.where(grant.indoor < 68, (grant.indoor-0.88)/2.12, grant.indoor)))
+jefferson['indoor_corrected'] = np.where(jefferson.indoor > 120, (jefferson.indoor-47.01)*(1/0.64), 
+         (np.where(jefferson.indoor < 68, (jefferson.indoor+2.29)/2.26, -100)))
 
-jefferson['indoor_corrected'] = np.where(jefferson.indoor > 68, (jefferson.indoor-2.17)*(1/0.71), 
-         (np.where(jefferson.indoor < 68, (jefferson.indoor-0.78)/1.84, jefferson.indoor)))
+lidgerwood['indoor_corrected'] = np.where(lidgerwood.indoor > 120, (lidgerwood.indoor-20.45)*(1/0.85), 
+         (np.where(lidgerwood.indoor < 68, (lidgerwood.indoor+2.55)/2.61, -100)))
 
-lidgerwood['indoor_corrected'] = np.where(lidgerwood.indoor > 68, (lidgerwood.indoor+16.05)*(1/0.91), 
-         (np.where(lidgerwood.indoor < 68, (lidgerwood.indoor-1.08)/2.11, lidgerwood.indoor)))
+regal['indoor_corrected'] = np.where(regal.indoor > 120, (regal.indoor-38.78)*(1/0.67), 
+         (np.where(regal.indoor < 68, (regal.indoor+2.22)/2.45, -100)))
 
-regal['indoor_corrected'] = np.where(regal.indoor > 68, (regal.indoor-4.12)*(1/0.72), 
-         (np.where(regal.indoor < 68, (regal.indoor-1.14)/1.99, regal.indoor)))
+sheridan['indoor_corrected'] = np.where(sheridan.indoor > 120, (sheridan.indoor-38.32)*(1/0.57), 
+         (np.where(sheridan.indoor < 68, (sheridan.indoor+2.33)/2.56, -100)))
 
-sheridan['indoor_corrected'] = np.where(sheridan.indoor > 68, (sheridan.indoor-1.26)*(1/0.62), 
-         (np.where(sheridan.indoor < 68, (sheridan.indoor-1.16)/2.07, sheridan.indoor)))
+stevens['indoor_corrected'] = np.where(stevens.indoor > 120, (stevens.indoor-58.07)*(1/0.62), 
+         (np.where(stevens.indoor < 68, (stevens.indoor+2.8)/2.48, -100)))
+#%%
+# below is when using the Reference node values that were linearly calibrated from the Augusta site, rather than the mlr calibration
+#audubon['indoor_corrected'] = np.where(audubon.indoor > 120, (audubon.indoor-34.4)*(1/0.61), 
+#         (np.where(audubon.indoor < 68, (audubon.indoor-0.96)/1.89, -100)))
 
-stevens['indoor_corrected'] = np.where(stevens.indoor > 68, (stevens.indoor-9.03)*(1/0.67), 
-         (np.where(stevens.indoor < 68, (stevens.indoor-0.62)/2.01, stevens.indoor)))
+#adams['indoor_corrected'] = np.where(adams.indoor > 120, (adams.indoor+12.3)*(1/0.68), 
+#         (np.where(adams.indoor < 68, (adams.indoor-1.53)/2.03, -100)))
+
+#balboa['indoor_corrected'] = np.where(balboa.indoor > 120, (balboa.indoor+44.68)*(1/0.87), 
+#         (np.where(balboa.indoor < 68, (balboa.indoor-1.28)/2.01, -100)))
+
+#browne['indoor_corrected'] = np.where(browne.indoor > 120, (browne.indoor+59.82)*(1/0.99), 
+#         (np.where(browne.indoor < 68, (browne.indoor-0.37)/2.08, -100)))
+
+#grant['indoor_corrected'] = np.where(grant.indoor > 120, (grant.indoor+28.43)*(1/0.88), 
+#         (np.where(grant.indoor < 68, (grant.indoor-0.91)/2.12, -100)))
+
+#jefferson['indoor_corrected'] = np.where(jefferson.indoor > 120, (jefferson.indoor+4.97)*(1/0.72), 
+#         (np.where(jefferson.indoor < 68, (jefferson.indoor-0.81)/1.83, -100)))
+
+#lidgerwood['indoor_corrected'] = np.where(lidgerwood.indoor > 120, (lidgerwood.indoor+43.28)*(1/0.95), 
+#         (np.where(lidgerwood.indoor < 68, (lidgerwood.indoor-1.09)/2.1, -100)))
+
+#regal['indoor_corrected'] = np.where(regal.indoor > 120, (regal.indoor+3.35)*(1/0.73), 
+#         (np.where(regal.indoor < 68, (regal.indoor-1.16)/1.98, -100)))
+
+#sheridan['indoor_corrected'] = np.where(sheridan.indoor > 120, (sheridan.indoor+11.6)*(1/0.64), 
+#         (np.where(sheridan.indoor < 68, (sheridan.indoor-1.21)/2.06, -100)))
+
+#stevens['indoor_corrected'] = np.where(stevens.indoor > 120, (stevens.indoor-4.16)*(1/0.68), 
+ #        (np.where(stevens.indoor < 68, (stevens.indoor-0.65)/2, -100)))
+#%%
+audubon = audubon[audubon['indoor_corrected'] != -100]
+adams = adams[adams['indoor_corrected'] != -100]
+balboa = balboa[balboa['indoor_corrected'] != -100]
+browne = browne[browne['indoor_corrected'] != -100]
+grant = grant[grant['indoor_corrected'] != -100]
+jefferson = jefferson[jefferson['indoor_corrected'] != -100]
+lidgerwood = lidgerwood[lidgerwood['indoor_corrected'] != -100]
+regal = regal[regal['indoor_corrected'] != -100]
+sheridan = sheridan[sheridan['indoor_corrected'] != -100]
+stevens = stevens[stevens['indoor_corrected'] != -100]
+#%%
+# this is the original code used to calibrate data, keep to show how got the 70 - 120 data range where there is no good calibration and the original equations
+#audubon['indoor_corrected'] = np.where(audubon.indoor > 68, (audubon.indoor-0.6)*(1/0.66), 
+#         (np.where(audubon.indoor < 68, (audubon.indoor-1.49)/2.04, audubon.indoor)))
+
+#adams['indoor_corrected'] = np.where(adams.indoor > 68, (adams.indoor-9)*(1/0.63), 
+#         (np.where(adams.indoor < 68, (adams.indoor-0.97)/1.9, adams.indoor)))
+
+#balboa['indoor_corrected'] = np.where(balboa.indoor > 68, (balboa.indoor+18.16)*(1/0.83), 
+#         (np.where(balboa.indoor < 68, (balboa.indoor-1.25)/2.02, balboa.indoor)))
+
+#browne['indoor_corrected'] = np.where(browne.indoor > 68, (browne.indoor+27.43)*(1/0.94), 
+#         (np.where(browne.indoor < 68, (browne.indoor-0.36)/2.09, browne.indoor)))
+
+#grant['indoor_corrected'] = np.where(grant.indoor > 68, (grant.indoor+7.68)*(1/0.85), 
+#         (np.where(grant.indoor < 68, (grant.indoor-0.88)/2.12, grant.indoor)))
+
+#jefferson['indoor_corrected'] = np.where(jefferson.indoor > 68, (jefferson.indoor-2.17)*(1/0.71), 
+#         (np.where(jefferson.indoor < 68, (jefferson.indoor-0.78)/1.84, jefferson.indoor)))
+
+#lidgerwood['indoor_corrected'] = np.where(lidgerwood.indoor > 68, (lidgerwood.indoor+16.05)*(1/0.91), 
+#         (np.where(lidgerwood.indoor < 68, (lidgerwood.indoor-1.08)/2.11, lidgerwood.indoor)))
+
+#regal['indoor_corrected'] = np.where(regal.indoor > 68, (regal.indoor-4.12)*(1/0.72), 
+#         (np.where(regal.indoor < 68, (regal.indoor-1.14)/1.99, regal.indoor)))
+
+#sheridan['indoor_corrected'] = np.where(sheridan.indoor > 68, (sheridan.indoor-1.26)*(1/0.62), 
+#         (np.where(sheridan.indoor < 68, (sheridan.indoor-1.16)/2.07, sheridan.indoor)))
+
+#stevens['indoor_corrected'] = np.where(stevens.indoor > 68, (stevens.indoor-9.03)*(1/0.67), 
+#         (np.where(stevens.indoor < 68, (stevens.indoor-0.62)/2.01, stevens.indoor)))
 #%%
 audubon['prediction_residuals'] = audubon['ref_value'] - audubon['indoor_corrected']
 adams['prediction_residuals'] = adams['ref_value'] - adams['indoor_corrected']
@@ -1191,35 +1337,45 @@ stevens = stevens[stevens['ref_value'] > 35]
 
 # if calculating the performance of the calibrated data, use #lines = 1 and residuals check =1, and add in residuals = indoor.prediction_residuals
 
-#linear_plot(audubon_low.ref_value, audubon_low.indoor, audubon_high.ref_value, audubon_high.indoor,'audubon', 2)
-linear_plot(audubon.ref_value, audubon.indoor_corrected, audubon.ref_value, audubon.indoor,'audubon', 1, residuals_check = 1, residuals = audubon.prediction_residuals)
+#linear_plot(audubon_low.ref_value, audubon_low.indoor, audubon_high.ref_value, audubon_high.indoor,'audubon', 2)   # used for determining the correction equations
+linear_plot(audubon_low.ref_value, audubon_low.indoor_corrected, audubon_high.ref_value, audubon_high.indoor_corrected,'audubon', 2)   # used for plotting the corrected data with 1 equation for each region
+#linear_plot(audubon.ref_value, audubon.indoor_corrected, audubon.ref_value, audubon.indoor,'audubon', 1, residuals_check = 1, residuals = audubon.prediction_residuals)
 #%%
 #linear_plot(adams_low.ref_value, adams_low.indoor, adams_high.ref_value, adams_high.indoor,'adams', 2)
-linear_plot(adams.ref_value, adams.indoor_corrected, adams.ref_value, adams.indoor,'Adams', 1, residuals_check = 1, residuals = adams.prediction_residuals)
+linear_plot(adams_low.ref_value, adams_low.indoor_corrected, adams_high.ref_value, adams_high.indoor_corrected,'adams', 2)
+#linear_plot(adams.ref_value, adams.indoor_corrected, adams.ref_value, adams.indoor,'Adams', 1, residuals_check = 1, residuals = adams.prediction_residuals)
 #%%
 #linear_plot(balboa_low.ref_value, balboa_low.indoor, balboa_high.ref_value, balboa_high.indoor,'Balboa', 2)
-linear_plot(balboa.ref_value, balboa.indoor_corrected, balboa.ref_value, balboa.indoor,'Balboa', 1, residuals_check = 1, residuals = balboa.prediction_residuals)
+linear_plot(balboa_low.ref_value, balboa_low.indoor_corrected, balboa_high.ref_value, balboa_high.indoor_corrected,'Balboa', 2)
+#linear_plot(balboa.ref_value, balboa.indoor_corrected, balboa.ref_value, balboa.indoor,'Balboa', 1, residuals_check = 1, residuals = balboa.prediction_residuals)
 #%%
 #linear_plot(browne_low.ref_value, browne_low.indoor, browne_high.ref_value, browne_high.indoor,'Browne', 2)
-linear_plot(browne.ref_value, browne.indoor_corrected, browne.ref_value, browne.indoor,'Browne', 1, residuals_check = 1, residuals = browne.prediction_residuals)
+linear_plot(browne_low.ref_value, browne_low.indoor_corrected, browne_high.ref_value, browne_high.indoor_corrected,'Browne', 2)
+#linear_plot(browne.ref_value, browne.indoor_corrected, browne.ref_value, browne.indoor,'Browne', 1, residuals_check = 1, residuals = browne.prediction_residuals)
 #%%
 #linear_plot(grant_low.ref_value, grant_low.indoor, grant_high.ref_value, grant_high.indoor,'Grant', 2)
-linear_plot(grant.ref_value, grant.indoor_corrected, grant.ref_value, grant.indoor,'Grant', 1, residuals_check = 1, residuals = grant.prediction_residuals)
+linear_plot(grant_low.ref_value, grant_low.indoor_corrected, grant_high.ref_value, grant_high.indoor_corrected,'Grant', 2)
+#linear_plot(grant.ref_value, grant.indoor_corrected, grant.ref_value, grant.indoor,'Grant', 1, residuals_check = 1, residuals = grant.prediction_residuals)
 #%%
 #linear_plot(jefferson_low.ref_value, jefferson_low.indoor, jefferson_high.ref_value, jefferson_high.indoor,'Jefferson', 2)
-linear_plot(jefferson.ref_value, jefferson.indoor_corrected, jefferson.ref_value, jefferson.indoor,'Jefferson', 1, residuals_check = 1, residuals = jefferson.prediction_residuals)
+linear_plot(jefferson_low.ref_value, jefferson_low.indoor_corrected, jefferson_high.ref_value, jefferson_high.indoor_corrected,'Jefferson', 2)
+#linear_plot(jefferson.ref_value, jefferson.indoor_corrected, jefferson.ref_value, jefferson.indoor,'Jefferson', 1, residuals_check = 1, residuals = jefferson.prediction_residuals)
 #%%
 #linear_plot(lidgerwood_low.ref_value, lidgerwood_low.indoor, lidgerwood_high.ref_value, lidgerwood_high.indoor,'Lidgerwood', 2)
-linear_plot(lidgerwood.ref_value, lidgerwood.indoor_corrected, lidgerwood.ref_value, lidgerwood.indoor,'Lidgerwood', 1, residuals_check = 1, residuals = lidgerwood.prediction_residuals)
+linear_plot(lidgerwood_low.ref_value, lidgerwood_low.indoor_corrected, lidgerwood_high.ref_value, lidgerwood_high.indoor_corrected,'Lidgerwood', 2)
+#linear_plot(lidgerwood.ref_value, lidgerwood.indoor_corrected, lidgerwood.ref_value, lidgerwood.indoor,'Lidgerwood', 1, residuals_check = 1, residuals = lidgerwood.prediction_residuals)
 #%%
 #linear_plot(regal_low.ref_value, regal_low.indoor, regal_high.ref_value, regal_high.indoor,'Regal', 2)
-linear_plot(regal.ref_value, regal.indoor_corrected, regal.ref_value, regal.indoor,'Regal', 1, residuals_check = 1, residuals = regal.prediction_residuals)
+linear_plot(regal_low.ref_value, regal_low.indoor_corrected, regal_high.ref_value, regal_high.indoor_corrected,'Regal', 2)
+#linear_plot(regal.ref_value, regal.indoor_corrected, regal.ref_value, regal.indoor,'Regal', 1, residuals_check = 1, residuals = regal.prediction_residuals)
 #%%
 #linear_plot(sheridan_low.ref_value, sheridan_low.indoor, sheridan_high.ref_value, sheridan_high.indoor,'Sheridan', 2)
-linear_plot(sheridan.ref_value, sheridan.indoor_corrected, sheridan.ref_value, sheridan.indoor,'Sheridan', 1, residuals_check = 1, residuals = sheridan.prediction_residuals)
+linear_plot(sheridan_low.ref_value, sheridan_low.indoor_corrected, sheridan_high.ref_value, sheridan_high.indoor_corrected,'Sheridan', 2)
+#linear_plot(sheridan.ref_value, sheridan.indoor_corrected, sheridan.ref_value, sheridan.indoor,'Sheridan', 1, residuals_check = 1, residuals = sheridan.prediction_residuals)
 #%%
 #linear_plot(stevens_low.ref_value, stevens_low.indoor, stevens_high.ref_value, stevens_high.indoor,'Stevens', 2)
-linear_plot(stevens.ref_value, stevens.indoor_corrected, stevens.ref_value, stevens.indoor,'Stevens', 1, residuals_check = 1, residuals = stevens.prediction_residuals)
+linear_plot(stevens_low.ref_value, stevens_low.indoor_corrected, stevens_high.ref_value, stevens_high.indoor_corrected,'Stevens', 2)
+#linear_plot(stevens.ref_value, stevens.indoor_corrected, stevens.ref_value, stevens.indoor,'Stevens', 1, residuals_check = 1, residuals = stevens.prediction_residuals)
 
 
 

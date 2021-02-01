@@ -16,61 +16,61 @@ def indoor_cal_low(indoor, name):
     indoor_cut = indoor.loc[start_time:end_time]
     
     if name == 'Audubon': 
-        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected-1.49)/2.04     
+        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected+2.27)/2.35   
     
     else:
             pass
         
     if name == 'Adams': 
-        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected-0.97)/1.9
+        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected+1.92)/2.51
     
     else:
             pass
 
     if name == 'Balboa': 
-        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected-1.25)/2.02
+        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected-2.33)/2.52
     
     else:
             pass      
         
     if name == 'Browne': 
-        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected-0.36)/2.09
+        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected+3.31)/2.61
     
     else:
             pass 
 
     if name == 'Grant': 
-        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected-0.88)/2.12
+        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected+2.87)/2.66
     
     else:
             pass
 
     if name == 'Jefferson': 
-        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected-0.78)/1.84
+        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected+2.29)/2.26
     
     else:
             pass
 
     if name == 'Lidgerwood': 
-        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected-1.08)/2.11
+        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected+2.55)/2.61
     
     else:
             pass
 
     if name == 'Regal': 
-        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected-1.14)/1.99
+        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected+2.22)/2.45
     
     else:
             pass
 
     if name == 'Sheridan': 
-        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected-1.16)/2.07
+        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected+2.33)/2.56
     
     else:
             pass
 
     if name == 'Stevens': 
-        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected-0.62)/2.01
+        indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected+2.8)/2.48
     
     else:
             pass
@@ -78,10 +78,6 @@ def indoor_cal_low(indoor, name):
 
 
     return indoor_cut
-
-
-
-
 
 
 

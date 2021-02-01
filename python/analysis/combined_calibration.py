@@ -198,6 +198,10 @@ files.sort()
 for file in files:
     winter_calibration_df = pd.concat([winter_calibration_df, pd.read_csv(file)], sort=False)
 #%%
+print('stdev of high cal stdev = ', high_calibration_df['ref_stdev'].std())
+print('avg of high cal stdev', high_calibration_df['ref_stdev'].mean())
+print('# high cal measurements = ', len(high_calibration_df['ref_stdev']))
+#%%
 
 calibration_df['time'] = pd.to_datetime(calibration_df['time'])
 calibration_df = calibration_df.sort_values('time')
@@ -228,7 +232,9 @@ mlr_high_jefferson = generate_mlr_function_high_cal(high_calibration_df, 'Jeffer
 mlr_high_lidgerwood = generate_mlr_function_high_cal(high_calibration_df, 'Lidgerwood')
 mlr_high_regal = generate_mlr_function_high_cal(high_calibration_df, 'Regal')
 mlr_high_sheridan = generate_mlr_function_high_cal(high_calibration_df, 'Sheridan')
+#%%
 mlr_high_stevens = generate_mlr_function_high_cal(high_calibration_df, 'Stevens')
+#%%
 
 mlr_winter_audubon = generate_mlr_function_high_cal(winter_calibration_df, 'Audubon')
 mlr_winter_adams = generate_mlr_function_high_cal(winter_calibration_df, 'Adams')

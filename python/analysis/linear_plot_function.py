@@ -51,7 +51,25 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
     slope1=par[0][0]
     intercept1=par[0][1]
     y_predicted1 = [slope1*i + intercept1  for i in x]
+    
+    lower_residuals = abs(x - y)
+    lower_residuals_not_abs = (x - y)
+    
+  #  print(type(lower_residuals))
+    print('lower stdev = ', lower_residuals_not_abs.std())
+    
+    lower_residuals = lower_residuals[lower_residuals >= 5]
 
+    count_over_5 = len(lower_residuals)
+    print('count_over_5 = ', count_over_5)
+        
+    total_count = len(x)
+    print('total count = ', total_count)
+    fraction_over = count_over_5/total_count
+    fraction_under = 1 - fraction_over
+    print('Upper Percentage of residuals over 5 ug/m3 = ', fraction_over)
+    print('Upper Percentage of residuals under 5 ug/m3 = ', fraction_under)
+   
     # Mean Error Calc and performance stats
     print('\n')
     print('Ref_Avg average = ', x.mean(), '\n')
@@ -63,16 +81,16 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
     print(unit_name + ' Adj sum = ', y.sum(), '\n')
     
     numerator = ((y-x)**2).sum()
-    print(numerator)
-    print(type(numerator))
+   # print(numerator)
+   # print(type(numerator))
     numerator = float(numerator)
-    print(type(numerator))
+   # print(type(numerator))
     denominator = len(y)
-    print(denominator)
-    print(type(denominator))
+   # print(denominator)
+   # print(type(denominator))
     denominator = float(denominator)
-    print(type(denominator))
-    print(numerator/denominator)
+   # print(type(denominator))
+   # print(numerator/denominator)
     rmse = (numerator/denominator)**0.5
     
     print(unit_name +  ' Adj RMSE = ', rmse, '\n')
@@ -100,11 +118,12 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
         print(unit_name + ' Percentage of residuals over 5 ug/m3 = ', fraction_over)
         print(unit_name + ' Percentage of residuals under 5ug/m3 = ', fraction_under)
 
+
     # plot it
     p1 = figure(plot_width=900,
             plot_height=450,
-            x_axis_label='BAM (ug/m^3)',
-            y_axis_label='Clarity Nodes (ug/m^3)')
+            x_axis_label='Reference Data (ug/m^3)',
+            y_axis_label='Indoor Unit (ug/m^3)')
 
     p1.circle(x,x,legend='Ref Avg. 1 to 1 line', color='red')
     p1.line(x,y_predicted,color='red',legend='y='+str(round(slope,2))+'x+'+str(round(intercept,2)), line_width=3)
@@ -143,7 +162,33 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
         intercept1=par[0][1]
         y_predicted1 = [slope1*i + intercept1  for i in x_winter]
         
-        # Mean Error Calc and performance stats
+        upper_residuals = abs(x_winter - y_winter)
+        # need this for the stdev of the residuals for the uncertainty (as using abs changes this)
+        upper_residuals_not_abs = x_winter - y_winter
+       # print('123')
+      #  print(x_winter)
+      #  print('1')
+     #  print(y_winter)
+      #  print('2')
+     #   print(upper_residuals)
+      #  print(type(upper_residuals))
+        print('upper stdev = ', upper_residuals_not_abs.std())
+        
+        
+      
+        upper_residuals = upper_residuals[upper_residuals >= 5]
+
+        count_over_5 = len(upper_residuals)
+        print('count_over_5 = ', count_over_5)
+    
+        total_count = len(x_winter)
+        print('total count = ', total_count)
+        fraction_over = count_over_5/total_count
+        fraction_under = 1 - fraction_over
+        print('Upper Percentage of residuals over 5 ug/m3 = ', fraction_over)
+        print('Upper Percentage of residuals under 5 ug/m3 = ', fraction_under)
+    
+    # Mean Error Calc and performance stats
         print('\n')
         print('Ref_Avg average = ', x_winter.mean(), '\n')
         print('Ref_Avg median = ', x_winter.median(), '\n')
@@ -154,25 +199,25 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
         print(unit_name + ' Adj sum = ', y_winter.sum(), '\n')
         
         numerator = ((y_winter-x_winter)**2).sum()
-        print(numerator)
-        print(type(numerator))
+     #   print(numerator)
+     #   print(type(numerator))
         numerator = float(numerator)
-        print(type(numerator))
+     #   print(type(numerator))
         denominator = len(y_winter)
-        print(denominator)
-        print(type(denominator))
+     #   print(denominator)
+     #   print(type(denominator))
         denominator = float(denominator)
-        print(type(denominator))
-        print(numerator/denominator)
+     #   print(type(denominator))
+     #   print(numerator/denominator)
         winter_rmse = (numerator/denominator)**0.5
         
-        print(unit_name +  ' Adj RMSE = ', rmse, '\n')
+        print(unit_name +  ' Adj RMSE = ', winter_rmse, '\n')
         
-        print(unit_name +  ' Adj RMSE = ', ((y_winter-x**2).sum()/len(y_winter))**0.5, '\n')
+        print(unit_name +  ' Adj RMSE = ', ((y_winter-x_winter**2).sum()/len(y_winter))**0.5, '\n')
         
-        winter_mae = (abs(x_winter-y).sum())/(x_winter.count())
+        winter_mae = (abs(x_winter-y_winter).sum())/(x_winter.count())
             
-        print(unit_name + ' mean absolute error =', mae, '\n')
+        print(unit_name + ' mean absolute error =', winter_mae, '\n')
         
         p1.circle(x_winter,x_winter,legend='Ref Avg. 1 to 1 line', color='red')
         p1.line(x_winter,y_predicted,color='red', line_width=3)#,legend='y='+str(round(slope,2))+'x+'+str(round(intercept,2)))

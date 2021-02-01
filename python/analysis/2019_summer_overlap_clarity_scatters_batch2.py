@@ -23,9 +23,9 @@ import numpy as np
 import scipy 
 from bokeh.layouts import row
 from bokeh.layouts import gridplot
-
+from linear_plot_function import linear_plot
 from gaussian_fit_function import gaussian_fit
-
+#%%
 
 Adams_All = pd.DataFrame({})
 files = glob('/Users/matthew/Desktop/data/Clarity_Backup/Adams*.csv')
@@ -1253,10 +1253,16 @@ export_png(p22, filename="/Users/matthew/Desktop/data/calibration/Clarity_batch_
 
 
 #%%
-
-
-    
-    
+#def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
+linear_plot(Grant.Ref_PM2_5, Grant.Predictions, Grant.Ref_PM2_5, Grant.Predictions, 'Grant', 1)
+#%%
+linear_plot(Jefferson.Ref_PM2_5, Jefferson.Predictions, Jefferson.Ref_PM2_5, Jefferson.Predictions, 'Jefferson', 1)
+#%%
+linear_plot(Adams.Ref_PM2_5, Adams.Predictions, Adams.Ref_PM2_5, Adams.Predictions, 'Adams', 1)
+#%%
+linear_plot(Sheridan.Ref_PM2_5, Sheridan.Predictions, Sheridan.Ref_PM2_5, Sheridan.Predictions, 'Sheridan', 1)
+#%%
+linear_plot(Stevens.Ref_PM2_5, Stevens.Predictions, Stevens.Ref_PM2_5, Stevens.Predictions, 'Stevens', 1)
     
     
     

@@ -28,7 +28,7 @@ def in_out_histogram(indoor,outdoor, df_list):
     
     column_list = ['Shifted Residuals', 'Fraction Infiltrated', 'Fraction Filtered']
     
-    # Number of times the threshold is applied (limit to 2 for Audubon and Adams)
+    # Number of times the threshold is applied 
     thresholds = [0,1,2,3]
   #  df_list = [df_threshold_1, df_threshold_2, df_threshold_3, df_threshold_4]
     

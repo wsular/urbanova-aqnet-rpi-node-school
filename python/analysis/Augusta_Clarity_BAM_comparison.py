@@ -24,6 +24,10 @@ from spec_humid import spec_humid
 from load_indoor_data import load_indoor
 from limit_of_detection import lod
 import copy
+from random_forest_function_test import rf, evaluate_model
+from mlr_function import mlr_function, mlr_model
+from Augusta_hybrid_calibration import hybrid_function
+from linear_plot_function import linear_plot
 #%%
 
 Reference_All = pd.DataFrame({})
@@ -114,15 +118,31 @@ Reference_All['time'] = pd.to_datetime(Reference_All['time'])
 Reference_All = Reference_All.sort_values('time')
 Reference_All.index = Reference_All.time
 Reference = Reference_All.loc[start_time:end_time]
-Reference = Reference.resample(interval).mean()                        
+Reference = Reference.resample(interval).mean()  
+                   
+#%%
+# hybrid model performance metrics
+Reference_hybrid_calibrated = hybrid_function(rf, mlr_model, Reference, 'Reference') 
+Reference_hybrid_calibrated = Reference_hybrid_calibrated.sort_index()
+
+residuals = Augusta.PM2_5 - Reference_hybrid_calibrated.PM2_5_corrected
+print('calibrated residuals stdev = ', residuals.std())  
+Reference_hybrid_calibrated['Augusta'] = Augusta.PM2_5
+#%%
+linear_plot(Reference_hybrid_calibrated.Augusta, Reference_hybrid_calibrated.PM2_5_corrected, 
+            Reference_hybrid_calibrated.Augusta, Reference_hybrid_calibrated.PM2_5_corrected,'Clarity Reference', 1)   # used for plotting the corrected data with 1 equation for each region
+#linear_plot(audubon.ref_value, audubon.indoor_corrected, audubon.ref_value, audubon.indoor,'audubon', 1, residuals_check = 1, residuals = audubon.prediction_residuals)
 #%%
 # Limit of detection
 
 print('Paccar')
 lod(Paccar, Augusta, threshold)
 print('Reference') 
-lod(Reference, Augusta, threshold)
+lod_reference = lod(Reference, Augusta, threshold)
+#%%
 
+# just used for testing what impact removing values below the lod has on the calibrations
+Reference = Reference[Reference['PM2_5'] > lod_reference]
 #%%
 Augusta_All.to_csv('/Users/matthew/Desktop/data/SRCAA_Augusta_BAM/All_overlap1.csv', index=False)
 #%%
@@ -260,6 +280,10 @@ predictions = model.predict(X)
 # Print out the statistics
 print_model = model.summary()
 print(print_model)
+#%%
+# plot raw Reference node data to confirm the linear fit
+linear_plot(Reference.Augusta_PM2_5, Reference.mlrPredictions, 
+            Reference.Augusta_PM2_5, Reference.mlrPredictions,'Raw Reference', 1)   # used for plotting the corrected data with 1 equation for each region
 
 
 
@@ -331,9 +355,10 @@ print('Ref standard dev a =', stdev_a, '\n',
 
 print('Ref standard error a =', se_a, '\n',
       'Ref standard error b =', se_b, '\n',
-      'Ref r vale =', r_ab)
+      'Ref r value =', r_ab)
 #%%
 gaussian_fit(Reference)
+linear_plot(Reference.Augusta_PM2_5, Reference.mlrPredictions, Reference.Augusta_PM2_5, Reference.mlrPredictions, 'Reference', 1)
 #%%
 print('max BAM value = ', Augusta['PM2_5'].max())
 #%%
@@ -354,11 +379,11 @@ p1 = figure(plot_width=900,
             x_axis_label='Time (local)',
             y_axis_label='PM 2.5 (ug/m3)')
         
-#p1.line(Augusta.index,     Augusta.PM2_5,  legend='Augusta',       color='green',     line_width=2)
+p1.line(Augusta.index,     Augusta.PM2_5,  legend='Augusta',       color='green',     line_width=2)
 #p1.line(Paccar.index,     Paccar.PM2_5,  legend='Paccar',       color='blue',     line_width=2)
 #p1.line(Paccar.index,     Paccar.lower_bound, legend='lower limit', color='red', line_width=2)
 #p1.line(Paccar.index,     Paccar.upper_bound, legend='upper limit', color='red', line_width=2)
-#p1.line(Reference.index,     Reference.PM2_5,  legend='Reference',       color='red',     line_width=2)
+p1.line(Reference_hybrid_calibrated.index,     Reference_hybrid_calibrated.PM2_5_corrected,  legend='Reference',       color='red',     line_width=2)
 
 #For plotting the corrected data compared to Augusta
 #p1.line(Augusta.index,     Augusta.PM2_5,  legend='Augusta',       color='gray',  line_alpha = 0.4,   line_width=2) # 
@@ -369,8 +394,8 @@ p1 = figure(plot_width=900,
 #p1.line(Paccar.index,     Paccar.PM2_5,  legend='Paccar Raw Data',    line_alpha = 0.8,   color='gold',     line_width=2)
 #p1.line(Reference.index,     Reference.PM2_5,  legend='Reference Raw Data',   line_alpha = 0.8,    color='gold',     line_width=2)
 #p1.line(Paccar.index,     Paccar.mlrPredictions,  legend='Paccar Corrected',    line_alpha = 0.8,   color='gold',     line_width=2)
-p1.line(Reference.index,     Reference.mlrPredictions,  legend='Reference Corrected',   line_alpha = 0.8,    color='gold',     line_width=2)
-p1.line(Augusta.index,     Augusta.PM2_5,  legend='Augusta',       color='black',  line_alpha = 0.6,   line_width=2)
+#p1.line(Reference.index,     Reference.mlrPredictions,  legend='Reference Corrected',   line_alpha = 0.8,    color='gold',     line_width=2)
+#p1.line(Augusta.index,     Augusta.PM2_5,  legend='Augusta',       color='black',  line_alpha = 0.6,   line_width=2)
 
 tab1 = Panel(child=p1, title="Augusta BAM and Clarity Comparison")
 

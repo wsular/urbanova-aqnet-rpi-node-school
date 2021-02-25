@@ -10,10 +10,11 @@ Created on Sun Jan 24 09:46:46 2021
 
 def indoor_cal_low(indoor, name):
     
-    start_time = '2019-09-01 07:00'
-    end_time = '2020-09-11 07:00'
+     # uncomment out the hashed lines when using in/out compare period 3
+   # start_time = '2019-09-01 07:00'     #
+   # end_time = '2020-09-11 07:00'       #
     indoor_cut = indoor.copy()
-    indoor_cut = indoor.loc[start_time:end_time]
+   # indoor_cut = indoor.loc[start_time:end_time]    #
     
     if name == 'Audubon': 
         indoor_cut['PM2_5_corrected'] = (indoor_cut.PM2_5_corrected+2.27)/2.35   

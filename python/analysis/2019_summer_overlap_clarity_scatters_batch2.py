@@ -68,7 +68,9 @@ files = glob('/Users/matthew/Desktop/data/Clarity_Backup/Paccar*.csv')
 files.sort()
 for file in files:
     Paccar_All = pd.concat([Paccar_All, pd.read_csv(file)], sort=False)
-    
+
+
+
 #%%
 
 start_time = '2019-08-19 00:00'
@@ -164,6 +166,8 @@ Adams = Adams_All.loc[start_time:end_time]
 Adams = Adams.resample(interval).pad()
 Adams['Ref_PM2_5'] = Reference['PM2_5']
 Adams = Adams.dropna()
+# take out Clarity node measurements below LOD to see impact on linear calibration results (ie slope, int and uncertainties in those)
+Adams = Adams[Adams['PM2_5'] > 4.87]
 
 #X = Adams[['PM2_5']]#,'Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)
 X = Adams[['Ref_PM2_5']]
@@ -179,7 +183,11 @@ predictions = model.predict(X)
 print_model = model.summary()
 print(print_model)
 
-Adams['Predictions'] = (Adams['PM2_5']+0.93)/1.1554
+# linear correction if using all calibration data
+#Adams['Predictions'] = (Adams['PM2_5']+0.93)/1.1554
+# linear correction if using LOD limited data
+Adams['Predictions'] = (Adams['PM2_5']-1.4203)/1.08
+
 Adams['residuals'] = Adams['Ref_PM2_5'] - Adams['PM2_5']
 Adams['prediction_residuals'] = Adams['Ref_PM2_5'] - Adams['Predictions']
 
@@ -227,6 +235,8 @@ Grant = Grant_All.loc[start_time:end_time]
 Grant = Grant.resample(interval).pad()
 Grant['Ref_PM2_5'] = Reference['PM2_5']
 Grant = Grant.dropna()
+# take out Clarity node measurements below LOD to see impact on linear calibration results (ie slope, int and uncertainties in those)
+Grant = Grant[Grant['PM2_5'] > 4.87]
 
 #X = Grant[['PM2_5']]#,'Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)
 X = Grant[['Ref_PM2_5']]
@@ -242,7 +252,11 @@ predictions = model.predict(X)
 print_model = model.summary()
 print(print_model)
 
-Grant['Predictions'] = (Grant['PM2_5']+1.0965)/1.29
+# linear correction if using all calibration data
+#Grant['Predictions'] = (Grant['PM2_5']+1.0965)/1.29
+# linear correction if using LOD limited data
+Grant['Predictions'] = (Grant['PM2_5']-1.5206)/1.21
+
 Grant['residuals'] = Grant['Ref_PM2_5'] - Grant['PM2_5']
 Grant['prediction_residuals'] = Grant['Ref_PM2_5'] - Grant['Predictions']
 
@@ -288,6 +302,9 @@ Jefferson = Jefferson_All.loc[start_time:end_time]
 Jefferson = Jefferson.resample(interval).pad()
 Jefferson['Ref_PM2_5'] = Reference['PM2_5']
 Jefferson = Jefferson.dropna()
+# take out Clarity node measurements below LOD to see impact on linear calibration results (ie slope, int and uncertainties in those)
+Jefferson = Jefferson[Jefferson['PM2_5'] > 4.87]
+
 
 #X = Jefferson[['PM2_5']]#,'Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)
 X = Jefferson[['Ref_PM2_5']]
@@ -303,7 +320,11 @@ predictions = model.predict(X)
 print_model = model.summary()
 print(print_model)
 
-Jefferson['Predictions'] = (Jefferson['PM2_5']+0.7099)/1.1458
+# linear correction if using all calibration data
+#Jefferson['Predictions'] = (Jefferson['PM2_5']+0.7099)/1.1458
+# linear correction if using LOD limited data
+Jefferson['Predictions'] = (Jefferson['PM2_5']-2.75)/1.04
+
 Jefferson['residuals'] = Jefferson['Ref_PM2_5'] - Jefferson['PM2_5']
 Jefferson['prediction_residuals'] = Jefferson['Ref_PM2_5'] - Jefferson['Predictions']
 
@@ -350,6 +371,8 @@ Sheridan = Sheridan_All.loc[start_time:end_time]
 Sheridan = Sheridan.resample(interval).pad()
 Sheridan['Ref_PM2_5'] = Reference['PM2_5']
 Sheridan = Sheridan.dropna()
+# take out Clarity node measurements below LOD to see impact on linear calibration results (ie slope, int and uncertainties in those)
+Sheridan = Sheridan[Sheridan['PM2_5'] > 4.87]
 
 
 #X = Sheridan[['PM2_5']]#,'Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)
@@ -366,7 +389,11 @@ predictions = model.predict(X)
 print_model = model.summary()
 print(print_model)
 
-Sheridan['Predictions'] = (Sheridan['PM2_5']+0.6958)/1.1468
+# linear correction if using all calibration data
+#Sheridan['Predictions'] = (Sheridan['PM2_5']+0.6958)/1.1468
+# linear correction if using LOD limited data
+Sheridan['Predictions'] = (Sheridan['PM2_5']-2.92)/1.03
+
 Sheridan['residuals'] = Sheridan['Ref_PM2_5'] - Sheridan['PM2_5']
 Sheridan['prediction_residuals'] = Sheridan['Ref_PM2_5'] - Sheridan['Predictions']
 
@@ -412,6 +439,8 @@ Stevens = Stevens_All.loc[start_time:end_time]
 Stevens = Stevens.resample(interval).pad()
 Stevens['Ref_PM2_5'] = Reference['PM2_5']
 Stevens = Stevens.dropna()
+# take out Clarity node measurements below LOD to see impact on linear calibration results (ie slope, int and uncertainties in those)
+Stevens = Stevens[Stevens['PM2_5'] > 4.87]
 
 #X = Stevens[['PM2_5']]#,'Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)
 X = Stevens[['Ref_PM2_5']]
@@ -427,7 +456,11 @@ predictions = model.predict(X)
 print_model = model.summary()
 print(print_model)
 
-Stevens['Predictions'] = (Stevens['PM2_5']+0.8901)/1.2767
+# linear correction if using all calibration data
+#Stevens['Predictions'] = (Stevens['PM2_5']+0.8901)/1.2767
+# linear correction if using LOD limited data
+Stevens['Predictions'] = (Stevens['PM2_5']-2.1848)/1.18
+
 Stevens['residuals'] = Stevens['Ref_PM2_5'] - Stevens['PM2_5']
 Stevens['prediction_residuals'] = Stevens['Ref_PM2_5'] - Stevens['Predictions']
 
@@ -1022,7 +1055,7 @@ p3 = figure(plot_width=900,
             x_axis_label='Clarity Reference (ug/m^3)',
             y_axis_label='Adams (ug/m^3)')
 
-p3.circle(df.Reference, df.Adams, legend='Adams', color='blue')
+p3.circle(df.Reference, df.Adams, legend='Adams', color='black')
 p3.legend.label_text_font_size = "10px"
 p3.line(x1,y1_predicted,color='blue',legend='y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)))
 
@@ -1035,8 +1068,8 @@ p4 = figure(plot_width=900,
             x_axis_label='Clarity Reference (ug/m^3)',
             y_axis_label='Grant (ug/m^3)')
 
-p4.circle(df.Reference, df.Grant, legend='Grant', color='green')
-p4.line(x2,y2_predicted,color='green',legend='y='+str(round(slope2,2))+'x+'+str(round(intercept2,2))+ '  ' + 'r^2 = ' + str(round(r_squared2,3)))
+p4.circle(df.Reference, df.Grant, legend='Grant', color='black')
+p4.line(x2,y2_predicted,color='black',legend='y='+str(round(slope2,2))+'x+'+str(round(intercept2,2))+ '  ' + 'r^2 = ' + str(round(r_squared2,3)))
 p4.legend.label_text_font_size = "10px"
 
 p4.legend.location='top_left'
@@ -1048,8 +1081,8 @@ p5 = figure(plot_width=900,
             x_axis_label='Clarity Reference (ug/m^3)',
             y_axis_label='Jefferson (ug/m^3)')
 
-p5.circle(df.Reference, df.Jefferson, legend='Jefferson', color='gold')
-p5.line(x3,y3_predicted,color='gold',legend='y='+str(round(slope3,2))+'x+'+str(round(intercept3,2))+ '  ' + 'r^2 = ' + str(round(r_squared3,3)))
+p5.circle(df.Reference, df.Jefferson, legend='Jefferson', color='black')
+p5.line(x3,y3_predicted,color='black',legend='y='+str(round(slope3,2))+'x+'+str(round(intercept3,2))+ '  ' + 'r^2 = ' + str(round(r_squared3,3)))
 p5.legend.label_text_font_size = "10px"
 
 p5.legend.location='top_left'
@@ -1061,8 +1094,8 @@ p6 = figure(plot_width=900,
             x_axis_label='Clarity Reference (ug/m^3)',
             y_axis_label='Sheridan (ug/m^3)')
 
-p6.circle(df.Reference, df.Sheridan, legend='Sheridan', color='brown')
-p6.line(x4,y4_predicted,color='brown',legend='y='+str(round(slope4,2))+'x+'+str(round(intercept4,2))+ '  ' + 'r^2 = ' + str(round(r_squared4,3)))
+p6.circle(df.Reference, df.Sheridan, legend='Sheridan', color='black')
+p6.line(x4,y4_predicted,color='black',legend='y='+str(round(slope4,2))+'x+'+str(round(intercept4,2))+ '  ' + 'r^2 = ' + str(round(r_squared4,3)))
 p6.legend.label_text_font_size = "10px"
 
 p6.legend.location='top_left'
@@ -1074,8 +1107,8 @@ p7 = figure(plot_width=900,
             x_axis_label='Clarity Reference (ug/m^3)',
             y_axis_label='Stevens (ug/m^3)')
 
-p7.circle(df.Reference, df.Stevens, legend='Stevens', color='purple')
-p7.line(x5,y5_predicted,color='purple',legend='y='+str(round(slope5,2))+'x+'+str(round(intercept5,2))+ '  ' + 'r^2 = ' + str(round(r_squared5,3)))
+p7.circle(df.Reference, df.Stevens, legend='Stevens', color='black')
+p7.line(x5,y5_predicted,color='black',legend='y='+str(round(slope5,2))+'x+'+str(round(intercept5,2))+ '  ' + 'r^2 = ' + str(round(r_squared5,3)))
 p7.legend.label_text_font_size = "10px"
 
 p7.legend.location='top_left'
@@ -1087,8 +1120,8 @@ p8 = figure(plot_width=900,
             x_axis_label='Clarity Reference (ug/m^3)',
             y_axis_label='Paccar (ug/m^3)')
 
-p8.circle(df.Reference, df.Paccar, legend='Paccar', color='teal')
-p8.line(x6,y6_predicted,color='teal',legend='y='+str(round(slope6,2))+'x+'+str(round(intercept6,2))+ '  ' + 'r^2 = ' + str(round(r_squared6,3)))
+p8.circle(df.Reference, df.Paccar, legend='Paccar', color='black')
+p8.line(x6,y6_predicted,color='black',legend='y='+str(round(slope6,2))+'x+'+str(round(intercept6,2))+ '  ' + 'r^2 = ' + str(round(r_squared6,3)))
 p8.legend.label_text_font_size = "10px"
 
 p8.legend.location='top_left'
@@ -1254,15 +1287,15 @@ export_png(p22, filename="/Users/matthew/Desktop/data/calibration/Clarity_batch_
 
 #%%
 #def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
-linear_plot(Grant.Ref_PM2_5, Grant.Predictions, Grant.Ref_PM2_5, Grant.Predictions, 'Grant', 1)
+linear_plot(Grant.Ref_PM2_5, Grant.PM2_5, Grant.Ref_PM2_5, Grant.Predictions, 'Grant', 1)
 #%%
-linear_plot(Jefferson.Ref_PM2_5, Jefferson.Predictions, Jefferson.Ref_PM2_5, Jefferson.Predictions, 'Jefferson', 1)
+linear_plot(Jefferson.Ref_PM2_5, Jefferson.PM2_5, Jefferson.Ref_PM2_5, Jefferson.Predictions, 'Jefferson', 1)
 #%%
-linear_plot(Adams.Ref_PM2_5, Adams.Predictions, Adams.Ref_PM2_5, Adams.Predictions, 'Adams', 1)
+linear_plot(Adams.Ref_PM2_5, Adams.PM2_5, Adams.Ref_PM2_5, Adams.Predictions, 'Adams', 1)
 #%%
-linear_plot(Sheridan.Ref_PM2_5, Sheridan.Predictions, Sheridan.Ref_PM2_5, Sheridan.Predictions, 'Sheridan', 1)
+linear_plot(Sheridan.Ref_PM2_5, Sheridan.PM2_5, Sheridan.Ref_PM2_5, Sheridan.Predictions, 'Sheridan', 1)
 #%%
-linear_plot(Stevens.Ref_PM2_5, Stevens.Predictions, Stevens.Ref_PM2_5, Stevens.Predictions, 'Stevens', 1)
+linear_plot(Stevens.Ref_PM2_5, Stevens.PM2_5, Stevens.Ref_PM2_5, Stevens.Predictions, 'Stevens', 1)
     
     
     

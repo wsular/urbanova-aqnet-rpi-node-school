@@ -12,8 +12,8 @@ def indoor_cal_smoke(indoor, name):
     
     
    
-    start_time = '2020-09-11 08:00'
-    end_time = '2020-10-22 07:00'
+    start_time = '2020-09-11 00:00'
+    end_time = '2020-09-21 19:00'
 
     indoor_time_cut = indoor.copy()
     indoor_time_cut = indoor.loc[start_time:end_time]
@@ -26,8 +26,8 @@ def indoor_cal_smoke(indoor, name):
     
     if name == 'Audubon': 
       #  print('audubon')
-        indoor_cut['PM2_5_corrected'] = np.where(indoor_cut.PM2_5_corrected > 70, (indoor_cut.PM2_5_corrected-34.4)*(1/0.61), 
-          (indoor_cut.PM2_5_corrected+2.27)/2.35)
+        indoor_cut['PM2_5_corrected'] = np.where(indoor_cut.PM2_5_corrected > 70, (indoor_cut.PM2_5_corrected-34.4)*(1/0.61),    # above threshold adjustment
+          (indoor_cut.PM2_5_corrected+2.27)/2.35)                                                                                # below threshold adjustment (same as indoor_cal_low equations))
     
     else:
             pass
@@ -95,7 +95,7 @@ def indoor_cal_smoke(indoor, name):
     else:
             pass
 
-
+    indoor_cut = indoor_cut.dropna()
 
     return indoor_cut
 

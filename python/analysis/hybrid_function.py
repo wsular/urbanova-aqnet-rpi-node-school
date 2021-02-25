@@ -43,23 +43,26 @@ def hybrid_function(rf_model, mlr_model,location):
    # features = features.drop('upper_uncertainty', axis = 1)
     features = features.drop('PM2_5', axis = 1)   # want to use the PM2_5_corrected that has been adjusted to the Ref Clarity unit already
     features = features.drop('PM10', axis = 1)
-    features = features.drop('ID', axis = 1)
+   # features = features.drop('ID', axis = 1)
     features = features.drop('Location', axis = 1)
-    features = features.drop('time', axis = 1)
+   # features = features.drop('time', axis = 1)
     features = features.drop('initial_PM_2_5_calibration', axis = 1)
-    
+   # features = features.drop('PM2_5_mlr_corrected', axis = 1)      # this was only here when recreating the  calibration comparison figure
+    print(2)
     print(features.head(10))
     features.rename(columns={'PM2_5_corrected':'PM2_5'}, inplace=True)   # rename so same headers as rf trained on
     features = features[['PM2_5', 'Rel_humid', 'temp']]  # reorder column so same order as rf trained on
     print(features.describe())
+    print(3)
     #features = features.dropna()
     print(features.head(10))
     features = np.array(features)
-    
+    print(4)
     predictions2 = rf_model.predict(features)
     df2['PM2_5_corrected'] = predictions2
     
     combined_df = df1.append(df2)
     location = combined_df
+    location = location.sort_index()
     
     return location

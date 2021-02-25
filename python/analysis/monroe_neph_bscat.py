@@ -14,6 +14,7 @@ from bokeh.plotting import figure
 from bokeh.io import output_file, show
 from bokeh.models import Range1d, LinearAxis
 from Augusta_BAM_uncertainty import Augusta_BAM_uncertainty
+from bokeh.io import export_png, output_file
 
 # winter sampling time
 start_time_winter = '2019-12-17 00:00'
@@ -143,17 +144,48 @@ p2 = figure(plot_width=900,
             x_axis_label='bscat (m^-1',
             y_axis_label='PM 2.5 (ug/m^3)')
 
-p2.title.text = 'bscat vs Neph PM2.5'    
+#p2.title.text = 'bscat vs Neph PM2.5'
+p2.title.text = '.'      # for final png so axis label isnt cut off  
 
+# for setting zoomed axis limits to save as png
+p2.x_range=Range1d(0, 3.2)
+p2.y_range=Range1d(0, 80)
 
-p2.scatter(Monroe_winter.bscat,     Monroe_winter.PM2_5,  legend='2019 winter',     color='red',   muted_color='red', muted_alpha=0.2 , line_width=2)
-p2.scatter(Monroe_sept.bscat,     Monroe_sept.PM2_5,  legend='september',     color='black',   muted_color='black', muted_alpha=0.2 , line_width=2)
+p2.scatter(Monroe_winter.bscat,     Monroe_winter.PM2_5,  legend='Winter 2019',     color='red',   muted_color='red', muted_alpha=0.2 , line_width=2, size = 12, alpha = 1)
 #p2.scatter(Monroe_All.bscat,     Monroe_All.PM2_5,  legend='All',     color='gray',   muted_color='gray', muted_alpha=0.1 , line_width=2)
-p2.scatter(Monroe_2018.bscat,     Monroe_2018.PM2_5,  legend='2018 winter',     color='green',   muted_color='green', muted_alpha=0.2 , line_width=2)
-p2.scatter(Monroe_2017.bscat,     Monroe_2017.PM2_5,  legend='2017 winter',     color='orange',   muted_color='orange', muted_alpha=0.2 , line_width=2)
+p2.triangle(Monroe_2018.bscat,     Monroe_2018.PM2_5,  legend='Winter 2018',     color='green',   muted_color='green', muted_alpha=0.2 , line_width=2, size = 14, alpha = 0.6)
+p2.diamond(Monroe_2017.bscat,     Monroe_2017.PM2_5,  legend='Winter 2017',     color='orange',   muted_color='orange', muted_alpha=0.2 , line_width=2, size =8, alpha = 0.4)
+p2.square(Monroe_sept.bscat,     Monroe_sept.PM2_5,  legend='September 2020',     color='black',   muted_color='black', muted_alpha=0.2 , line_width=2, size = 6, alpha = 0.6)
 
 
 p2.legend.click_policy="mute"
+p2.legend.location='top_left'
+p2.legend.label_text_font_size = "14pt"
+p2.legend.label_text_font = "times"
+p2.legend.label_text_color = "black"
+    
+   # p1.xaxis.axis_label="xaxis_name"
+p2.xaxis.axis_label_text_font_size = "14pt"
+p2.xaxis.major_label_text_font_size = "14pt"
+p2.xaxis.axis_label_text_font = "times"
+p2.xaxis.axis_label_text_color = "black"
+
+   # p1.yaxis.axis_label="yaxis_name"
+p2.yaxis.axis_label_text_font_size = "14pt"
+p2.yaxis.major_label_text_font_size = "14pt"
+p2.yaxis.axis_label_text_font = "times"
+p2.yaxis.axis_label_text_color = "black"
+
+    
+p2.toolbar.logo = None
+p2.toolbar_location = None
+p2.xgrid.grid_line_color = None
+p2.ygrid.grid_line_color = None
+# for all bscat data
+#export_png(p2,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/neph_all_bscat.png')
+
+export_png(p2,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/neph_zoomed_bscat.png')
+
 tab2 = Panel(child=p2, title="bscat vs PM 2.5")
 
 
@@ -203,17 +235,45 @@ p5 = figure(plot_width=900,
             x_axis_label='BAM PM 2.5 (ug/m^3)',
             y_axis_label='Monroe Neph PM 2.5 (ug/m^3)')
 
-p5.title.text = 'Neph vs BAM PM2.5'    
+#p5.title.text = 'Neph vs BAM PM2.5'   # take out for saving final png
+# for setting zoomed axis limits to save as png
+#p5.x_range=Range1d(0, 130)
+#p5.y_range=Range1d(0, 170)    
 
-
-p5.scatter(Augusta_winter.PM2_5_corrected,   Monroe_winter.PM2_5,       legend='winter 2020',     color='red',   muted_color='red', muted_alpha=0.2 , line_width=2)
-p5.scatter(Augusta_sept.PM2_5_corrected,     Monroe_sept.PM2_5,       legend='september 2020',     color='black',   muted_color='black', muted_alpha=0.2 , line_width=2)
-p5.scatter(Augusta_2018.PM2_5_corrected,     Monroe_2018.PM2_5,       legend='winter 2018',     color='green',   muted_color='green', muted_alpha=0.2 , line_width=2)
-p5.scatter(Augusta_2017.PM2_5_corrected,     Monroe_2017.PM2_5,       legend='winter 2017',     color='gray',   muted_color='gray', muted_alpha=0.2 , line_width=2)
+p5.square(Augusta_sept.PM2_5_corrected,     Monroe_sept.PM2_5,       legend='September 2020',     color='black',   muted_color='black', muted_alpha=0.2 , line_width=2, size = 8, alpha = 0.8)
+p5.diamond(Augusta_2017.PM2_5_corrected,     Monroe_2017.PM2_5,       legend='Winter 2017',     color='brown',   muted_color='brown', muted_alpha=0.2 , line_width=2, size = 10, alpha = 0.8)
+p5.triangle(Augusta_2018.PM2_5_corrected,     Monroe_2018.PM2_5,       legend='Winter 2018',     color='green',   muted_color='green', muted_alpha=0.2 , line_width=2, size = 12, alpha = 0.6)
+p5.scatter(Augusta_winter.PM2_5_corrected,   Monroe_winter.PM2_5,       legend='Winter 2019',     color='orange',   muted_color='orange', muted_alpha=0.2 , size = 8, line_width=2, alpha = 0.5)
 
 
 
 p5.legend.click_policy="mute"
+p5.legend.location='top_left'
+p5.legend.label_text_font_size = "14pt"
+p5.legend.label_text_font = "times"
+p5.legend.label_text_color = "black"
+    
+   # p1.xaxis.axis_label="xaxis_name"
+p5.xaxis.axis_label_text_font_size = "14pt"
+p5.xaxis.major_label_text_font_size = "14pt"
+p5.xaxis.axis_label_text_font = "times"
+p5.xaxis.axis_label_text_color = "black"
+
+   # p1.yaxis.axis_label="yaxis_name"
+p5.yaxis.axis_label_text_font_size = "14pt"
+p5.yaxis.major_label_text_font_size = "14pt"
+p5.yaxis.axis_label_text_font = "times"
+p5.yaxis.axis_label_text_color = "black"
+
+    
+p5.toolbar.logo = None
+p5.toolbar_location = None
+p5.xgrid.grid_line_color = None
+p5.ygrid.grid_line_color = None
+# for all  data
+export_png(p5,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/neph_all_vs_BAM.png')
+# for zoomed data
+#export_png(p5,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/neph_zoomed_vs_BAM.png')
 tab5 = Panel(child=p5, title="Neph vs BAM PM 2.5")
 
 

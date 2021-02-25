@@ -9,7 +9,9 @@ import pandas as pd
 from glob import glob
 #%%
 
-def load_indoor(name, df_csv, df_json, interval, start_time, end_time):
+def load_indoor(name, df_csv, df_json, interval, **kwargs):
+    
+    
     
     files_csv   = glob('/Users/matthew/Desktop/data/urbanova/ramboll/' + name + '/BME*.csv')
     files_csv.sort()
@@ -23,8 +25,8 @@ def load_indoor(name, df_csv, df_json, interval, start_time, end_time):
     df_csv = df_csv.resample(interval).mean()
     #df_csv = df_csv.loc[start_time:end_time]
     
-  #  print(df_csv.head)
-
+    print(df_csv.head)
+    
     files_json   = glob('/Users/matthew/Desktop/data/urbanova/ramboll/' + name + '/WSU*.json')
     files_json.sort()
     for file in files_json:
@@ -35,9 +37,42 @@ def load_indoor(name, df_csv, df_json, interval, start_time, end_time):
     df_json = df_json.sort_values('Datetime')
     df_json.index = df_json.Datetime
     df_json = df_json.resample(interval).mean()
-    df_json = df_json.loc[start_time:end_time]
+   # df_json = df_json.loc[start_time:end_time]
     
-  #  print(df_json.head)
+    time_period_4 = kwargs.get('time_period_4')
+    
+    if time_period_4 == 'yes':
+    
+        start_1 = kwargs.get('start_1')
+        stop_1 = kwargs.get('stop_1')
+        start_2 = kwargs.get('start_2')
+        stop_2 = kwargs.get('stop_2')
+    
+        indoor_all_2 = df_csv.copy()
+    
+        df_csv = df_csv.loc[start_1:stop_1]
+        df_csv = df_csv.resample(interval).mean() 
+        df_csv = df_csv.dropna()
+        
+        
+        indoor_all_2 = indoor_all_2.loc[start_2:stop_2]
+        indoor_all_2 = indoor_all_2.resample(interval).mean() 
+        indoor_all_2 = indoor_all_2.dropna()
+        
+        df_csv = df_csv.append(indoor_all_2)
+    
+    elif time_period_4 == 'no':
+        
+        start = kwargs.get('start')
+        print(start)
+        
+        stop = kwargs.get('stop')
+        print(stop)
+        
+        df_csv = df_csv.loc[start:stop]
+        df_csv = df_csv.resample(interval).mean() 
+        df_csv = df_csv.dropna()
+      
     
     return df_csv, df_json
     

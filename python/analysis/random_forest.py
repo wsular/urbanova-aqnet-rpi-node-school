@@ -569,6 +569,8 @@ predictions_data = pd.DataFrame(data = {'date': test_dates, 'prediction': predic
 predictions_data = predictions_data.sort_values('date')
 predictions_data['prediction_residuals'] = predictions_data['prediction'] - predictions_data['BAM']
 
+print('test data residual stdev = ', predictions_data['prediction_residuals'].std())
+
 predictions_data['Location'] = 'Reference'
 #########predictions_data['Location'] = 'Paccar'
 

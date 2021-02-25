@@ -28,9 +28,11 @@ def evaluate_model(model, location):
    # features = features.drop('upper_uncertainty', axis = 1)
     features = features.drop('PM2_5', axis = 1)   # want to use the PM2_5_corrected that has been adjusted to the Ref Clarity unit already
     features = features.drop('PM10', axis = 1)
-    features = features.drop('ID', axis = 1)
+    #features = features.drop('ID', axis = 1)
     features = features.drop('Location', axis = 1)
-    features = features.drop('time', axis = 1)
+   # features = features.drop('time', axis = 1)
+  #  features = features.drop('PM2_5_hybrid', axis = 1)         # just for when recreating the calibration comparison  figures
+   # features = features.drop('PM2_5_mlr_corrected', axis = 1)  # just for when recreating the calibration comparison  figures
     
     print(features.head(10))
     features.rename(columns={'PM2_5_corrected':'PM2_5'}, inplace=True)   # rename so same headers as rf trained on
@@ -41,7 +43,7 @@ def evaluate_model(model, location):
     features = np.array(features)
     
     predictions = model.predict(features)
-    location['PM2_5_corrected'] = predictions
+    location['PM2_5_rf_corrected'] = predictions
     
     return location
 

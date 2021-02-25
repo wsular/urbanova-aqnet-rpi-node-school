@@ -16,8 +16,8 @@ from bokeh.io import output_notebook, output_file, show
 import shapely
 from shapely.geometry import LineString, Point
 from bokeh.models import Label
-
-
+import statsmodels.api as sm
+from bokeh.io import export_png, output_file
 
 def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
 
@@ -32,6 +32,18 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
     #the data
    # x=np.array(df.Augusta)
    # y=np.array(df.Augusta)
+
+    X = x
+    #X = X.dropna()
+    X = sm.add_constant(X) ## let's add an intercept (beta_0) to our model
+
+    # Note the difference in argument order
+    model = sm.OLS(y, X).fit() ## sm.OLS(output, input)
+    predictions = model.predict(X)
+    
+    # Print out the statistics
+    print_model = model.summary()
+    print(print_model)
 
     # determine best fit line (ie 1 to 1 line for avg. ref values)
     par = np.polyfit(x, x, 1, full=True)
@@ -123,13 +135,14 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
     p1 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Reference Data (ug/m^3)',
-            y_axis_label='Indoor Unit (ug/m^3)')
+            y_axis_label='Indoor Unit (ug/m^3)',
+            )
 
-    p1.circle(x,x,legend='Ref Avg. 1 to 1 line', color='red')
-    p1.line(x,y_predicted,color='red',legend='y='+str(round(slope,2))+'x+'+str(round(intercept,2)), line_width=3)
+    #p1.circle(x,x,legend='Ref Avg. 1 to 1 line', color='red')
+    #p1.line(x,y_predicted,color='black',legend='y='+str(round(slope,2))+'x+'+str(round(intercept,2)), line_width=3, line_dash='dashed')
 
-    p1.circle(x, y, legend=unit_name, color='blue')
-    p1.line(x,y_predicted1,color='blue',legend='y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)), line_width=3)
+    p1.circle(x, y, legend='Lower Regime: ' + 'y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)), color='black', size=5)
+   # p1.line(x,y_predicted1,color='blue',legend='y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)), line_width=3)
 
     
     # create extrapolatd data to find intersection of 2 calibration regimes
@@ -137,7 +150,7 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
     y_predicted_extrap_high = [slope1*i + intercept1  for i in x_extrap]
     
     #print(type(y_predicted_extrap_high))
-    p1.line(x_extrap,y_predicted_extrap_high,color='blue', line_width=3)
+    p1.line(x_extrap,y_predicted_extrap_high,color='black', line_width=3)
 
     
 
@@ -219,24 +232,28 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
             
         print(unit_name + ' mean absolute error =', winter_mae, '\n')
         
-        p1.circle(x_winter,x_winter,legend='Ref Avg. 1 to 1 line', color='red')
-        p1.line(x_winter,y_predicted,color='red', line_width=3)#,legend='y='+str(round(slope,2))+'x+'+str(round(intercept,2)))
+        # 1 to 1 line already plotted above
+        #p1.circle(x_winter,x_winter,legend='Ref Avg. 1 to 1 line', color='red')
+        #p1.line(x_winter,y_predicted,color='black', line_width=2, line_dash='dashed')#,legend='y='+str(round(slope,2))+'x+'+str(round(intercept,2)))
         
-        p1.circle(x_winter, y_winter, legend=unit_name, color='blue')
-        p1.line(x_winter,y_predicted1,color='green',legend='y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)), line_width=3)
+        # lower regime data
+        p1.triangle(x_winter, y_winter, legend='Upper Regime:' + ' y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)), color='black', size=8)
+        # this is just commented out so dont have two entries in legend (wanted to keep the extrapolated line for high regime just for visual purposes)
+      #  p1.line(x_winter,y_predicted1,color='green',line_width=3)#, legend='y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)), line_width=3)
 
         # create extrapolated data to connect the upper and lower regimes for the 1 to 1 reference line
 
-        x_extrap_ref = np.linspace(0, 420, num=10)
+        x_extrap_ref = np.linspace(0, 900, num=10)
         y_predicted_extrap_ref = [slope*i + intercept  for i in x_extrap_ref]
-    
-        p1.line(x_extrap_ref,y_predicted_extrap_ref,color='red', line_width=3)
+        
+        # add the fit of the upper regime to the extrapolated data (so don't have too many things in legend)
+        p1.line(x_extrap_ref,y_predicted_extrap_ref,color='black', line_width=2, line_dash='dashed')
 
         # create extrapolatd data to find intersection of 2 calibration regimes
-        x_extrap_winter = np.linspace(0, 100, num=10)
+        x_extrap_winter = np.linspace(0, 900, num=10)
         y_predicted_extrap_winter = [slope1*i + intercept1  for i in x_extrap_winter]
     
-        p1.line(x_extrap_winter,y_predicted_extrap_winter,color='green', line_width=3)
+        p1.line(x_extrap_winter,y_predicted_extrap_winter,color='black', line_width=3)
         
         
         # find intersection of the two lines to determine where to switch claibration regimes
@@ -270,14 +287,43 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
     else:
         pass
 
-
     p1.legend.location='top_left'
+    p1.legend.label_text_font_size = "14pt"
+    p1.legend.label_text_font = "times"
+    p1.legend.label_text_color = "black"
+    
+   # p1.xaxis.axis_label="xaxis_name"
+    p1.xaxis.axis_label_text_font_size = "14pt"
+    p1.xaxis.major_label_text_font_size = "14pt"
+    p1.xaxis.axis_label_text_font = "times"
+    p1.xaxis.axis_label_text_color = "black"
+
+   # p1.yaxis.axis_label="yaxis_name"
+    p1.yaxis.axis_label_text_font_size = "14pt"
+    p1.yaxis.major_label_text_font_size = "14pt"
+    p1.yaxis.axis_label_text_font = "times"
+    p1.yaxis.axis_label_text_color = "black"
    # p1.toolbar.logo = None
    # p1.toolbar_location = None
     
+    p1.toolbar.logo = None
+    p1.toolbar_location = None
+    
+    p1.xgrid.grid_line_color = None
+    p1.ygrid.grid_line_color = None
+    
+    p1.x_range.range_padding = 0
+    p1.y_range.range_padding = 0
+    
+    # for audubon indoor cal raw data
+    export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/Audubon_indoor_cal_raw_data.png')
+    # for audubon indoor cal corrected data
+   # export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/Audubon_indoor_cal_corrected_data.png')
+    # for audubon combined calibration raw data
+    #export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/Audubon_combined_cal_raw_data.png')
     tab1 = Panel(child=p1, title = 'Smoke Event Raw Data')
 
-
+    
 
     tabs = Tabs(tabs=[ tab1])
 

@@ -22,6 +22,7 @@ import datetime
 import copy
 from load_indoor_data import load_indoor
 from linear_plot_function import linear_plot
+from bokeh.io import export_png, output_file
 
 # Function to calculate the power-law with constants a and b
 def power_law(x, a, b):
@@ -886,6 +887,25 @@ tabs = Tabs(tabs=[ tab1])
 show(tabs)
 
 #%%
+
+# for creating the png figures of rh and temp 
+# make sure to switch between RH and temp parameters when saving each
+start_time = '2020-12-01 00:00'
+end_time = '2020-12-03 00:00'
+
+audubon_bme = audubon_bme.loc[start_time:end_time]
+adams_bme = adams_bme.loc[start_time:end_time]
+balboa_bme = balboa_bme.loc[start_time:end_time]
+browne_bme = browne_bme.loc[start_time:end_time]
+grant_bme = grant_bme.loc[start_time:end_time]
+jefferson_bme = jefferson_bme.loc[start_time:end_time]
+lidgerwood_bme = lidgerwood_bme.loc[start_time:end_time]
+regal_bme = regal_bme.loc[start_time:end_time]
+sheridan_bme = sheridan_bme.loc[start_time:end_time]
+stevens_bme = stevens_bme.loc[start_time:end_time]
+Reference = Reference.loc[start_time:end_time]
+Browne = Browne.loc[start_time:end_time]
+
 if PlotType=='notebook':
     output_notebook()
 else:
@@ -897,23 +917,46 @@ p1 = figure(plot_width=900,
             x_axis_label='Time (local)',
             y_axis_label='RH (%)')
 
-p1.title.text = 'RH'
+#p1.title.text = 'RH'
 
-p1.line(audubon_bme.index,     audubon_bme.RH,     legend='Audubon',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
-p1.line(adams_bme.index,       adams_bme.RH,       legend='Adams',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
-p1.line(balboa_bme.index,      balboa_bme.RH,      legend='Balboa',        color='teal',         line_width=2, muted_color='teal', muted_alpha=0.2)
-p1.line(browne_bme.index,      browne_bme.RH,      legend='Browne',        color='gold',       line_width=2, muted_color='gold', muted_alpha=0.2)
-p1.line(grant_bme.index,       grant_bme.RH,       legend='Grant',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
-p1.line(jefferson_bme.index,   jefferson_bme.RH,   legend='Jefferson',     color='brown',       line_width=2, muted_color='brown', muted_alpha=0.2)
-p1.line(lidgerwood_bme.index,  lidgerwood_bme.RH,  legend='Lidgerwood',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
-p1.line(regal_bme.index,       regal_bme.RH,       legend='Regal',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
-p1.line(sheridan_bme.index,    sheridan_bme.RH,    legend='Sheridan',      color='deepskyblue', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
-p1.line(stevens_bme.index,     stevens_bme.RH,     legend='Stevens',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
-p1.line(Reference.index,   Reference.Rel_humid,    legend='Reference',     color='red',       line_width=2, muted_color='red', muted_alpha=0.2)
-p1.line(Browne.index,      Browne.Rel_humid,    legend='Browne outside',     color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
+p1.line(audubon_bme.index,     audubon_bme.temp,     legend='IAQU-2',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
+p1.line(adams_bme.index,       adams_bme.temp,       legend='IAQU-1',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
+p1.line(balboa_bme.index,      balboa_bme.temp,      legend='IAQU-3',        color='teal',         line_width=2, muted_color='teal', muted_alpha=0.2)
+p1.line(browne_bme.index,      browne_bme.temp,      legend='IAQU-4',        color='gold',       line_width=2, muted_color='gold', muted_alpha=0.2)
+p1.line(grant_bme.index,       grant_bme.temp,       legend='IAQU-5',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
+p1.line(jefferson_bme.index,   jefferson_bme.temp,   legend='IAQU-6',     color='brown',       line_width=2, muted_color='brown', muted_alpha=0.2)
+p1.line(lidgerwood_bme.index,  lidgerwood_bme.temp,  legend='IAQU-7',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
+p1.line(regal_bme.index,       regal_bme.temp,       legend='IAQU-8',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
+p1.line(sheridan_bme.index,    sheridan_bme.temp,    legend='IAQU-9',      color='deepskyblue', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
+p1.line(stevens_bme.index,     stevens_bme.temp,     legend='IAQU-10',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
+p1.line(Reference.index,   Reference.temp,    legend='Reference',     color='red',       line_width=2, muted_color='red', muted_alpha=0.2)
+p1.line(Browne.index,      Browne.temp,    legend='CN-4',     color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
 
 
 p1.legend.click_policy="mute"
+p1.legend.location='top_left'
+p1.legend.label_text_font_size = "14pt"
+p1.legend.label_text_font = "times"
+p1.legend.label_text_color = "black" 
+p1.xaxis.axis_label_text_font_size = "14pt"
+p1.xaxis.major_label_text_font_size = "14pt"
+p1.xaxis.axis_label_text_font = "times"
+p1.xaxis.axis_label_text_color = "black"
+
+p1.yaxis.axis_label_text_font_size = "14pt"
+p1.yaxis.major_label_text_font_size = "14pt"
+p1.yaxis.axis_label_text_font = "times"
+p1.yaxis.axis_label_text_color = "black"
+
+p1.toolbar.logo = None
+p1.toolbar_location = None
+p1.xgrid.grid_line_color = None
+p1.ygrid.grid_line_color = None
+
+# for saving RH
+#export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/indoor_cal_RH.png')
+# for saving Temp
+export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/indoor_cal_temp.png')
 
 tab1 = Panel(child=p1, title="RH")
 
@@ -1086,6 +1129,7 @@ sheridan = sheridan[sheridan['indoor'].round(2) !=127.28]
 sheridan = sheridan[sheridan['indoor'].round(2) !=155.98]
 sheridan = sheridan[sheridan['indoor'].round(2) !=121.67]
 sheridan = sheridan[sheridan['indoor'].round(2) !=69.49]
+sheridan = sheridan[sheridan['indoor'].round(2) !=53.45]
 
 stevens = stevens[stevens['indoor'] < 1000]
 stevens = stevens[stevens['indoor'].round(2) !=894.05]
@@ -1134,8 +1178,27 @@ lidgerwood = lidgerwood[lidgerwood['indoor_remaining'] != -100]
 regal = regal[regal['indoor_remaining'] != -100]
 sheridan = sheridan[sheridan['indoor_remaining'] != -100]
 stevens = stevens[stevens['indoor_remaining'] != -100]
-
 #%%
+# set specific date range just for final png to be saved for paper, otherwise don't run this
+# for typical outdoor concentrations
+#start_time = '2020-11-22 07:00'
+#end_time = '2020-12-01 07:00'
+
+# for example of chamber test
+start_time = '2020-12-01 09:15'
+end_time = '2020-12-01 09:45'
+
+audubon = audubon.loc[start_time:end_time]
+adams = adams.loc[start_time:end_time]
+balboa = balboa.loc[start_time:end_time]
+browne = browne.loc[start_time:end_time]
+grant = grant.loc[start_time:end_time]
+jefferson = jefferson.loc[start_time:end_time]
+lidgerwood = lidgerwood.loc[start_time:end_time]
+regal = regal.loc[start_time:end_time]
+sheridan = sheridan.loc[start_time:end_time]
+stevens = stevens.loc[start_time:end_time]
+
 
 
 p1 = figure(plot_width=900,
@@ -1144,25 +1207,48 @@ p1 = figure(plot_width=900,
             x_axis_label='Time (local)',
             y_axis_label='PM2.5 (ug/m^3)')
 
-p1.title.text = 'Indoor PM2.5'
+#p1.title.text = 'Indoor PM2.5'
 
-p1.line(audubon.index,     audubon.indoor,     legend='audubon',        color='green',             line_width=2, muted_color='green', muted_alpha=0.2)
-p1.line(adams.index,       adams.indoor,       legend='adams',        color='blue',              line_width=2, muted_color='blue', muted_alpha=0.2)
-p1.line(balboa.index,      balboa.indoor,      legend='balboa',        color='red',               line_width=2, muted_color='red', muted_alpha=0.2)
-p1.line(browne.index,      browne.indoor,      legend='browne',        color='black',             line_width=2, muted_color='black', muted_alpha=0.2)
-p1.line(grant.index,       grant.indoor,       legend='grant',        color='purple',            line_width=2, muted_color='purple', muted_alpha=0.2)
-p1.line(jefferson.index,   jefferson.indoor,   legend='jefferson',        color='brown',             line_width=2, muted_color='brown', muted_alpha=0.2)
-p1.line(lidgerwood.index,  lidgerwood.indoor,  legend='lidgerwood',        color='orange',            line_width=2, muted_color='orange', muted_alpha=0.2)
-p1.line(regal.index,       regal.indoor,       legend='regal',        color='khaki',             line_width=2, muted_color='khaki', muted_alpha=0.2)
-p1.line(sheridan.index,    sheridan.indoor,    legend='sheridan',        color='deepskyblue',       line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
-p1.line(stevens.index,     stevens.indoor,     legend='stevens',       color='grey',              line_width=2, muted_color='grey', muted_alpha=0.2)
+p1.line(audubon.index,     audubon.indoor,     legend='IAQU-1',        color='black',             line_width=2, muted_color='black', muted_alpha=0.6, )
+#p1.line(adams.index,       adams.indoor,       legend='IAQU-2',        color='blue',              line_width=2, muted_color='blue', muted_alpha=0.2)
+#p1.line(balboa.index,      balboa.indoor,      legend='IAQU-3',        color='red',               line_width=2, muted_color='red', muted_alpha=0.2)
+#p1.line(browne.index,      browne.indoor,      legend='IAQU-4',        color='black',             line_width=2, muted_color='black', muted_alpha=0.2)
+#p1.line(grant.index,       grant.indoor,       legend='IAQU-5',        color='purple',            line_width=2, muted_color='purple', muted_alpha=0.2)
+#p1.line(jefferson.index,   jefferson.indoor,   legend='IAQU-6',        color='brown',             line_width=2, muted_color='brown', muted_alpha=0.2)
+#p1.line(lidgerwood.index,  lidgerwood.indoor,  legend='IAQU-7',        color='orange',            line_width=2, muted_color='orange', muted_alpha=0.2)
+#p1.line(regal.index,       regal.indoor,       legend='IAQU-8',        color='khaki',             line_width=2, muted_color='khaki', muted_alpha=0.2)
+#p1.line(sheridan.index,    sheridan.indoor,    legend='IAQU-9',        color='deepskyblue',       line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
+#p1.line(stevens.index,     stevens.indoor,     legend='IAQU-10',       color='grey',              line_width=2, muted_color='grey', muted_alpha=0.2)
 
 # all ref values are the same between units
-p1.line(audubon.index,     audubon.ref_value,     legend='ref_value',        color='teal',             line_width=2, muted_color='teal', muted_alpha=0.2)
+p1.line(audubon.index,     audubon.ref_value,     legend='Ref. Value',        color='red',             line_width=2, muted_color='red', muted_alpha=0.6, line_alpha=0.6)
 
 
 
 p1.legend.click_policy="mute"
+
+p1.legend.location='top_left'
+p1.legend.label_text_font_size = "14pt"
+p1.legend.label_text_font = "times"
+p1.legend.label_text_color = "black" 
+p1.xaxis.axis_label_text_font_size = "14pt"
+p1.xaxis.major_label_text_font_size = "14pt"
+p1.xaxis.axis_label_text_font = "times"
+p1.xaxis.axis_label_text_color = "black"
+
+p1.yaxis.axis_label_text_font_size = "14pt"
+p1.yaxis.major_label_text_font_size = "14pt"
+p1.yaxis.axis_label_text_font = "times"
+p1.yaxis.axis_label_text_color = "black"
+
+p1.toolbar.logo = None
+p1.toolbar_location = None
+p1.xgrid.grid_line_color = None
+p1.ygrid.grid_line_color = None
+# for typical outdoor conditions during indoor calibration
+#export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/Typical_outdoor_conditions_indoor_cal.png')
+# for example smoke chamber test during indoor calibration
+export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/Typical_chamber_conditions_indoor_cal.png')
 
 tab1 = Panel(child=p1, title="Indoor PM 2.5")
 
@@ -1205,8 +1291,34 @@ sheridan_high = sheridan[sheridan['indoor'] > 120]
 
 stevens_low = stevens[stevens['indoor'] < 70]
 stevens_high = stevens[stevens['indoor'] > 120]
+
+#%%
+# look at effect of removing data < LOD (for both the indoor units and the reference unit)
+audubon_low = audubon_low[audubon_low['indoor'] > 4.87]
+adams_low = adams_low[adams_low['indoor'] > 4.87]
+balboa_low = balboa_low[balboa_low['indoor'] > 4.87]
+browne_low = browne_low[browne_low['indoor'] > 4.87]
+grant_low = grant_low[grant_low['indoor'] > 4.87]
+jefferson_low = jefferson_low[jefferson_low['indoor'] > 4.87]
+lidgerwood_low = lidgerwood_low[lidgerwood_low['indoor'] > 4.87]
+regal_low = regal_low[regal_low['indoor'] > 4.87]
+sheridan_low = sheridan_low[sheridan_low['indoor'] > 4.87]
+stevens_low = stevens_low[stevens_low['indoor'] > 4.87]
+
+audubon_low = audubon_low[audubon_low['ref_value'] > 4.87]
+adams_low = adams_low[adams_low['ref_value'] > 4.87]
+balboa_low = balboa_low[balboa_low['ref_value'] > 4.87]
+browne_low = browne_low[browne_low['ref_value'] > 4.87]
+grant_low = grant_low[grant_low['ref_value'] > 4.87]
+jefferson_low = jefferson_low[jefferson_low['ref_value'] > 4.87]
+lidgerwood_low = lidgerwood_low[lidgerwood_low['ref_value'] > 4.87]
+regal_low = regal_low[regal_low['ref_value'] > 4.87]
+sheridan_low = sheridan_low[sheridan_low['ref_value'] > 4.87]
+stevens_low = stevens_low[stevens_low['ref_value'] > 4.87]
+
 #%%
 # resulting calibrations when using the mlr calibration from Augusta to calibrate the reference node first (note that high calibration doesnt change, just the low one compared to the cell below)
+
 audubon['indoor_corrected'] = np.where(audubon.indoor > 120, (audubon.indoor-34.4)*(1/0.61), 
          (np.where(audubon.indoor < 68, (audubon.indoor+2.27)/2.35, -100)))
 
@@ -1236,6 +1348,39 @@ sheridan['indoor_corrected'] = np.where(sheridan.indoor > 120, (sheridan.indoor-
 
 stevens['indoor_corrected'] = np.where(stevens.indoor > 120, (stevens.indoor-58.07)*(1/0.62), 
          (np.where(stevens.indoor < 68, (stevens.indoor+2.8)/2.48, -100)))
+#%%
+# This correction for each location is what is obtained if remove all values below LOD to see the effect on slope and intercept
+audubon['indoor_corrected'] = np.where(audubon.indoor > 120, (audubon.indoor-34.4)*(1/0.61), 
+         (np.where(audubon.indoor < 68, (audubon.indoor-2.0363)/2.01, -100)))
+
+adams['indoor_corrected'] = np.where(adams.indoor > 120, (adams.indoor-15.8)*(1/0.65), 
+         (np.where(adams.indoor < 68, (adams.indoor-3.7207)/2.0567, -100)))
+
+balboa['indoor_corrected'] = np.where(balboa.indoor > 120, (balboa.indoor+11.9)*(1/0.82), 
+         (np.where(balboa.indoor < 68, (balboa.indoor-2.7033)/2.1168, -100)))
+
+browne['indoor_corrected'] = np.where(browne.indoor > 120, (browne.indoor+4.86)*(1/0.91), 
+         (np.where(browne.indoor < 68, (browne.indoor-0.2153)/2.3276, -100)))
+
+grant['indoor_corrected'] = np.where(grant.indoor > 120, (grant.indoor-25.84)*(1/0.8), 
+         (np.where(grant.indoor < 68, (grant.indoor-1.5332)/2.3, -100)))
+
+jefferson['indoor_corrected'] = np.where(jefferson.indoor > 120, (jefferson.indoor-47.01)*(1/0.64), 
+         (np.where(jefferson.indoor < 68, (jefferson.indoor-1.4648)/1.9677, -100)))
+
+lidgerwood['indoor_corrected'] = np.where(lidgerwood.indoor > 120, (lidgerwood.indoor-20.45)*(1/0.85), 
+         (np.where(lidgerwood.indoor < 68, (lidgerwood.indoor-2.2813)/2.2241, -100)))
+
+regal['indoor_corrected'] = np.where(regal.indoor > 120, (regal.indoor-38.78)*(1/0.67), 
+         (np.where(regal.indoor < 68, (regal.indoor-2.6366)/2.0674, -100)))
+
+sheridan['indoor_corrected'] = np.where(sheridan.indoor > 120, (sheridan.indoor-38.32)*(1/0.57), 
+         (np.where(sheridan.indoor < 68, (sheridan.indoor-5.9363)/1.87, -100)))
+
+stevens['indoor_corrected'] = np.where(stevens.indoor > 120, (stevens.indoor-58.07)*(1/0.62), 
+         (np.where(stevens.indoor < 68, (stevens.indoor-1.6187)/2.1362, -100)))
+
+
 #%%
 # below is when using the Reference node values that were linearly calibrated from the Augusta site, rather than the mlr calibration
 #audubon['indoor_corrected'] = np.where(audubon.indoor > 120, (audubon.indoor-34.4)*(1/0.61), 
@@ -1337,44 +1482,44 @@ stevens = stevens[stevens['ref_value'] > 35]
 
 # if calculating the performance of the calibrated data, use #lines = 1 and residuals check =1, and add in residuals = indoor.prediction_residuals
 
-#linear_plot(audubon_low.ref_value, audubon_low.indoor, audubon_high.ref_value, audubon_high.indoor,'audubon', 2)   # used for determining the correction equations
-linear_plot(audubon_low.ref_value, audubon_low.indoor_corrected, audubon_high.ref_value, audubon_high.indoor_corrected,'audubon', 2)   # used for plotting the corrected data with 1 equation for each region
+linear_plot(audubon_low.ref_value, audubon_low.indoor, audubon_high.ref_value, audubon_high.indoor,'audubon', 2)   # used for determining the correction equations
+#linear_plot(audubon_low.ref_value, audubon_low.indoor_corrected, audubon_high.ref_value, audubon_high.indoor_corrected,'audubon', 2)   # used for plotting the corrected data with 1 equation for each region
 #linear_plot(audubon.ref_value, audubon.indoor_corrected, audubon.ref_value, audubon.indoor,'audubon', 1, residuals_check = 1, residuals = audubon.prediction_residuals)
 #%%
-#linear_plot(adams_low.ref_value, adams_low.indoor, adams_high.ref_value, adams_high.indoor,'adams', 2)
-linear_plot(adams_low.ref_value, adams_low.indoor_corrected, adams_high.ref_value, adams_high.indoor_corrected,'adams', 2)
+linear_plot(adams_low.ref_value, adams_low.indoor, adams_high.ref_value, adams_high.indoor,'adams', 2)
+#linear_plot(adams_low.ref_value, adams_low.indoor_corrected, adams_high.ref_value, adams_high.indoor_corrected,'adams', 2)
 #linear_plot(adams.ref_value, adams.indoor_corrected, adams.ref_value, adams.indoor,'Adams', 1, residuals_check = 1, residuals = adams.prediction_residuals)
 #%%
-#linear_plot(balboa_low.ref_value, balboa_low.indoor, balboa_high.ref_value, balboa_high.indoor,'Balboa', 2)
-linear_plot(balboa_low.ref_value, balboa_low.indoor_corrected, balboa_high.ref_value, balboa_high.indoor_corrected,'Balboa', 2)
+linear_plot(balboa_low.ref_value, balboa_low.indoor, balboa_high.ref_value, balboa_high.indoor,'Balboa', 2)
+#linear_plot(balboa_low.ref_value, balboa_low.indoor_corrected, balboa_high.ref_value, balboa_high.indoor_corrected,'Balboa', 2)
 #linear_plot(balboa.ref_value, balboa.indoor_corrected, balboa.ref_value, balboa.indoor,'Balboa', 1, residuals_check = 1, residuals = balboa.prediction_residuals)
 #%%
-#linear_plot(browne_low.ref_value, browne_low.indoor, browne_high.ref_value, browne_high.indoor,'Browne', 2)
-linear_plot(browne_low.ref_value, browne_low.indoor_corrected, browne_high.ref_value, browne_high.indoor_corrected,'Browne', 2)
+linear_plot(browne_low.ref_value, browne_low.indoor, browne_high.ref_value, browne_high.indoor,'Browne', 2)
+#linear_plot(browne_low.ref_value, browne_low.indoor_corrected, browne_high.ref_value, browne_high.indoor_corrected,'Browne', 2)
 #linear_plot(browne.ref_value, browne.indoor_corrected, browne.ref_value, browne.indoor,'Browne', 1, residuals_check = 1, residuals = browne.prediction_residuals)
 #%%
-#linear_plot(grant_low.ref_value, grant_low.indoor, grant_high.ref_value, grant_high.indoor,'Grant', 2)
-linear_plot(grant_low.ref_value, grant_low.indoor_corrected, grant_high.ref_value, grant_high.indoor_corrected,'Grant', 2)
+linear_plot(grant_low.ref_value, grant_low.indoor, grant_high.ref_value, grant_high.indoor,'Grant', 2)
+#linear_plot(grant_low.ref_value, grant_low.indoor_corrected, grant_high.ref_value, grant_high.indoor_corrected,'Grant', 2)
 #linear_plot(grant.ref_value, grant.indoor_corrected, grant.ref_value, grant.indoor,'Grant', 1, residuals_check = 1, residuals = grant.prediction_residuals)
 #%%
-#linear_plot(jefferson_low.ref_value, jefferson_low.indoor, jefferson_high.ref_value, jefferson_high.indoor,'Jefferson', 2)
-linear_plot(jefferson_low.ref_value, jefferson_low.indoor_corrected, jefferson_high.ref_value, jefferson_high.indoor_corrected,'Jefferson', 2)
+linear_plot(jefferson_low.ref_value, jefferson_low.indoor, jefferson_high.ref_value, jefferson_high.indoor,'Jefferson', 2)
+#linear_plot(jefferson_low.ref_value, jefferson_low.indoor_corrected, jefferson_high.ref_value, jefferson_high.indoor_corrected,'Jefferson', 2)
 #linear_plot(jefferson.ref_value, jefferson.indoor_corrected, jefferson.ref_value, jefferson.indoor,'Jefferson', 1, residuals_check = 1, residuals = jefferson.prediction_residuals)
 #%%
-#linear_plot(lidgerwood_low.ref_value, lidgerwood_low.indoor, lidgerwood_high.ref_value, lidgerwood_high.indoor,'Lidgerwood', 2)
-linear_plot(lidgerwood_low.ref_value, lidgerwood_low.indoor_corrected, lidgerwood_high.ref_value, lidgerwood_high.indoor_corrected,'Lidgerwood', 2)
+linear_plot(lidgerwood_low.ref_value, lidgerwood_low.indoor, lidgerwood_high.ref_value, lidgerwood_high.indoor,'Lidgerwood', 2)
+#linear_plot(lidgerwood_low.ref_value, lidgerwood_low.indoor_corrected, lidgerwood_high.ref_value, lidgerwood_high.indoor_corrected,'Lidgerwood', 2)
 #linear_plot(lidgerwood.ref_value, lidgerwood.indoor_corrected, lidgerwood.ref_value, lidgerwood.indoor,'Lidgerwood', 1, residuals_check = 1, residuals = lidgerwood.prediction_residuals)
 #%%
-#linear_plot(regal_low.ref_value, regal_low.indoor, regal_high.ref_value, regal_high.indoor,'Regal', 2)
-linear_plot(regal_low.ref_value, regal_low.indoor_corrected, regal_high.ref_value, regal_high.indoor_corrected,'Regal', 2)
+linear_plot(regal_low.ref_value, regal_low.indoor, regal_high.ref_value, regal_high.indoor,'Regal', 2)
+#linear_plot(regal_low.ref_value, regal_low.indoor_corrected, regal_high.ref_value, regal_high.indoor_corrected,'Regal', 2)
 #linear_plot(regal.ref_value, regal.indoor_corrected, regal.ref_value, regal.indoor,'Regal', 1, residuals_check = 1, residuals = regal.prediction_residuals)
 #%%
-#linear_plot(sheridan_low.ref_value, sheridan_low.indoor, sheridan_high.ref_value, sheridan_high.indoor,'Sheridan', 2)
-linear_plot(sheridan_low.ref_value, sheridan_low.indoor_corrected, sheridan_high.ref_value, sheridan_high.indoor_corrected,'Sheridan', 2)
+linear_plot(sheridan_low.ref_value, sheridan_low.indoor, sheridan_high.ref_value, sheridan_high.indoor,'Sheridan', 2)
+#linear_plot(sheridan_low.ref_value, sheridan_low.indoor_corrected, sheridan_high.ref_value, sheridan_high.indoor_corrected,'Sheridan', 2)
 #linear_plot(sheridan.ref_value, sheridan.indoor_corrected, sheridan.ref_value, sheridan.indoor,'Sheridan', 1, residuals_check = 1, residuals = sheridan.prediction_residuals)
 #%%
-#linear_plot(stevens_low.ref_value, stevens_low.indoor, stevens_high.ref_value, stevens_high.indoor,'Stevens', 2)
-linear_plot(stevens_low.ref_value, stevens_low.indoor_corrected, stevens_high.ref_value, stevens_high.indoor_corrected,'Stevens', 2)
+linear_plot(stevens_low.ref_value, stevens_low.indoor, stevens_high.ref_value, stevens_high.indoor,'Stevens', 2)
+#linear_plot(stevens_low.ref_value, stevens_low.indoor_corrected, stevens_high.ref_value, stevens_high.indoor_corrected,'Stevens', 2)
 #linear_plot(stevens.ref_value, stevens.indoor_corrected, stevens.ref_value, stevens.indoor,'Stevens', 1, residuals_check = 1, residuals = stevens.prediction_residuals)
 
 

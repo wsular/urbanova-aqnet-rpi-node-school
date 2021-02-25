@@ -61,17 +61,17 @@ def in_out_histogram(indoor,outdoor, df_list):
         df_percentage = df['percentage_total_measurements'].tolist()  ###
         print(df_percentage)                                           ###
         df_location.append(location_name)
-        df_avg_fraction_filtered.append(np.mean(df_cut['Fraction Filtered']))
-        df_out_avg.append(np.mean(df_cut['Outdoor Calibrated']))
-        df_in_avg.append(np.mean(df_cut['PM2_5_corrected_shift']))
-        df_out_med.append(np.nanmedian(df_cut['Outdoor Calibrated']))
-        df_in_med.append(np.nanmedian(df_cut['PM2_5_corrected_shift']))
+        df_avg_fraction_filtered.append(round(np.mean(df_cut['Fraction Filtered']), 2))
+        df_out_avg.append(round(np.mean(df_cut['Outdoor Calibrated']),2))
+        df_in_avg.append(round(np.mean(df_cut['PM2_5_corrected_shift']),2))
+        df_out_med.append(round(np.nanmedian(df_cut['Outdoor Calibrated']),2))
+        df_in_med.append(round(np.nanmedian(df_cut['PM2_5_corrected_shift']),2))
         df_count.append(len(df_cut))
         print(len(df_cut))
         print(total_measurements)
         number_measurements = len(df_cut)
         print(number_measurements)
-        df_percentage.append((number_measurements/total_measurements)*100)     ###
+        df_percentage.append(round(((number_measurements/total_measurements)*100),2))    ###
         
        # l_df_location,l_df_avg_fraction_filtered,l_df_out_avg, l_df_in_avg, l_df_out_med, l_df_in_med = len(df_location),len(df_avg_fraction_filtered),len(df_out_avg),len(df_in_avg),len(df_out_med),len(df_in_med)
 

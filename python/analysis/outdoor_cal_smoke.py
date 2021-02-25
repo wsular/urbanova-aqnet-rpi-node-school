@@ -24,8 +24,8 @@ def outdoor_cal_smoke(outdoor, name, high_mlr_function):
     
     
     
-    start_time = '2020-09-11 08:00'
-    end_time = '2020-10-22 07:00'
+    start_time = '2020-09-11 00:00'
+    end_time = '2020-09-21 19:00'
 
     outdoor_cut = outdoor.copy()
     outdoor_cut = outdoor.loc[start_time:end_time]
@@ -33,7 +33,7 @@ def outdoor_cal_smoke(outdoor, name, high_mlr_function):
     if name == 'Audubon': 
         print('audubon')
         outdoor_cut['PM2_5_corrected'] = np.where((outdoor_cut.PM2_5 > 51), mlr_function_high_cal(high_mlr_function, outdoor_cut),  # high calibration adjustment
-                                       ((outdoor_cut.PM2_5-0.4207)/1.0739)                               # Paccar roof adjustment to approximate Reference Clarity node
+                                       ((outdoor_cut.PM2_5-0.36)/1.0739)                               # Paccar roof adjustment to approximate Reference Clarity node
                                        *0.454-outdoor_cut.Rel_humid*0.0483-outdoor_cut.temp*0.0774+4.8242)   # mlr to adjust Reference Clarity node to BAM
     
     else:
@@ -81,7 +81,7 @@ def outdoor_cal_smoke(outdoor, name, high_mlr_function):
 
     if name == 'Lidgerwood': 
         outdoor_cut['PM2_5_corrected'] = np.where((outdoor_cut.PM2_5 > 66),  mlr_function_high_cal(high_mlr_function, outdoor_cut),   # high calibration adjustment
-                                         (outdoor_cut.PM2_5-1.1306)/0.9566                                    # Paccar roof adjustment to approximate Reference Clarity node
+                                         (outdoor_cut.PM2_5-1.06)/0.98                                    # Paccar roof adjustment to approximate Reference Clarity node
                                          *0.454-outdoor_cut.Rel_humid*0.0483-outdoor_cut.temp*0.0774+4.8242)  # mlr to adjust Reference Clarity node to BAM
     
     else:
@@ -89,7 +89,7 @@ def outdoor_cal_smoke(outdoor, name, high_mlr_function):
 
     if name == 'Regal': 
         outdoor_cut['PM2_5_corrected'] = np.where((outdoor_cut.PM2_5 > 54),  mlr_function_high_cal(high_mlr_function, outdoor_cut),   # high calibration adjustment
-                                    ((outdoor_cut.PM2_5-0.247)/0.9915)                                    # Paccar roof adjustment to approximate Reference Clarity node
+                                    ((outdoor_cut.PM2_5-0.247)/0.98)                                    # Paccar roof adjustment to approximate Reference Clarity node
                                     *0.454-outdoor_cut.Rel_humid*0.0483-outdoor_cut.temp*0.0774+4.8242)         # mlr to adjust Reference Clarity node to BAM
     
     else:

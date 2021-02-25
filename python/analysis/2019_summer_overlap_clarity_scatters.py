@@ -99,7 +99,7 @@ Paccar = Paccar.dropna()
 #X = Paccar[['PM2_5']]#,'Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)
 X = Paccar[['Ref_PM2_5']]
 #X = X.dropna()
-y = Paccar['PM2_5'] ## Y usually means our output/dependent variable
+y = Paccar[['PM2_5']] ## Y usually means our output/dependent variable
 X = sm.add_constant(X) ## let's add an intercept (beta_0) to our model
 
 # Note the difference in argument order
@@ -159,6 +159,8 @@ Audubon = Audubon.resample(interval).mean()
 Audubon['Ref_PM2_5'] = Reference['PM2_5']
 Audubon['Location'] = 'Audubon'
 Audubon = Audubon.dropna()
+# take out Clarity node measurements below LOD to see impact on linear calibration results (ie slope, int and uncertainties in those)
+#Audubon = Audubon[Audubon['PM2_5'] > 4.87]
 
 #X = Audubon[['PM2_5']]#,'Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)
 X = Audubon[['Ref_PM2_5']]
@@ -168,13 +170,16 @@ X = sm.add_constant(X) ## let's add an intercept (beta_0) to our model
 
 # Note the difference in argument order
 model = sm.OLS(y, X).fit() ## sm.OLS(output, input)
-predictions = model.predict(X)
+
 
 # Print out the statistics
 print_model = model.summary()
 print(print_model)
 
-Audubon['Predictions'] = (Audubon['PM2_5']-0.36)/1.09
+# linear correction if using all calibration data
+#Audubon['Predictions'] = ( Audubon['PM2_5']-0.36)/1.07
+# linear correction if using LOD limited data
+Audubon['Predictions'] = ( Audubon['PM2_5']-1.65)/0.9263
 Audubon['residuals'] = Audubon['Ref_PM2_5'] - Audubon['PM2_5']
 Audubon['prediction_residuals'] = Audubon['Ref_PM2_5'] - Audubon['Predictions']
 
@@ -222,6 +227,8 @@ Balboa = Balboa.resample(interval).mean()
 Balboa['Ref_PM2_5'] = Reference['PM2_5']
 Balboa['Location'] = 'Balboa'
 Balboa = Balboa.dropna()
+# take out Clarity node measurements below LOD to see impact on linear calibration results (ie slope, int and uncertainties in those)
+#Balboa = Balboa[Balboa['PM2_5'] > 4.87]
 
 Balboa['Ref_PM2_5'] = Reference['PM2_5']
 #X = Balboa[['PM2_5']]#,'Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)
@@ -238,7 +245,10 @@ predictions = model.predict(X)
 print_model = model.summary()
 print(print_model)
 
-Balboa['Predictions'] =( Balboa['PM2_5']-0.2878)/1.2457
+# linear correction if using all calibration data
+#Balboa['Predictions'] =( Balboa['PM2_5']-0.2878)/1.2457
+# linear correction if using LOD limited data
+Balboa['Predictions'] =( Balboa['PM2_5']-0.914)/1.18
 Balboa['residuals'] = Balboa['Ref_PM2_5'] - Balboa['PM2_5']
 Balboa['prediction_residuals'] = Balboa['Ref_PM2_5'] - Balboa['Predictions']
 
@@ -286,6 +296,8 @@ Browne = Browne.resample(interval).mean()
 Browne['Ref_PM2_5'] = Reference['PM2_5']
 Browne['Location'] = 'Browne'
 Browne = Browne.dropna()
+# take out Clarity node measurements below LOD to see impact on linear calibration results (ie slope, int and uncertainties in those)
+#Browne = Browne[Browne['PM2_5'] > 4.87]
 
 Browne['Ref_PM2_5'] = Reference['PM2_5']
 #X = Browne[['PM2_5']]#,'Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)
@@ -302,7 +314,10 @@ predictions = model.predict(X)
 print_model = model.summary()
 print(print_model)
 
-Browne['Predictions'] = (Browne['PM2_5']-0.4771)/1.1082
+# linear correction if using all calibration data
+#Browne['Predictions'] = (Browne['PM2_5']-0.4771)/1.1082
+# linear correction if using LOD limited data
+Browne['Predictions'] = (Browne['PM2_5']-1.36)/1
 Browne['residuals'] = Browne['Ref_PM2_5'] - Browne['PM2_5']
 Browne['prediction_residuals'] = Browne['Ref_PM2_5'] - Browne['Predictions']
 
@@ -350,6 +365,8 @@ Lidgerwood = Lidgerwood.resample(interval).mean()
 Lidgerwood['Ref_PM2_5'] = Reference['PM2_5']
 Lidgerwood['Location'] = 'Lidgerwood'
 Lidgerwood = Lidgerwood.dropna()
+# take out Clarity node measurements below LOD to see impact on linear calibration results (ie slope, int and uncertainties in those)
+#Lidgerwood = Lidgerwood[Lidgerwood['PM2_5'] > 4.87]
 
 Lidgerwood['Ref_PM2_5'] = Reference['PM2_5']
 #X = Lidgerwood[['PM2_5']]#,'Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)
@@ -366,7 +383,11 @@ predictions = model.predict(X)
 print_model = model.summary()
 print(print_model)
 
-Lidgerwood['Predictions'] = (Lidgerwood['PM2_5']-1.1306)/0.9566
+# linear correction if using all calibration data
+#Lidgerwood['Predictions'] = (Lidgerwood['PM2_5']-1.1306)/0.9566
+# linear correction if using LOD limited data
+Lidgerwood['Predictions'] = (Lidgerwood['PM2_5']-2.84)/0.737
+
 Lidgerwood['residuals'] = Lidgerwood['Ref_PM2_5'] - Lidgerwood['PM2_5']
 Lidgerwood['prediction_residuals'] = Lidgerwood['Ref_PM2_5'] - Lidgerwood['Predictions']
 
@@ -414,6 +435,8 @@ Regal = Regal.resample(interval).mean()
 Regal['Ref_PM2_5'] = Reference['PM2_5']
 Regal['Location'] = 'Regal'
 Regal = Regal.dropna()
+# take out Clarity node measurements below LOD to see impact on linear calibration results (ie slope, int and uncertainties in those)
+#Regal = Regal[Regal['PM2_5'] > 4.87]
 
 Regal['Ref_PM2_5'] = Reference['PM2_5']
 #X = Regal[['PM2_5']]#,'Rel_humid', 'temp']] ## X usually means our input variables (or independent variables)
@@ -430,7 +453,11 @@ predictions = model.predict(X)
 print_model = model.summary()
 print(print_model)
 
-Regal['Predictions'] = (Regal['PM2_5']-0.247)/0.9915
+# linear correction if using all calibration data
+#Regal['Predictions'] = (Regal['PM2_5']-0.247)/0.9915
+# linear correction if using LOD limited data
+Regal['Predictions'] = (Regal['PM2_5']-2.238)/0.7431
+
 Regal['residuals'] = Regal['Ref_PM2_5'] - Regal['PM2_5']
 Regal['prediction_residuals'] = Regal['Ref_PM2_5'] - Regal['Predictions']
 

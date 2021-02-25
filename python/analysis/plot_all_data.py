@@ -36,9 +36,9 @@ from itertools import combinations
 #from import_test import y
 
 import copy
-
+from bokeh.models.formatters import DatetimeTickFormatter
 from random_forest_function_test import rf, evaluate_model
-from mlr_function import mlr_function, mlr_model
+#from mlr_function import mlr_function, mlr_model
 from hybrid_function import hybrid_function
 from rf_uncertainty_function import rf_uncertainty
 from mlr_uncertainty_function import mlr_uncertainty
@@ -71,6 +71,9 @@ from outdoor_low_cal import outdoor_cal_low
 from outdoor_cal_smoke import outdoor_cal_smoke
 from outdoor_low_uncertainty import outdoor_low_uncertainty
 from outdoor_smoke_uncertainty import outdoor_smoke_uncertainty
+from figure_format import figure_format
+from average_day import average_day
+from time_period_4_compare_data_generator import in_out_compare_period_4_data_generator
 #%%
 
 # initiate dataframe for high calibration data used to generate high calibration mlr functions for each location
@@ -112,34 +115,53 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #start_time = '2019-10-31 07:00'
 #end_time = '2019-11-08 19:00'
 
-# students in schools
+# students in schools (in/out period 1)
 #start_time = '2020-02-15 07:00'
 #end_time = '2020-03-10 19:00'
+#sampling_period = '1'
 
-# empty schools till smoke
+# empty schools till smoke (in/out period 2)
 #start_time = '2020-03-10 07:00'
 #end_time = '2020-09-10 19:00'
+#sampling_period = '2'
 
-# smoke event
-
-#start_time = '2020-09-10 07:00'
+# smoke event (in/out period 3)
+#start_time = '2020-09-11 00:00'
 #end_time = '2020-09-21 19:00'
+#sampling_period = '3'
 
 # Complete sampling time for outdoor
 #start_time = '2019-09-01 07:00'
 #end_time = '2021-01-27 07:00'
 
 # Complete sampling time for indoor/outdoor
-start_time = '2020-02-15 07:00'
-end_time = '2020-10-22 07:00'
+#start_time = '2020-02-15 07:00'
+#end_time = '2020-10-22 07:00'
 
-# indoor calibration period (not the times of the chamber test but the overall time period at Von's house)
+# indoor calibration period (not just the times of the chamber test but the overall time period at Von's house)
 #start_time = '2020-11-04 00:00'
 #end_time = '2020-12-07 23:00'
 
 # Date Range of interest
-#start_time = '2021-01-06 07:00'   # was 2/9//20 7:00
+#start_time = '2020-03-10 07:00'   
+#end_time = '2020-10-23 07:00'
+
+#Indoor/outdoor compare #4 - part 1
+start_time_1 = '2020-09-22 07:00'   
+end_time_1 = '2020-10-22 07:00'
+
+
+#Indoor/outdoor compare #4 - part 2
+start_time_2 = '2021-01-15 07:00'   
+end_time_2 = '2021-02-21 07:00'
+
+sampling_period = '4'
+
+# Indoor/outdoor compare #4 - need to cut twice and combine for smoke to indoor cal and from reinstall to present
+#start_time = '2020--06 07:00'
 #end_time = '2021-01-08 07:00'
+
+
 
 #interval = '2T'    # for plotting indoor/outdoor comparisons
 interval = '60T'
@@ -350,11 +372,6 @@ Augusta_All['Location'] = 'Augusta'
 
 Augusta_BAM_uncertainty(stdev_number,Augusta_All)
 
-Augusta_All['time'] = pd.to_datetime(Augusta_All['time'])
-Augusta_All = Augusta_All.sort_values('time')
-Augusta_All.index = Augusta_All.time
-Augusta = Augusta_All.loc[start_time:end_time] 
-
 
 Monroe_All = pd.DataFrame({})
 files = glob('/Users/matthew/Desktop/data/SRCAA_Monroe_Neph/Monroe*.csv')
@@ -401,8 +418,29 @@ Greenbluff_All['PM2_5_corrected'] = Greenbluff_All['PM2_5']    # creates column 
 #Regal_All['PM2_5_corrected'] = np.where((Regal_All.PM2_5 < 100), mlr_function(mlr_model, Regal_All), Regal_All.PM2_5_corrected)  # high calibration adjustment
 #Sheridan_All['PM2_5_corrected'] = np.where((Sheridan_All.PM2_5 < 100), mlr_function(mlr_model, Sheridan_All), Sheridan_All.PM2_5_corrected)  # high calibration adjustment
 #Stevens_All['PM2_5_corrected'] = np.where((Stevens_All.PM2_5 < 100), mlr_function(mlr_model, Stevens_All), Stevens_All.PM2_5_corrected)  # high calibration adjustment
+#%%
+# only use this for creating the Clarity data set for in/out comparison period 4
+Audubon = in_out_compare_period_4_data_generator(Audubon_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Audubon')
+Adams = in_out_compare_period_4_data_generator(Adams_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Adams')
+Balboa = in_out_compare_period_4_data_generator(Balboa_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Balboa')
+Browne = in_out_compare_period_4_data_generator(Browne_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Browne')
+Grant = in_out_compare_period_4_data_generator(Grant_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Grant')
+Jefferson = in_out_compare_period_4_data_generator(Jefferson_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Jefferson')
+Lidgerwood = in_out_compare_period_4_data_generator(Lidgerwood_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Lidgerwood')
+Regal = in_out_compare_period_4_data_generator(Regal_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Regal')
+Sheridan = in_out_compare_period_4_data_generator(Sheridan_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Sheridan')
+Stevens = in_out_compare_period_4_data_generator(Stevens_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Stevens')
+
+
+#%%
+# don't use this cell if doing period 4 in/out comparisons, use the cell above instead
 
 # resample and cut data to time period of interest
+
+Augusta_All['time'] = pd.to_datetime(Augusta_All['time'])
+Augusta_All = Augusta_All.sort_values('time')
+Augusta_All.index = Augusta_All.time
+Augusta = Augusta_All.loc[start_time:end_time] 
 
 Audubon_All['time'] = pd.to_datetime(Audubon_All['time'])
 Audubon_All = Audubon_All.sort_values('time')
@@ -529,23 +567,28 @@ Jefferson['Location'] = 'Jefferson'
 Lidgerwood['Location'] = 'Lidgerwood'
 Regal['Location'] = 'Regal'
 Sheridan['Location'] = 'Sheridan'
+#Sheridan_copy = Sheridan.copy()
+#Sheridan_copy2 = Sheridan.copy()
 Stevens['Location'] = 'Stevens'
+Stevens_copy = Stevens.copy()
+Stevens_copy2 = Stevens.copy()
 
 #%%
 
 # apply calibration for lower values during the winter using the calibration from SRCAA overlap
+# comment out appropriate lines in outdoor_low_cal if in in/out compare period 4
 
-Audubon_low = outdoor_cal_low(Audubon, 'Audubon')
-Adams_low = outdoor_cal_low(Adams, 'Adams')
-Balboa_low = outdoor_cal_low(Balboa, 'Balboa')
-Browne_low = outdoor_cal_low(Browne, 'Browne')
-Grant_low = outdoor_cal_low(Grant, 'Grant')
-Jefferson_low = outdoor_cal_low(Jefferson, 'Jefferson')
-Lidgerwood_low= outdoor_cal_low(Lidgerwood, 'Lidgerwood')
-Regal_low =  outdoor_cal_low(Regal, 'Regal')
-Sheridan_low = outdoor_cal_low(Sheridan, 'Sheridan')
-Stevens_low = outdoor_cal_low(Stevens, 'Stevens')
-
+Audubon_low = outdoor_cal_low(Audubon, 'Audubon', time_period = sampling_period)
+Adams_low = outdoor_cal_low(Adams, 'Adams', time_period = sampling_period)
+Balboa_low = outdoor_cal_low(Balboa, 'Balboa', time_period = sampling_period)
+Browne_low = outdoor_cal_low(Browne, 'Browne', time_period = sampling_period)
+Grant_low = outdoor_cal_low(Grant, 'Grant', time_period = sampling_period)
+Jefferson_low = outdoor_cal_low(Jefferson, 'Jefferson', time_period = sampling_period)
+Lidgerwood_low= outdoor_cal_low(Lidgerwood, 'Lidgerwood', time_period = sampling_period)
+Regal_low =  outdoor_cal_low(Regal, 'Regal', time_period = sampling_period)
+Sheridan_low = outdoor_cal_low(Sheridan, 'Sheridan', time_period = sampling_period)
+Stevens_low = outdoor_cal_low(Stevens, 'Stevens', time_period = sampling_period)
+#%%
 outdoor_low_uncertainty(2, Audubon_low)
 outdoor_low_uncertainty(2, Adams_low)
 outdoor_low_uncertainty(2, Balboa_low)
@@ -581,7 +624,30 @@ outdoor_smoke_uncertainty(2, Regal_smoke)
 outdoor_smoke_uncertainty(2, Sheridan_smoke)
 outdoor_smoke_uncertainty(2, Stevens_smoke)
 #%%
-
+# use this when don't include the sept 2020 smoke period
+Audubon = Audubon_low
+Adams = Adams_low
+Balboa = Balboa_low
+Browne = Browne_low
+Grant = Grant_low
+Jefferson = Jefferson_low
+Lidgerwood = Lidgerwood_low
+Regal = Regal_low
+Sheridan = Sheridan_low
+Stevens = Stevens_low
+#%%
+# use this when doing sampling period 3
+Audubon = Audubon_smoke
+Adams = Adams_smoke
+Balboa = Balboa_smoke
+Browne = Browne_smoke
+Grant = Grant_smoke
+Jefferson = Jefferson_smoke
+Lidgerwood = Lidgerwood_smoke
+Regal = Regal_smoke
+Sheridan = Sheridan_smoke
+Stevens = Stevens_smoke
+#%%
 Audubon = Audubon_low.append(Audubon_smoke)
 Adams = Adams_low.append(Adams_smoke)
 Balboa = Balboa_low.append(Balboa_smoke)
@@ -593,6 +659,101 @@ Regal = Regal_low.append(Regal_smoke)
 Sheridan = Sheridan_low.append(Sheridan_smoke)
 Stevens = Stevens_low.append(Stevens_smoke)
 #%%
+Audubon = Audubon.sort_index()
+Adams = Adams.sort_index()
+Balboa = Balboa.sort_index()
+Browne = Browne.sort_index()
+Grant = Grant.sort_index()
+Jefferson = Jefferson.sort_index()
+Lidgerwood = Lidgerwood.sort_index()
+Regal = Regal.sort_index()
+Sheridan = Sheridan.sort_index()
+Stevens = Stevens.sort_index()
+
+#%%
+#Just for recreating the gridplot for comparing Calibration approaches
+# linear adjustement to reference node based on Paccar roof calibration just for recreating the RF capped plot
+Stevens['PM2_5_corrected'] = (Stevens.PM2_5+0.8901)/1.2767  # Paccar roof adjustment
+Stevens_copy['PM2_5_corrected'] = (Stevens_copy.PM2_5+0.8901)/1.2767  # Paccar roof adjustment
+Stevens_copy2['PM2_5_corrected'] = (Stevens_copy2.PM2_5+0.8901)/1.2767
+evaluate_model(rf, Stevens_copy)
+Stevens_copy2 = hybrid_function(rf, mlr_model, Stevens_copy2)
+Stevens['PM2_5_mlr_corrected'] = Stevens['PM2_5_corrected']*0.454-Stevens.Rel_humid*0.0483-Stevens.temp*0.0774+4.8242   # Augusta mlr correction
+Stevens['PM2_5_linear_corrected'] = (Stevens['PM2_5_corrected'] + 0.6232)/1.7588   # linear correction of Reference node at Augustsa
+
+#Just for recreating the gridplot for comparing Calibration approaches
+p1 = figure(title = '.',
+            plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m3)')
+        
+p1.line(Stevens.index,     Stevens.PM2_5_linear_corrected,  legend='Linear',  muted_color='black', muted_alpha=0.2,     color='black',     line_width=2)
+#p1.line(Paccar.index,        Paccar.PM2_5,              legend='Clarity',       color='blue',      line_width=2) 
+p1.line(Augusta.index,     Augusta.PM2_5,           legend='SRCAA BAM',  muted_color='red', muted_alpha=0.4,  line_alpha=0.4,   color='red',       line_width=2) 
+p1.y_range=Range1d(0, 60) 
+
+
+figure_format(p1)
+p1.legend.location='top_right'
+    
+p2 = figure(title = '.',
+            plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m3)')
+        
+p2.line(Stevens_copy.index,     Stevens_copy.PM2_5_rf_corrected,  legend='RF',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
+p2.line(Augusta.index,     Augusta.PM2_5_corrected,           legend='SRCAA BAM',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   color='red',       line_width=2) 
+p2.y_range=Range1d(0, 60)
+
+
+figure_format(p2)
+p2.legend.location='top_right'
+    
+p3 = figure(title = '.',
+            plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m3)')
+        
+p3.line(Stevens.index,     Stevens.PM2_5_mlr_corrected,  legend='MLR',       color='black',   muted_color='black', muted_alpha=0.2,  line_width=2)
+p3.line(Augusta.index,     Augusta.PM2_5,           legend='SRCAA BAM',       color='red',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    line_width=2) 
+p3.y_range=Range1d(0, 60)
+
+figure_format(p3)
+p3.legend.location='top_right'
+
+p4 = figure(title = '.',
+            plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m3)')
+        
+p4.line(Stevens_copy2.index,     Stevens_copy2.PM2_5_corrected,  legend='Hybrid',  muted_color='black', muted_alpha=0.2,     color='black',     line_width=2)
+p4.line(Augusta.index,     Augusta.PM2_5,           legend='SRCAA BAM',    muted_color='red', muted_alpha=0.4,   color='red', line_alpha=0.4,      line_width=2) 
+p4.y_range=Range1d(0, 60)
+
+figure_format(p4)
+p4.legend.location='top_right'
+
+p5 = gridplot([[p1,p2], [p3, p4]], plot_width = 400, plot_height = 300, toolbar_location=None)
+
+export_png(p5,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/calibration_comparison_with_rf.png')
+
+
+tab1 = Panel(child=p5, title="Indoor Outdoor Comparison")
+
+tabs = Tabs(tabs=[ tab1])
+
+show(tabs)
+#%%
+# apply mlr calibration from Augusta
+#Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 < 51), Audubon.PM2_5*0.454-Audubon.Rel_humid*0.0483-Audubon.temp*0.0774+4.8242, Audubon.PM2_5_corrected)  # high calibration adjustment
 
 # originally had adjustments in 3 lines, combined into one line per location
 
@@ -600,7 +761,7 @@ Stevens = Stevens_low.append(Stevens_smoke)
 # high calibration
 #Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 > 51), mlr_function_high_cal(mlr_high_audubon, Audubon),  # high calibration adjustment
 #                                       ((Audubon.PM2_5-0.4207)/1.0739)                               # Paccar roof adjustment
-#                                       *0.454-Audubon.Rel_humid*0.0483-Audubon.temp*0.0774+4.8242)   # high calibration adjustment
+#                                       *0.454-Audubon.Rel_humid*0.0483-Audubon.temp*0.0774+4.8242)   # Augusta mlr adjustment
 # linear adjustement to reference node based on Paccar roof calibration
 #Audubon['PM2_5_corrected'] = np.where((Audubon.PM2_5 < 51), (Audubon.PM2_5-0.4207)/1.0739, Audubon.PM2_5_corrected)  # Paccar roof adjustment
 # apply mlr calibration from Augusta
@@ -686,56 +847,131 @@ radiosonde['adams_temp'] = Adams['temp']
 
 audubon_bme = pd.DataFrame({})
 audubon_bme_json = pd.DataFrame({})
-audubon_bme, audubon_bme_json = load_indoor('Audubon', audubon_bme,audubon_bme_json, interval, start_time, end_time)
 
 adams_bme = pd.DataFrame({})
 adams_bme_json = pd.DataFrame({})
-adams_bme, adams_bme_json = load_indoor('Adams', adams_bme,adams_bme_json, interval, start_time, end_time)
 
 balboa_bme = pd.DataFrame({})
 balboa_bme_json = pd.DataFrame({})
-balboa_bme, balboa_bme_json = load_indoor('Balboa', balboa_bme,balboa_bme_json, interval, start_time, end_time)
 
 browne_bme = pd.DataFrame({})
 browne_bme_json = pd.DataFrame({})
-browne_bme, browne_bme_json = load_indoor('Browne', browne_bme,browne_bme_json, interval, start_time, end_time)
 
 grant_bme = pd.DataFrame({})
 grant_bme_json = pd.DataFrame({})
-grant_bme, grant_bme_json = load_indoor('Grant', grant_bme,grant_bme_json, interval, start_time, end_time)
 
 jefferson_bme = pd.DataFrame({})
 jefferson_bme_json = pd.DataFrame({})
-jefferson_bme, jefferson_bme_json = load_indoor('Jefferson', jefferson_bme,jefferson_bme_json, interval, start_time, end_time)
 
 lidgerwood_bme = pd.DataFrame({})
 lidgerwood_bme_json = pd.DataFrame({})
-lidgerwood_bme, lidgerwood_bme_json = load_indoor('Lidgerwood', lidgerwood_bme,lidgerwood_bme_json, interval, start_time, end_time)
 
 regal_bme = pd.DataFrame({})
 regal_bme_json = pd.DataFrame({})
-regal_bme, regal_bme_json = load_indoor('Regal', regal_bme,regal_bme_json, interval, start_time, end_time)
 
 sheridan_bme = pd.DataFrame({})
 sheridan_bme_json = pd.DataFrame({})
-sheridan_bme, sheridan_bme_json = load_indoor('Sheridan', sheridan_bme,sheridan_bme_json, interval, start_time, end_time)
 
 stevens_bme = pd.DataFrame({})
 stevens_bme_json = pd.DataFrame({})
-stevens_bme, stevens_bme_json = load_indoor('Stevens', stevens_bme,stevens_bme_json, interval, start_time, end_time)
+
+if sampling_period == '4':
+    audubon_bme, audubon_bme_json = load_indoor('Audubon', audubon_bme,audubon_bme_json, interval, 
+                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
+                                                start_2 = start_time_2, stop_2 = end_time_2)
+else:
+    audubon_bme, audubon_bme_json = load_indoor('Audubon', audubon_bme,audubon_bme_json, interval,
+                                                time_period_4 = 'no', start = start_time, stop = end_time)
+
+
+if sampling_period == '4':
+    adams_bme, adams_bme_json = load_indoor('Adams', adams_bme,adams_bme_json, interval, 
+                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
+                                                start_2 = start_time_2, stop_2 = end_time_2)
+else:
+    adams_bme, adams_bme_json = load_indoor('Adams', adams_bme,adams_bme_json, interval,
+                                            time_period_4 = 'no', start = start_time, stop = end_time)
+
+
+if sampling_period == '4':
+    balboa_bme, balboa_bme_json = load_indoor('Balboa', balboa_bme,balboa_bme_json, interval, 
+                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
+                                                start_2 = start_time_2, stop_2 = end_time_2)
+else:
+    balboa_bme, balboa_bme_json = load_indoor('Balboa', balboa_bme,balboa_bme_json, interval,
+                                              time_period_4 = 'no', start = start_time, stop = end_time)
+
+
+if sampling_period == '4':
+    browne_bme, browne_bme_json = load_indoor('Browne', browne_bme,browne_bme_json, interval, 
+                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
+                                                start_2 = start_time_2, stop_2 = end_time_2)
+else:
+    browne_bme, browne_bme_json = load_indoor('Browne', browne_bme,browne_bme_json, interval,
+                                              time_period_4 = 'no', start = start_time, stop = end_time)
+
+if sampling_period == '4':
+    grant_bme, grant_bme_json = load_indoor('Grant', grant_bme,grant_bme_json, interval, 
+                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
+                                                start_2 = start_time_2, stop_2 = end_time_2)
+else:
+    grant_bme, grant_bme_json = load_indoor('Grant', grant_bme,grant_bme_json, interval,
+                                            time_period_4 = 'no', start = start_time, stop = end_time)
+
+if sampling_period == '4':
+    jefferson_bme, jefferson_bme_json = load_indoor('Jefferson', jefferson_bme,jefferson_bme_json, interval, 
+                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
+                                                start_2 = start_time_2, stop_2 = end_time_2)
+else:
+    jefferson_bme, jefferson_bme_json = load_indoor('Jefferson', jefferson_bme,jefferson_bme_json, interval,
+                                                    time_period_4 = 'no', start = start_time, stop = end_time)
+
+
+if sampling_period == '4':
+    lidgerwood_bme, lidgerwood_bme_json = load_indoor('Lidgerwood', lidgerwood_bme,lidgerwood_bme_json, interval, 
+                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
+                                                start_2 = start_time_2, stop_2 = end_time_2)
+else:
+    lidgerwood_bme, lidgerwood_bme_json = load_indoor('Lidgerwood', lidgerwood_bme,lidgerwood_bme_json, interval,
+                                                      time_period_4 = 'no', start = start_time, stop = end_time)
+
+if sampling_period == '4':
+    regal_bme, regal_bme_json = load_indoor('Regal', regal_bme,regal_bme_json, interval, 
+                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
+                                                start_2 = start_time_2, stop_2 = end_time_2)
+else:
+    regal_bme, regal_bme_json = load_indoor('Regal', regal_bme,regal_bme_json, interval,
+                                            time_period_4 = 'no', start = start_time, stop = end_time)
+    
+if sampling_period == '4':
+    sheridan_bme, sheridan_bme_json = load_indoor('Sheridan', sheridan_bme,sheridan_bme_json, interval, 
+                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
+                                                start_2 = start_time_2, stop_2 = end_time_2)
+else:
+    sheridan_bme, sheridan_bme_json = load_indoor('Sheridan', sheridan_bme,sheridan_bme_json, interval,
+                                                  time_period_4 = 'no', start = start_time, stop = end_time)
+
+if sampling_period == '4':
+    stevens_bme, stevens_bme_json = load_indoor('Stevens', stevens_bme,stevens_bme_json, interval, 
+                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
+                                                start_2 = start_time_2, stop_2 = end_time_2)
+else:
+    stevens_bme, stevens_bme_json = load_indoor('Stevens', stevens_bme,stevens_bme_json, interval,
+                                                time_period_4 = 'no', start = start_time, stop = end_time)
 
 # Add specific humidity column to corresponding Clarity nodes
 #%%
-spec_humid(audubon_bme, audubon_bme_json, Audubon)
-spec_humid(adams_bme, adams_bme_json, Adams)
-spec_humid(balboa_bme, balboa_bme_json, Balboa)
-spec_humid(browne_bme, browne_bme_json, Browne)
-spec_humid(regal_bme, regal_bme_json, Grant)       # Note Grant using Regal BME to fill in gaps of pressure data when Grant BME down
-spec_humid(adams_bme, adams_bme_json, Jefferson)    # Note Jefferson using Adams BME to fill in gaps of pressure data when Jefferson BME down
-spec_humid(balboa_bme, balboa_bme_json, Lidgerwood) # Note Lidgerwood using Balboa BME to fill in gaps of pressure data when Lidgerwood BME down
-spec_humid(regal_bme, regal_bme_json, Regal)
-spec_humid(sheridan_bme, sheridan_bme_json, Sheridan)
-spec_humid(stevens_bme, stevens_bme_json, Stevens)
+# this was just used to check the impact of using specific humidity - don't need anymore
+#spec_humid(audubon_bme, audubon_bme_json, Audubon)
+#spec_humid(adams_bme, adams_bme_json, Adams)
+#spec_humid(balboa_bme, balboa_bme_json, Balboa)
+#spec_humid(browne_bme, browne_bme_json, Browne)
+#spec_humid(regal_bme, regal_bme_json, Grant)       # Note Grant using Regal BME to fill in gaps of pressure data when Grant BME down
+#spec_humid(adams_bme, adams_bme_json, Jefferson)    # Note Jefferson using Adams BME to fill in gaps of pressure data when Jefferson BME down
+#spec_humid(balboa_bme, balboa_bme_json, Lidgerwood) # Note Lidgerwood using Balboa BME to fill in gaps of pressure data when Lidgerwood BME down
+#spec_humid(regal_bme, regal_bme_json, Regal)
+#spec_humid(sheridan_bme, sheridan_bme_json, Sheridan)
+#spec_humid(stevens_bme, stevens_bme_json, Stevens)
 
 #%%
 
@@ -753,7 +989,7 @@ spec_humid(stevens_bme, stevens_bme_json, Stevens)
 #    evaluate_model(rf, Jefferson)
 #    evaluate_model(rf, Lidgerwood)
 #    evaluate_model(rf, Regal)
-#    evaluate_model(rf, Sheridan)
+   # evaluate_model(rf, Sheridan_copy)
 #    evaluate_model(rf, Stevens)
     
 #else:
@@ -817,8 +1053,9 @@ spec_humid(stevens_bme, stevens_bme_json, Stevens)
 #    Jefferson_All = hybrid_function(rf, mlr_model, Jefferson)
 ##    Lidgerwood_All = hybrid_function(rf, mlr_model, Lidgerwood)
  #   Regal_All = hybrid_function(rf ,mlr_model, Regal)
- #   Sheridan_All = hybrid_function(rf, mlr_model, Sheridan)
- #   Stevens_All =  hybrid_function(rf, mlr_model, Stevens)
+    #Sheridan_All = hybrid_function(rf, mlr_model, Sheridan)
+
+   # Stevens_All =  hybrid_function(rf, mlr_model, Stevens)
 #else:
 #    pass
 #%%
@@ -1167,26 +1404,30 @@ p1 = figure(plot_width=900,
             x_axis_label='Time (local)',
             y_axis_label='PM 2.5 (ug/m3)')
 
-p1.title.text = 'Clarity Calibrated PM 2.5'
+#p1.title.text = 'Clarity Calibrated PM 2.5'
 
-p1.line(Audubon.index,     Audubon.PM2_5_corrected,     legend='Audubon',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
-p1.line(Adams.index,       Adams.PM2_5_corrected,       legend='Adams',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
-p1.line(Balboa.index,      Balboa.PM2_5_corrected,      legend='Balboa',        color='red',         line_width=2, muted_color='red', muted_alpha=0.2)
-p1.line(Browne.index,      Browne.PM2_5_corrected,      legend='Browne',        color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
-p1.line(Grant.index,       Grant.PM2_5_corrected,       legend='Grant',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
+#p1.line(Audubon.index,     Audubon.PM2_5_corrected,     legend='Audubon',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
+#p1.line(Adams.index,       Adams.PM2_5_corrected,       legend='Adams',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
+#p1.line(Balboa.index,      Balboa.PM2_5_corrected,      legend='Balboa',        color='red',         line_width=2, muted_color='red', muted_alpha=0.2)
+#p1.line(Browne.index,      Browne.PM2_5_corrected,      legend='Browne',        color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
+#p1.line(Grant.index,       Grant.PM2_5_corrected,       legend='Grant',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
 p1.line(Jefferson.index,   Jefferson.PM2_5_corrected,   legend='Jefferson',     color='brown',       line_width=2, muted_color='brown', muted_alpha=0.2)
-p1.line(Lidgerwood.index,  Lidgerwood.PM2_5_corrected,  legend='Lidgerwood',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
-p1.line(Regal.index,       Regal.PM2_5_corrected,       legend='Regal',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
-p1.line(Sheridan.index,    Sheridan.PM2_5_corrected,    legend='Sheridan',      color='deepskyblue', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
-p1.line(Stevens.index,     Stevens.PM2_5_corrected,     legend='Stevens',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
-p1.line(Reference.index,  Reference.PM2_5_corrected,    legend='Reference',     color='olive',       line_width=2, muted_color='olive', muted_alpha=0.2)
-p1.line(Paccar.index,     Paccar.PM2_5_corrected,       legend='Paccar',        color='lime',        line_width=2, muted_color='lime', muted_alpha=0.2)
-p1.line(Augusta.index,     Augusta.PM2_5,               legend='Augusta',       color='teal',         muted_color='teal', muted_alpha=0.2,     line_width=2)
-p1.line(Broadway.index,    Broadway.PM2_5,              legend='Broadway BAM',  color='black',        muted_color='black', muted_alpha=0.2, line_width=2)
-p1.line(Greenbluff.index,    Greenbluff.PM2_5,          legend='Greenbluff TEOM',  color='red',       muted_color='red', muted_alpha=0.2, line_width=2)
-p1.line(Monroe.index,       Monroe.PM2_5,               legend='Monroe Neph',   color='blue',         muted_color='blue', muted_alpha=0.2, line_width=2)
+#p1.line(Lidgerwood.index,  Lidgerwood.PM2_5_corrected,  legend='Lidgerwood',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
+#p1.line(Regal.index,       Regal.PM2_5_corrected,       legend='Regal',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
+#p1.line(Sheridan.index,    Sheridan.PM2_5_corrected,    legend='CN-8',      color='black', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
+#p1.line(Stevens.index,     Stevens.PM2_5_corrected,     legend='Stevens',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
+p1.line(Reference.index,  Reference.PM2_5_corrected,    legend='Reference',     color='red',       line_width=2, muted_color='red', muted_alpha=0.2)
+p1.line(jefferson.index,  jefferson.PM2_5_corrected,    legend='IAQU',     color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
+
+#p1.line(Paccar.index,     Paccar.PM2_5_corrected,       legend='Paccar',        color='lime',        line_width=2, muted_color='lime', muted_alpha=0.2)
+#p1.line(Augusta.index,     Augusta.PM2_5,               legend='SRCAA BAM',       color='red',         muted_color='teal', muted_alpha=0.2,     line_width=2)
+#p1.line(Broadway.index,    Broadway.PM2_5,              legend='Broadway BAM',  color='black',        muted_color='black', muted_alpha=0.2, line_width=2)
+#p1.line(Greenbluff.index,    Greenbluff.PM2_5,          legend='Greenbluff TEOM',  color='red',       muted_color='red', muted_alpha=0.2, line_width=2)
+#p1.line(Monroe.index,       Monroe.PM2_5,               legend='Monroe Neph',   color='blue',         muted_color='blue', muted_alpha=0.2, line_width=2)
 
 p1.legend.click_policy="hide"
+
+#figure_format(p1)
 
 tab1 = Panel(child=p1, title="Calibrated PM 2.5")
 
@@ -1594,7 +1835,8 @@ regal['Location'] = 'Regal'
 #%%
 
 # just used to resample indoor data to lower frequency so doesnt take so long to load in each time
-date_range = '1_14_to_1_14_21_install_day'
+date_range = '1_15_to_1_21_21'
+
 
 audubon.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Audubon/resample_15_min_audubon' + '_' + date_range + '.csv', index=False)
 adams.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Adams/resample_15_min_adams' + '_' + date_range + '.csv', index=False)
@@ -1765,98 +2007,100 @@ stevens_bme['Datetime'] = stevens_bme.index
 # add temp and relative humidity columns from BME280 to indoor unit PM 2.5 df
 adams['Datetime'] = pd.to_datetime(adams['Datetime'])
 adams.index = adams.Datetime
-adams = adams.loc[start_time:end_time]
-adams = adams.resample(interval).mean() 
+audubon['Datetime'] = pd.to_datetime(audubon['Datetime'])
+audubon.index = audubon.Datetime
+balboa['Datetime'] = pd.to_datetime(balboa['Datetime'])
+balboa.index = balboa.Datetime
+browne['Datetime'] = pd.to_datetime(browne['Datetime'])
+browne.index = browne.Datetime
+grant['Datetime'] = pd.to_datetime(grant['Datetime'])
+grant.index = grant.Datetime
+jefferson['Datetime'] = pd.to_datetime(jefferson['Datetime'])
+jefferson.index = jefferson.Datetime
+lidgerwood['Datetime'] = pd.to_datetime(lidgerwood['Datetime'])
+lidgerwood.index = lidgerwood.Datetime
+regal['Datetime'] = pd.to_datetime(regal['Datetime'])
+regal.index = regal.Datetime
+sheridan['Datetime'] = pd.to_datetime(sheridan['Datetime'])
+sheridan.index = sheridan.Datetime
+stevens['Datetime'] = pd.to_datetime(stevens['Datetime'])
+stevens.index = stevens.Datetime
+#%%
 
+if sampling_period == '4':
+    adams = in_out_compare_period_4_data_generator(adams, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Adams', unit = 'indoor')
+    audubon = in_out_compare_period_4_data_generator(audubon, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Audubon', unit = 'indoor')
+    balboa = in_out_compare_period_4_data_generator(balboa, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Balboa', unit = 'indoor')
+    browne = in_out_compare_period_4_data_generator(browne, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Browne', unit = 'indoor')
+    grant = in_out_compare_period_4_data_generator(grant, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Grant', unit = 'indoor')
+    jefferson = in_out_compare_period_4_data_generator(jefferson, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Jefferson', unit = 'indoor')
+    lidgerwood = in_out_compare_period_4_data_generator(lidgerwood, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Lidgerwood', unit = 'indoor')
+    regal = in_out_compare_period_4_data_generator(regal, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Regal', unit = 'indoor')
+    sheridan = in_out_compare_period_4_data_generator(sheridan, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Sheridan', unit = 'indoor')
+    stevens = in_out_compare_period_4_data_generator(stevens, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Stevens', unit = 'indoor')
+    
+        
+else:
+    adams = adams.loc[start_time:end_time]
+    audubon = audubon.loc[start_time:end_time]
+    balboa = balboa.loc[start_time:end_time]
+    browne = browne.loc[start_time:end_time]
+    grant = grant.loc[start_time:end_time]
+    jefferson = jefferson.loc[start_time:end_time]
+    lidgerwood = lidgerwood.loc[start_time:end_time]
+    regal = regal.loc[start_time:end_time]
+    sheridan = sheridan.loc[start_time:end_time]
+    stevens = stevens.loc[start_time:end_time]
+
+
+#%%
+
+adams = adams.resample(interval).mean() 
 adams['PM2_5_corrected'] = adams['PM2_5_env']    # this is just renaming so column name matches function input (because for the Clarity nodes, theyd been corrected to the Clarity reference node by this point)
 adams['Rel_humid'] = adams_bme['RH']
 adams['temp'] = adams_bme['temp']
 
-audubon['Datetime'] = pd.to_datetime(audubon['Datetime'])
-audubon.index = audubon.Datetime
-audubon = audubon.loc[start_time:end_time]
 audubon = audubon.resample(interval).mean() 
-
 audubon['PM2_5_corrected'] = audubon['PM2_5_env']    # this is just renaming so column name matches function input (because for the Clarity nodes, theyd been corrected to the Clarity reference node by this point)
 audubon['Rel_humid'] = audubon_bme['RH']
 audubon['temp'] = audubon_bme['temp']
 
-
-balboa['Datetime'] = pd.to_datetime(balboa['Datetime'])
-balboa.index = balboa.Datetime
-balboa = balboa.loc[start_time:end_time]
 balboa = balboa.resample(interval).mean() 
-
 balboa['PM2_5_corrected'] = balboa['PM2_5_env']    # this is just renaming so column name matches function input (because for the Clarity nodes, theyd been corrected to the Clarity reference node by this point)
 balboa['Rel_humid'] = balboa_bme['RH']
 balboa['temp'] = balboa_bme['temp']
 
-
-browne['Datetime'] = pd.to_datetime(browne['Datetime'])
-browne.index = browne.Datetime
-browne = browne.loc[start_time:end_time]
 browne = browne.resample(interval).mean() 
-
 browne['PM2_5_corrected'] = browne['PM2_5_env']    # this is just renaming so column name matches function input (because for the Clarity nodes, theyd been corrected to the Clarity reference node by this point)
 browne['Rel_humid'] = browne_bme['RH']
 browne['temp'] = browne_bme['temp']
 
-
-grant['Datetime'] = pd.to_datetime(grant['Datetime'])
-grant.index = grant.Datetime
-grant = grant.loc[start_time:end_time]
 grant = grant.resample(interval).mean() 
-
 grant['PM2_5_corrected'] = grant['PM2_5_env']    # this is just renaming so column name matches function input (because for the Clarity nodes, theyd been corrected to the Clarity reference node by this point)
 grant['Rel_humid'] = grant_bme['RH']
 grant['temp'] = grant_bme['temp']
 
-
-jefferson['Datetime'] = pd.to_datetime(jefferson['Datetime'])
-jefferson.index = jefferson.Datetime
-jefferson = jefferson.loc[start_time:end_time]
 jefferson = jefferson.resample(interval).mean() 
-
 jefferson['PM2_5_corrected'] = jefferson['PM2_5_env']    # this is just renaming so column name matches function input (because for the Clarity nodes, theyd been corrected to the Clarity reference node by this point)
 jefferson['Rel_humid'] = jefferson_bme['RH']
 jefferson['temp'] = jefferson_bme['temp']
 
-
-lidgerwood['Datetime'] = pd.to_datetime(lidgerwood['Datetime'])
-lidgerwood.index = lidgerwood.Datetime
-lidgerwood = lidgerwood.loc[start_time:end_time]
 lidgerwood = lidgerwood.resample(interval).mean() 
-
 lidgerwood['PM2_5_corrected'] = lidgerwood['PM2_5_env']    # this is just renaming so column name matches function input (because for the Clarity nodes, theyd been corrected to the Clarity reference node by this point)
 lidgerwood['Rel_humid'] = lidgerwood_bme['RH']
 lidgerwood['temp'] = lidgerwood_bme['temp']
 
-
-regal['Datetime'] = pd.to_datetime(regal['Datetime'])
-regal.index = regal.Datetime
-regal = regal.loc[start_time:end_time]
 regal = regal.resample(interval).mean() 
-
 regal['PM2_5_corrected'] = regal['PM2_5_env']    # this is just renaming so column name matches function input (because for the Clarity nodes, theyd been corrected to the Clarity reference node by this point)
 regal['Rel_humid'] = regal_bme['RH']
 regal['temp'] = regal_bme['temp']
 
-
-sheridan['Datetime'] = pd.to_datetime(sheridan['Datetime'])
-sheridan.index = sheridan.Datetime
-sheridan = sheridan.loc[start_time:end_time]
 sheridan = sheridan.resample(interval).mean() 
-
 sheridan['PM2_5_corrected'] = sheridan['PM2_5_env']    # this is just renaming so column name matches function input (because for the Clarity nodes, theyd been corrected to the Clarity reference node by this point)
 sheridan['Rel_humid'] = sheridan_bme['RH']
 sheridan['temp'] = sheridan_bme['temp']
 
-
-stevens['Datetime'] = pd.to_datetime(stevens['Datetime'])
-stevens.index = stevens.Datetime
-stevens = stevens.loc[start_time:end_time]
 stevens = stevens.resample(interval).mean() 
-
 stevens['PM2_5_corrected'] = stevens['PM2_5_env']    # this is just renaming so column name matches function input (because for the Clarity nodes, theyd been corrected to the Clarity reference node by this point)
 stevens['Rel_humid'] = stevens_bme['RH']
 stevens['temp'] = stevens_bme['temp']
@@ -1909,6 +2153,44 @@ lidgerwood = lidgerwood_low.append(lidgerwood_smoke)
 regal = regal_low.append(regal_smoke)
 sheridan = sheridan_low.append(sheridan_smoke)
 stevens = stevens_low.append(stevens_smoke)
+#%%
+# use when not in sampling period 3
+audubon = audubon_smoke
+adams = adams_smoke
+balboa = balboa_smoke
+browne = browne_smoke
+grant = grant_smoke
+jefferson = jefferson_smoke
+lidgerwood = lidgerwood_smoke
+regal = regal_smoke
+sheridan = sheridan_smoke
+stevens = stevens_smoke
+#%%
+
+# use when not in smoke cal times
+audubon = audubon_low
+adams = adams_low
+balboa = balboa_low
+browne = browne_low
+grant = grant_low
+jefferson = jefferson_low
+lidgerwood = lidgerwood_low
+regal = regal_low
+sheridan = sheridan_low
+stevens = stevens_low
+#%%
+
+audubon = audubon.sort_index()
+adams = adams.sort_index()
+balboa = balboa.sort_index()
+browne = browne.sort_index()
+grant = grant.sort_index()
+jefferson = jefferson.sort_index()
+lidgerwood = lidgerwood.sort_index()
+regal = regal.sort_index()
+sheridan = sheridan.sort_index()
+stevens = stevens.sort_index()
+
 
 
 #%%
@@ -1962,6 +2244,59 @@ stevens = stevens_low.append(stevens_smoke)
 #checking function output
 #balboa['out_PM2_5_corrected'] = Balboa['PM2_5_corrected']
 #balboa['PM2_5_corrected'] = balboa['PM2_5_corrected'].shift(-1)
+#%%
+#used for testing whether the daily hour averages in average_day function are correct (they are)
+#Audubon.to_csv('/Users/matthew/Desktop/daily_test/Audubon.csv',  index=True , date_format='%Y-%m-%d %H:%M:%S')
+#audubon.to_csv('/Users/matthew/Desktop/daily_test/audubon_1.csv',  index=True , date_format='%Y-%m-%d %H:%M:%S')
+
+
+#%%
+p1, audubon_averages = average_day(audubon, Audubon, 'Site #1', sampling_period, 'unshifted')
+p2, adams_averages = average_day(adams, Adams, 'Site #2', sampling_period, 'unshifted')
+p3, balboa_averages = average_day(balboa, Balboa, 'Site #3', sampling_period, 'unshifted')
+p4, browne_averages = average_day(browne, Browne, 'Site #4', sampling_period, 'unshifted')
+p5, grant_averages = average_day(grant, Grant, 'Site #5', sampling_period, 'unshifted')
+p6, jefferson_averages = average_day(jefferson, Jefferson, 'Site #6', sampling_period, 'unshifted')
+p7, lidgerwood_averages = average_day(lidgerwood, Lidgerwood, 'Site #7', sampling_period, 'unshifted')
+p8, regal_averages = average_day(regal, Regal, 'Site #8', sampling_period, 'unshifted')
+p9, sheridan_averages = average_day(sheridan, Sheridan, 'Site #9', sampling_period, 'unshifted')
+p10, stevens_averages = average_day(stevens, Stevens, 'Site #10', sampling_period, 'unshifted')
+
+indoor_averages = pd.DataFrame({})
+indoor_averages['Site #1'] = audubon_averages['Audubon_IAQU']
+indoor_averages['Site #2'] = adams_averages['Adams_IAQU']
+indoor_averages['Site #3'] = balboa_averages['Balboa_IAQU']
+indoor_averages['Site #4'] = browne_averages['Browne_IAQU']
+indoor_averages['Site #5'] = grant_averages['Grant_IAQU']
+indoor_averages['Site #6'] = jefferson_averages['Jefferson_IAQU']
+indoor_averages['Site #7'] = lidgerwood_averages['Lidgerwood_IAQU']
+indoor_averages['Site #8'] = regal_averages['Regal_IAQU']
+indoor_averages['Site #9'] = sheridan_averages['Sheridan_IAQU']
+indoor_averages['Site #10'] = stevens_averages['Stevens_IAQU']
+
+outdoor_averages = pd.DataFrame({})
+outdoor_averages['Site #1'] = audubon_averages['Audubon_CN']
+outdoor_averages['Site #2'] = adams_averages['Adams_CN']
+outdoor_averages['Site #3'] = balboa_averages['Balboa_CN']
+outdoor_averages['Site #4'] = browne_averages['Browne_CN']
+outdoor_averages['Site #5'] = grant_averages['Grant_CN']
+outdoor_averages['Site #6'] = jefferson_averages['Jefferson_CN']
+outdoor_averages['Site #7'] = lidgerwood_averages['Lidgerwood_CN']
+outdoor_averages['Site #8'] = regal_averages['Regal_CN']
+outdoor_averages['Site #9'] = sheridan_averages['Sheridan_CN']
+outdoor_averages['Site #10'] = stevens_averages['Stevens_CN']
+
+
+p11 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
+
+# make sure to change the In_out_compare number to put in correct folder based on the time period
+export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_' + sampling_period + '/hourly_averages_all_sites_gridplot.png')
+
+tab1 = Panel(child=p11, title="Indoor Outdoor Comparison")
+
+tabs = Tabs(tabs=[ tab1])
+
+show(tabs)
 
 #%%
 
@@ -1981,6 +2316,10 @@ in_out_corr(corr_df, lidgerwood, Lidgerwood)
 in_out_corr(corr_df, regal, Regal)
 in_out_corr(corr_df, sheridan, Sheridan)
 in_out_corr(corr_df, stevens, Stevens)
+
+
+
+
 #%%
 # use if want to sort corr df by the maxium correlation
 #order_list = pd.DataFrame({'Audubon': corr_df['Audubon'].max(),
@@ -1999,8 +2338,8 @@ in_out_corr(corr_df, stevens, Stevens)
 #sorted_order_list.append('offset')
 #%%
 # this sorts the corr df by project and non-project schools
-sorted_order_list = ['offset','Adams', 'Browne', 'Balboa', 'Jefferson', 'Lidgerwood', # non project schools
-                     'Audubon', 'Grant', 'Regal', 'Sheridan', 'Stevens']
+sorted_order_list = ['offset','Audubon', 'Grant', 'Regal', 'Sheridan', 'Stevens', # project schools
+                     'Adams', 'Balboa', 'Browne', 'Jefferson', 'Lidgerwood'] 
 
 corr_df = corr_df[sorted_order_list]
 #%%
@@ -2018,6 +2357,7 @@ opt_shift(balboa, corr_df)
 opt_shift(browne, corr_df)
 opt_shift(jefferson, corr_df)
 opt_shift(lidgerwood, corr_df)
+
 
 #%%
 
@@ -2068,25 +2408,26 @@ df_list = in_out_histogram(stevens, Stevens, df_list)
 
 
 #%%
-indoor_outdoor_plot(adams, Adams)
+# input arg 3 is the plot title, arg 4 is the in/out compare time period (for saving png's of figures to correct folder) make sure to change based on the selected time period so don't overwrite figures
+indoor_outdoor_plot(audubon, Audubon, 'Site #1', sampling_period)
 #%%
-indoor_outdoor_plot(audubon, Audubon)
+indoor_outdoor_plot(adams, Adams, 'Site #2', sampling_period)
 #%%
-indoor_outdoor_plot(balboa, Balboa)
+indoor_outdoor_plot(balboa, Balboa, 'Site #3', sampling_period)
 #%%
-indoor_outdoor_plot(browne, Browne)
+indoor_outdoor_plot(browne, Browne, 'Site #4', sampling_period)
 #%%
-indoor_outdoor_plot(grant, Grant)
+indoor_outdoor_plot(grant, Grant, 'Site #5', sampling_period)
 #%%
-indoor_outdoor_plot(jefferson, Jefferson)
+indoor_outdoor_plot(jefferson, Jefferson, 'Site #6', sampling_period)
 #%%
-indoor_outdoor_plot(lidgerwood, Lidgerwood)
+indoor_outdoor_plot(lidgerwood, Lidgerwood, 'Site #7', sampling_period)
 #%%
-indoor_outdoor_plot(regal, Regal)
+indoor_outdoor_plot(regal, Regal, 'Site #8', sampling_period)
 #%%
-indoor_outdoor_plot(sheridan, Sheridan)
+indoor_outdoor_plot(sheridan, Sheridan, 'Site #9', sampling_period)
 #%%
-indoor_outdoor_plot(stevens, Stevens)
+indoor_outdoor_plot(stevens, Stevens, 'Site #10', sampling_period)
 
 #%%
 
@@ -2791,134 +3132,220 @@ particle_distribution(Sheridan_df_list, param_1, param_2, param_3, param_4, para
 particle_distribution(Stevens_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Stevens_name_list, param_9)
 #%%
 
-p1 = figure(title = 'Grant',
+p1 = figure(title = 'Site #1',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
             y_axis_label='PM 2.5 (ug/m3)')
+p1.title.text_font_size = '14pt' 
         
-p1.line(grant.index,     grant.PM2_5_corrected,  legend='Indoor PMS5003',  muted_color='red', muted_alpha=0.2,     color='red',     line_width=2)
-#p1.line(Paccar.index,        Paccar.PM2_5,              legend='Clarity',       color='blue',      line_width=2) 
-p1.line(Grant.index,     Grant.PM2_5_corrected,           legend='Outside Calibrated',  muted_color='black', muted_alpha=0.4,  line_alpha=0.4,   color='black',       line_width=2) 
-p1.line(grant.index,     grant.PM2_5_corrected_shift,  legend='Shifted',  muted_color='blue', muted_alpha=0.4,     color='blue',     line_width=2)
-
-source_error = ColumnDataSource(data=dict(base=Grant.index, lower=Grant.lower_uncertainty, upper=Grant.upper_uncertainty))
+#p1.line(audubon.index,     audubon.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
+p1.line(Audubon.index,     Audubon.PM2_5_corrected,           legend='Calibrated CN',       color='red', muted_color='red', muted_alpha=0.4, line_alpha=0.4,     line_width=2) 
+source_error = ColumnDataSource(data=dict(base=Audubon.index, lower=Audubon.lower_uncertainty, upper=Audubon.upper_uncertainty))
+p1.line(audubon.index,     audubon.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 #p1.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
 #)
-
 p1.legend.click_policy="mute"
-p1.legend.location='top_left'
-    
-p2 = figure(title = 'Stevens',
+p1.legend.location='top_right'
+figure_format(p1)
+
+
+p2 = figure(title = 'Site #2',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
             y_axis_label='PM 2.5 (ug/m3)')
+p2.title.text_font_size = '14pt' 
         
-p2.line(stevens.index,     stevens.PM2_5_corrected,  legend='Indoor PMS5003',       color='red',  muted_color='red', muted_alpha=0.2,   line_width=2)
-p2.line(Stevens.index,     Stevens.PM2_5_corrected,           legend='Outside Calibrated',  muted_color='black', muted_alpha=0.4, line_alpha=0.4,    color='black',       line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Stevens.index, lower=Stevens.lower_uncertainty, upper=Stevens.upper_uncertainty))
-p2.line(stevens.index,     stevens.PM2_5_corrected_shift,  legend='Shifted',  muted_color='blue', muted_alpha=0.4,     color='blue',     line_width=2)
+#p2.line(adams.index,     adams.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',   muted_color='black', muted_alpha=0.2,  line_width=2)
+p2.line(Adams.index,     Adams.PM2_5_corrected,           legend='Calibrated CN',       color='red',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    line_width=2) 
+source_error = ColumnDataSource(data=dict(base=Adams.index, lower=Adams.lower_uncertainty, upper=Adams.upper_uncertainty))
+p2.line(adams.index,     adams.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 
 #p2.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
 #)
-
 p2.legend.click_policy="mute"
-p2.legend.location='top_left'
-    
-p3 = figure(title = 'Balboa',
+p2.legend.location='top_right'
+figure_format(p2)
+
+
+p3 = figure(title = 'Site #3',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
             y_axis_label='PM 2.5 (ug/m3)')
+p3.title.text_font_size = '14pt' 
         
-p3.line(balboa.index,     balboa.PM2_5_corrected,  legend='Indoor PMS5003',       color='red', muted_color='red', muted_alpha=0.2,    line_width=2)
-p3.line(Balboa.index,     Balboa.PM2_5_corrected,           legend='Outside Calibrated',   muted_color='black', muted_alpha=0.4, line_alpha=0.4,   color='black',       line_width=2) 
+#p3.line(balboa.index,     balboa.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
+p3.line(Balboa.index,     Balboa.PM2_5_corrected,           legend='Calibrated CN',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   color='red',       line_width=2) 
 source_error = ColumnDataSource(data=dict(base=Balboa.index, lower=Balboa.lower_uncertainty, upper=Balboa.upper_uncertainty))
-p3.line(balboa.index,     balboa.PM2_5_corrected_shift,  legend='Shifted',  muted_color='blue', muted_alpha=0.4,     color='blue',     line_width=2)
+p3.line(balboa.index,     balboa.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 
 #p3.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
 #)
 p3.legend.click_policy="mute"
-p3.legend.location='top_left'
-    
-p4 = figure(title = 'Adams',
+p3.legend.location='top_right'
+figure_format(p3)
+
+p4 = figure(title = 'Site# 4',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
             y_axis_label='PM 2.5 (ug/m3)')
+p4.title.text_font_size = '14pt' 
         
-p4.line(adams.index,     adams.PM2_5_corrected,  legend='Indoor PMS5003',       color='red',   muted_color='red', muted_alpha=0.2,  line_width=2)
-p4.line(Adams.index,     Adams.PM2_5_corrected,           legend='Outside Calibrated',       color='black',  muted_color='black', muted_alpha=0.4, line_alpha=0.4,    line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Adams.index, lower=Adams.lower_uncertainty, upper=Adams.upper_uncertainty))
-p4.line(adams.index,     adams.PM2_5_corrected_shift,  legend='Shifted',  muted_color='blue', muted_alpha=0.4,     color='blue',     line_width=2)
-
+#p4.line(browne.index,     browne.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
+p4.line(Browne.index,     Browne.PM2_5_corrected,           legend='Calibrated CN',       color='red', muted_color='red', muted_alpha=0.4,  line_alpha=0.4,    line_width=2) 
+source_error = ColumnDataSource(data=dict(base=Browne.index, lower=Browne.lower_uncertainty, upper=Browne.upper_uncertainty))
+p4.line(browne.index,     browne.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 #p4.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
 #)
 p4.legend.click_policy="mute"
-p4.legend.location='top_left'
+p4.legend.location='top_right'
+figure_format(p4)
 
-
-p5 = figure(title = 'Jefferson',
+p5 = figure(title = 'Site #5',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
+            y_axis_label='PM 2.5 (ug/m3)') 
+p5.title.text_font_size = '14pt'
         
-p5.line(jefferson.index,     jefferson.PM2_5_corrected,  legend='Indoor PMS5003',  muted_color='red', muted_alpha=0.2,     color='red',     line_width=2)
-p5.line(Jefferson.index,     Jefferson.PM2_5_corrected,           legend='Outside Calibrated',    muted_color='black', muted_alpha=0.4,   color='black', line_alpha=0.4,      line_width=2) 
-p5.line(Reference.index,     Reference.PM2_5_corrected,        legend = 'Clarity Reference',       color='blue',  muted_color='blue', muted_alpha=0.2  ,   line_width=2)
-source_error = ColumnDataSource(data=dict(base=Jefferson.index, lower=Jefferson.lower_uncertainty, upper=Jefferson.upper_uncertainty))
-p5.line(jefferson.index,     jefferson.PM2_5_corrected_shift,  legend='Shifted',  muted_color='blue', muted_alpha=0.4,     color='blue',     line_width=2)
+#p5.line(grant.index,     grant.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.2,     color='black',     line_width=2)
+#p5.line(Paccar.index,        Paccar.PM2_5,              legend='Clarity',       color='blue',      line_width=2) 
+p5.line(Grant.index,     Grant.PM2_5_corrected,           legend='Calibrated CN',  muted_color='red', muted_alpha=0.4,  line_alpha=0.4,   color='red',       line_width=2) 
+p5.line(grant.index,     grant.PM2_5_corrected_shift,  legend='Calirbated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
-
-#tab1 = Panel(child=p5, title="Indoor Outdoor Comparison")
-
-#tabs = Tabs(tabs=[ tab1])
-
-#show(tabs)
+source_error = ColumnDataSource(data=dict(base=Grant.index, lower=Grant.lower_uncertainty, upper=Grant.upper_uncertainty))
 
 #p5.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
 #)
 p5.legend.click_policy="mute"
-p5.legend.location='top_left'
-
-p6 = figure(title = 'Sheridan',
+p5.legend.location='top_right'
+figure_format(p5)
+    
+p6 = figure(title = 'Site #6',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
             y_axis_label='PM 2.5 (ug/m3)')
-        
-p6.line(sheridan.index,     sheridan.PM2_5_corrected,  legend='Indoor PMS5003',       color='red',  muted_color='red', muted_alpha=0.2,   line_width=2)
-p6.line(Sheridan.index,     Sheridan.PM2_5_corrected,           legend='Outside Calibrated',   muted_color='black', muted_alpha=0.4, line_alpha=0.4,   color='black',       line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Sheridan.index, lower=Sheridan.lower_uncertainty, upper=Sheridan.upper_uncertainty))
-p6.line(sheridan.index,     sheridan.PM2_5_corrected_shift,  legend='Shifted',  muted_color='blue', muted_alpha=0.4,     color='blue',     line_width=2)
+p6.title.text_font_size = '14pt' 
+   
+#p6.line(jefferson.index,     jefferson.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.2,     color='black',     line_width=2)
+p6.line(Jefferson.index,     Jefferson.PM2_5_corrected,           legend='Calibrated CN',    muted_color='red', muted_alpha=0.4,   color='red', line_alpha=0.4,      line_width=2) 
+#p6.line(Reference.index,     Reference.PM2_5_corrected,        legend = 'Clarity Reference',       color='blue',  muted_color='blue', muted_alpha=0.2  ,   line_width=2)
+source_error = ColumnDataSource(data=dict(base=Jefferson.index, lower=Jefferson.lower_uncertainty, upper=Jefferson.upper_uncertainty))
+p6.line(jefferson.index,     jefferson.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 
 #p6.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
 #)
 p6.legend.click_policy="mute"
-p6.legend.location='top_left'
+p6.legend.location='top_right'
+figure_format(p6)
 
-p7 = gridplot([[p1,p2, p3], [p4, p5, p6]], plot_width = 400, plot_height = 300)
 
-export_png(p7, filename='/Users/matthew/Desktop/data/Indoor_Outdoor_Upper_Schools_Comparison.png')
+p7 = figure(title = 'Site #7',
+            plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m3)')
+p7.title.text_font_size = '14pt'      
+#p7.line(lidgerwood.index,     lidgerwood.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
+p7.line(Lidgerwood.index,     Lidgerwood.PM2_5_corrected,           legend='Calibrated CN',       color='red',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    line_width=2) 
+source_error = ColumnDataSource(data=dict(base=Lidgerwood.index, lower=Lidgerwood.lower_uncertainty, upper=Lidgerwood.upper_uncertainty))
+p7.line(lidgerwood.index,     lidgerwood.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+
+#p7.add_layout(
+#    Whisker(source=source_error, base="base", upper="upper", lower="lower")
+#)
+p7.legend.click_policy="mute"
+p7.legend.location='top_left'
+figure_format(p7)
+
+
+p8 = figure(title = 'Site #8',
+            plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m3)')
+p8.title.text_font_size = '14pt'  
+
+#p8.line(regal.index,     regal.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
+p8.line(Regal.index,     Regal.PM2_5_corrected,           legend='Calibrated CN',       color='red',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   line_width=2) 
+source_error = ColumnDataSource(data=dict(base=Regal.index, lower=Regal.lower_uncertainty, upper=Regal.upper_uncertainty))
+p8.line(regal.index,     regal.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+
+#p8.add_layout(
+#    Whisker(source=source_error, base="base", upper="upper", lower="lower")
+#)
+p8.legend.click_policy="mute"
+p8.legend.location='top_left'
+figure_format(p8)
+
+
+p9 = figure(title = 'Site  #9',
+            plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m3)')
+p9.title.text_font_size = '14pt'
+#p9.line(sheridan.index,     sheridan.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
+p9.line(Sheridan.index,     Sheridan.PM2_5_corrected,           legend='Calibrated CN',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   color='red',       line_width=2) 
+source_error = ColumnDataSource(data=dict(base=Sheridan.index, lower=Sheridan.lower_uncertainty, upper=Sheridan.upper_uncertainty))
+p9.line(sheridan.index,     sheridan.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+
+
+#p9.add_layout(
+#    Whisker(source=source_error, base="base", upper="upper", lower="lower")
+#)
+p9.legend.click_policy="mute"
+p9.legend.location='top_left'
+
+figure_format(p9)
+
+
+p10 = figure(title = 'Site #10',
+            plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m3)')
+        
+p10.title.text_font_size = '14pt'
+#p10.line(stevens.index,     stevens.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
+p10.line(Stevens.index,     Stevens.PM2_5_corrected,           legend='Calibrated CN',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    color='red',       line_width=2) 
+source_error = ColumnDataSource(data=dict(base=Stevens.index, lower=Stevens.lower_uncertainty, upper=Stevens.upper_uncertainty))
+p10.line(stevens.index,     stevens.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+
+figure_format(p10)
+
+#p7 = gridplot([[p1,p2, p3], [p4, p5, p6]], plot_width = 400, plot_height = 300, toolbar_location=None)
+
+p7 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
+
+# make sure to change the In_out_compare number to put in correct folder based on the time period
+#export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_1/sites_1_to_6_gridplot.png')
+export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_' + sampling_period + '/all_sites_gridplot.png')
 
 tab1 = Panel(child=p7, title="Indoor Outdoor Comparison")
 
@@ -2929,83 +3356,92 @@ show(tabs)
 
 #%%
 
-p1 = figure(title = 'Browne',
+p7 = figure(title = 'Site #7',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
             y_axis_label='PM 2.5 (ug/m3)')
-        
-p1.line(browne.index,     browne.PM2_5_corrected,  legend='Indoor PMS5003',       color='red',  muted_color='red', muted_alpha=0.2,   line_width=2)
-p1.line(Browne.index,     Browne.PM2_5_corrected,           legend='Outside Calibrated',       color='black', muted_color='black', muted_alpha=0.4,  line_alpha=0.4,    line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Browne.index, lower=Browne.lower_uncertainty, upper=Browne.upper_uncertainty))
-p1.line(browne.index,     browne.PM2_5_corrected_shift,  legend='Shifted',  muted_color='blue', muted_alpha=0.4,     color='blue',     line_width=2)
-
-#p1.add_layout(
-#    Whisker(source=source_error, base="base", upper="upper", lower="lower")
-#)
-p1.legend.click_policy="mute"
-p1.legend.location='top_left'
-
-
-p2 = figure(title = 'Audubon',
-            plot_width=900,
-            plot_height=450,
-            x_axis_type='datetime',
-            x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
-        
-p2.line(audubon.index,     audubon.PM2_5_corrected,  legend='Indoor PMS5003',       color='red',  muted_color='red', muted_alpha=0.2,   line_width=2)
-p2.line(Audubon.index,     Audubon.PM2_5_corrected,           legend='Outside Calibrated',       color='black', muted_color='black', muted_alpha=0.4, line_alpha=0.4,     line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Audubon.index, lower=Audubon.lower_uncertainty, upper=Audubon.upper_uncertainty))
-p2.line(audubon.index,     audubon.PM2_5_corrected_shift,  legend='Shifted',  muted_color='blue', muted_alpha=0.4,     color='blue',     line_width=2)
-
-#p2.add_layout(
-#    Whisker(source=source_error, base="base", upper="upper", lower="lower")
-#)
-p2.legend.click_policy="mute"
-p2.legend.location='top_left'
-    
-p3 = figure(title = 'Lidgerwood',
-            plot_width=900,
-            plot_height=450,
-            x_axis_type='datetime',
-            x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
-        
-p3.line(lidgerwood.index,     lidgerwood.PM2_5_corrected,  legend='Indoor PMS5003',       color='red', muted_color='red', muted_alpha=0.2,    line_width=2)
-p3.line(Lidgerwood.index,     Lidgerwood.PM2_5_corrected,           legend='Outside Calibrated',       color='black',  muted_color='black', muted_alpha=0.4, line_alpha=0.4,    line_width=2) 
+p7.title.text_font_size = '14pt'      
+#p7.line(lidgerwood.index,     lidgerwood.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
+p7.line(Lidgerwood.index,     Lidgerwood.PM2_5_corrected,           legend='Calibrated CN',       color='red',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    line_width=2) 
 source_error = ColumnDataSource(data=dict(base=Lidgerwood.index, lower=Lidgerwood.lower_uncertainty, upper=Lidgerwood.upper_uncertainty))
-p3.line(lidgerwood.index,     lidgerwood.PM2_5_corrected_shift,  legend='Shifted',  muted_color='blue', muted_alpha=0.4,     color='blue',     line_width=2)
+p7.line(lidgerwood.index,     lidgerwood.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
-#p3.add_layout(
+#p7.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
 #)
-p3.legend.click_policy="mute"
-p3.legend.location='top_left'
-    
-p4 = figure(title = 'Regal',
+p7.legend.click_policy="mute"
+p7.legend.location='top_left'
+figure_format(p7)
+
+
+p8 = figure(title = 'Site #8',
+            plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m3)')
+p8.title.text_font_size = '14pt'  
+
+#p8.line(regal.index,     regal.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
+p8.line(Regal.index,     Regal.PM2_5_corrected,           legend='Calibrated CN',       color='red',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   line_width=2) 
+source_error = ColumnDataSource(data=dict(base=Regal.index, lower=Regal.lower_uncertainty, upper=Regal.upper_uncertainty))
+p8.line(regal.index,     regal.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+
+#p8.add_layout(
+#    Whisker(source=source_error, base="base", upper="upper", lower="lower")
+#)
+p8.legend.click_policy="mute"
+p8.legend.location='top_left'
+figure_format(p8)
+
+
+p9 = figure(title = 'Site  #9',
+            plot_width=900,
+            plot_height=450,
+            x_axis_type='datetime',
+            x_axis_label='Time (local)',
+            y_axis_label='PM 2.5 (ug/m3)')
+p9.title.text_font_size = '14pt'
+#p9.line(sheridan.index,     sheridan.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
+p9.line(Sheridan.index,     Sheridan.PM2_5_corrected,           legend='Calibrated CN',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   color='red',       line_width=2) 
+source_error = ColumnDataSource(data=dict(base=Sheridan.index, lower=Sheridan.lower_uncertainty, upper=Sheridan.upper_uncertainty))
+p9.line(sheridan.index,     sheridan.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+
+
+#p9.add_layout(
+#    Whisker(source=source_error, base="base", upper="upper", lower="lower")
+#)
+p9.legend.click_policy="mute"
+p9.legend.location='top_left'
+
+figure_format(p9)
+
+
+p10 = figure(title = 'Site #10',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
             y_axis_label='PM 2.5 (ug/m3)')
         
-p4.line(regal.index,     regal.PM2_5_corrected,  legend='Indoor PMS5003',       color='red', muted_color='red', muted_alpha=0.2,    line_width=2)
-p4.line(Regal.index,     Regal.PM2_5_corrected,           legend='Outside Calibrated',       color='black',   muted_color='black', muted_alpha=0.4, line_alpha=0.4,   line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Regal.index, lower=Regal.lower_uncertainty, upper=Regal.upper_uncertainty))
-p4.line(regal.index,     regal.PM2_5_corrected_shift,  legend='Shifted',  muted_color='blue', muted_alpha=0.4,     color='blue',     line_width=2)
+p10.title.text_font_size = '14pt'
+#p10.line(stevens.index,     stevens.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
+p10.line(Stevens.index,     Stevens.PM2_5_corrected,           legend='Calibrated CN',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    color='red',       line_width=2) 
+source_error = ColumnDataSource(data=dict(base=Stevens.index, lower=Stevens.lower_uncertainty, upper=Stevens.upper_uncertainty))
+p10.line(stevens.index,     stevens.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
-#p4.add_layout(
-#    Whisker(source=source_error, base="base", upper="upper", lower="lower")
-#)
-p4.legend.click_policy="mute"
-p4.legend.location='top_left'
+figure_format(p10)
 
 
-p5 = gridplot([[p1,p2], [p3, p4]], plot_width = 500, plot_height = 300)
 
-export_png(p5, filename='/Users/matthew/Desktop/data/Indoor_Outdoor_Lower_Schools_Comparison.png')
+
+
+
+p5 = gridplot([[p7,p8], [p9, p10]], plot_width = 500, plot_height = 300, toolbar_location=None)
+
+export_png(p5, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_1/sites_7_to_10_gridplot.png')
 
 tab1 = Panel(child=p5, title="Indoor Outdoor Comparison")
 

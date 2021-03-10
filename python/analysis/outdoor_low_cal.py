@@ -22,13 +22,27 @@ Created on Sun Jan 24 09:46:46 2021
 
 def outdoor_cal_low(outdoor, name, time_period):
     
+    if time_period =='6':
+        outdoor_start_1 = '2019-09-01 00:00'
+        outdoor_end_1 = '2020-09-10 23:00'
+        
+        outdoor_start_2 = '2020-09-21 20:00'
+     #   outdoor_end_2 = '2021-02-21 00:00'   # for end of analysis period
+        outdoor_end_2 = '2021-03-09 00:00'    # for end of data for sending to solmaz
+        outdoor_1 = outdoor.loc[outdoor_start_1:outdoor_end_1]
+        outdoor_2 = outdoor.loc[outdoor_start_2:outdoor_end_2]
+        
+        outdoor_cut = outdoor_1.append(outdoor_2)
+        outdoor_cut = outdoor_cut.sort_index()
     
-    if time_period == '3':
+    
+    elif time_period == '3':
     
         start_time = '2019-09-01 07:00'  #
         end_time = '2020-09-11 07:00'    #
         outdoor_cut = outdoor.copy()
-        outdoor_cut = outdoor.loc[start_time:end_time]   #
+        outdoor_cut = outdoor.loc[start_time:end_time]  
+        #
     else:
         outdoor_cut = outdoor.copy()
     

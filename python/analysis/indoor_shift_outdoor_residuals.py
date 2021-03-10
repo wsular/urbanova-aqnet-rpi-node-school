@@ -20,7 +20,7 @@ def in_out_histogram(indoor,outdoor, df_list):
     copy_indoor['Shifted Residuals'] = copy_indoor['Outdoor Calibrated'] - copy_indoor['PM2_5_corrected_shift']
     copy_indoor['Fraction Infiltrated'] = copy_indoor['PM2_5_corrected_shift']/copy_indoor['Outdoor Calibrated']
     copy_indoor['Fraction Filtered'] = (copy_indoor['Outdoor Calibrated']-copy_indoor['PM2_5_corrected_shift'])/copy_indoor['Outdoor Calibrated']
-    copy_indoor = copy_indoor.dropna()
+  #  copy_indoor = copy_indoor.dropna()
     
     total_measurements = len(copy_indoor)
     print(total_measurements)

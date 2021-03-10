@@ -28,12 +28,19 @@ def average_day(indoor, outdoor, site_number, time_period, shift):
     if time_period == '1':
        # print('1')
         filepath = '/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_1/'
+        y_scale_option = (-0.5, 10)
     elif time_period == '2':
         filepath = '/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_2/'
+        y_scale_option = (-0.5, 7)
     elif time_period == '3':
         filepath = '/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_3/'
+        y_scale_option = (0, 250)
     elif time_period == '4':
         filepath = '/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_4/'
+        y_scale_option = (-0.5, 10)
+    elif time_period == '5':
+        filepath = '/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_5/'
+        y_scale_option = (0, 90)
     
     
     PlotType = 'HTMLfile'
@@ -57,7 +64,7 @@ def average_day(indoor, outdoor, site_number, time_period, shift):
     indoor_average_day['times'] = pd.to_datetime(dates['times'])
     indoor_average_day = indoor_average_day.sort_values('times')
     indoor_average_day.index = indoor_average_day.times
-
+    
     
     outdoor_average_day['PM2_5_hourly_avg'] = outdoor['PM2_5_corrected'].groupby(outdoor.index.hour).mean()
     outdoor_average_day['times'] = pd.to_datetime(dates['times'])
@@ -80,7 +87,8 @@ def average_day(indoor, outdoor, site_number, time_period, shift):
                         plot_height=450,
                         x_axis_type='datetime',
                         x_axis_label='Time (hrs)',
-                        y_axis_label='PM2.5 (ug/m^3)')
+                        y_axis_label='PM2.5 (ug/m^3)',
+                        y_range = y_scale_option)
     p1.title.text = site_number
     p1.title.text_font_size = '14pt'
             
@@ -92,6 +100,7 @@ def average_day(indoor, outdoor, site_number, time_period, shift):
     
     p1.legend.click_policy="mute"
     figure_format(p1)
+    p1.legend.location='top_center'
     p1.xaxis.formatter = DatetimeTickFormatter(days="", hours="%H", seconds="" )
     
     if shift == 'unshifted':

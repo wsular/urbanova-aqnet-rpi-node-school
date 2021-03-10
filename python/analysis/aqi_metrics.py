@@ -12,7 +12,8 @@ import numpy as np
 def metrics(location_list, total_measurements,nan_values):
     
     metrics = pd.DataFrame({})
-    locations = ['Audubon', 'Adams', 'Balboa', 'Browne', 
+    locations = ['Audubon', 'Adams', 'Balboa', 
+                 'Browne', 
             'Grant', 'Jefferson', 'Lidgerwood', 'Regal',
             'Sheridan', 'Stevens']
     

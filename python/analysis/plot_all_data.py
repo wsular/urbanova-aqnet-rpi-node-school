@@ -31,6 +31,8 @@ from bokeh.layouts import row
 from bokeh.models import Label, LabelSet
 from datetime import datetime, timedelta
 from itertools import combinations
+from bokeh.models import ColumnDataSource, ranges, LabelSet
+
 
 #import import_test
 #from import_test import y
@@ -55,6 +57,8 @@ from good_aqi import good_aqi
 from moderate_aqi import moderate_aqi
 from unhealthy_for_sensitive_aqi import unhealthy_for_sensitive_aqi
 from unhealthy_aqi import unhealthy_aqi
+from very_unhealthy_aqi import very_unhealthy_aqi
+from hazardous_aqi import hazardous_aqi
 from aqi_metrics import metrics
 from spec_humid import spec_humid
 from load_indoor_data import load_indoor
@@ -74,6 +78,8 @@ from outdoor_smoke_uncertainty import outdoor_smoke_uncertainty
 from figure_format import figure_format
 from average_day import average_day
 from time_period_4_compare_data_generator import in_out_compare_period_4_data_generator
+from remove_smoke import remove_smoke
+from average_day_CN_only import average_day_CN
 #%%
 
 # initiate dataframe for high calibration data used to generate high calibration mlr functions for each location
@@ -111,10 +117,6 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #start_time = '2020-02-16 07:00'
 #end_time = '2020-06-22 07:00'
 
-# Stage 1 burn ban
-#start_time = '2019-10-31 07:00'
-#end_time = '2019-11-08 19:00'
-
 # students in schools (in/out period 1)
 #start_time = '2020-02-15 07:00'
 #end_time = '2020-03-10 19:00'
@@ -130,9 +132,36 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #end_time = '2020-09-21 19:00'
 #sampling_period = '3'
 
-# Complete sampling time for outdoor
-#start_time = '2019-09-01 07:00'
-#end_time = '2021-01-27 07:00'
+#Indoor/outdoor compare #4 - part 1
+#start_time_1 = '2020-09-22 07:00'# start time for analysis period 4 
+#start_time_1 = '2020-02-15 07:00'# start time for sending all calibrated indoor data to Solmaz
+#end_time_1 = '2020-10-22 07:00'
+
+#Indoor/outdoor compare #4 - part 2
+#start_time_2 = '2021-01-15 07:00'   # indoor units re-installed in schools after calibration
+#end_time_2 = '2021-02-21 07:00'   # end time for analysis
+#end_time_2 = '2021-03-09 00:00'   # end time for sending calibrated indoor data to Solmaz
+
+#sampling_period = '4'
+
+#Smoke event all indoor overlap
+#start_time = '2020-09-16 08:00'   
+#end_time = '2020-09-21 19:00'
+
+#sampling_period = '5'
+
+#Complete sampling time for outdoor
+start_time = '2019-09-01 07:00'
+#end_time = '2021-02-21 07:00'  # end time of analysis
+end_time = '2021-03-09 07:00'   # end time for sending data to Solmaz
+
+sampling_period = '6'
+
+# Stage 1 burn ban
+#start_time = '2019-10-31 07:00'
+#end_time = '2019-11-08 19:00'
+
+#sampling_period = '7'
 
 # Complete sampling time for indoor/outdoor
 #start_time = '2020-02-15 07:00'
@@ -143,21 +172,12 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #end_time = '2020-12-07 23:00'
 
 # Date Range of interest
-#start_time = '2020-03-10 07:00'   
-#end_time = '2020-10-23 07:00'
-
-#Indoor/outdoor compare #4 - part 1
-start_time_1 = '2020-09-22 07:00'   
-end_time_1 = '2020-10-22 07:00'
+#start_time = '2020-02-21 07:00'   
+#end_time = '2021-03-09 23:00'
 
 
-#Indoor/outdoor compare #4 - part 2
-start_time_2 = '2021-01-15 07:00'   
-end_time_2 = '2021-02-21 07:00'
 
-sampling_period = '4'
-
-# Indoor/outdoor compare #4 - need to cut twice and combine for smoke to indoor cal and from reinstall to present
+# Jefferson Indoor IAQU and Ref node overlap not smoke
 #start_time = '2020--06 07:00'
 #end_time = '2021-01-08 07:00'
 
@@ -183,6 +203,10 @@ files.sort()
 for file in files:
     location_traits = pd.concat([location_traits, pd.read_csv(file)], sort=False)
 
+#%%
+# if in burn ban need to remove Browne from location traits (Browne CN was malfunctioning during this time)
+location_traits = location_traits[~location_traits.School.str.contains("Browne")]
+#%%
 
 #Import entire data set
 
@@ -247,7 +271,6 @@ else:
     pass
 
 # drop erroneous data from Nov. 2019 when sensor malfunctioning
-Adams_All
 Browne_All = Browne_All[Browne_All['PM2_5'] < 1000]
 
 
@@ -430,7 +453,7 @@ Lidgerwood = in_out_compare_period_4_data_generator(Lidgerwood_All, start_time_1
 Regal = in_out_compare_period_4_data_generator(Regal_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Regal')
 Sheridan = in_out_compare_period_4_data_generator(Sheridan_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Sheridan')
 Stevens = in_out_compare_period_4_data_generator(Stevens_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Stevens')
-
+Reference = in_out_compare_period_4_data_generator(Reference_All, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Reference')
 
 #%%
 # don't use this cell if doing period 4 in/out comparisons, use the cell above instead
@@ -463,6 +486,20 @@ Browne_All['time'] = pd.to_datetime(Browne_All['time'])
 Browne_All = Browne_All.sort_values('time')
 Browne_All.index = Browne_All.time
 Browne = Browne_All.loc[start_time:end_time]
+
+# needed to also drop the data from when node working again (in Paccar lab) to when it was re-installed in Spokane
+Browne_start_1 = start_time
+Browne_end_1 = '2019-11-15 00:00'
+
+Browne_start_2 = '2019-11-25 00:00'
+Browne_end_2 = end_time
+
+Browne_1 = Browne.loc[Browne_start_1:Browne_end_1]
+Browne_2 = Browne.loc[Browne_start_2:Browne_end_2]
+
+Browne = Browne_1.append(Browne_2)
+Browne = Browne.sort_index()
+
 
 
 Grant_All['time'] = pd.to_datetime(Grant_All['time'])
@@ -572,7 +609,33 @@ Sheridan['Location'] = 'Sheridan'
 Stevens['Location'] = 'Stevens'
 Stevens_copy = Stevens.copy()
 Stevens_copy2 = Stevens.copy()
+#%%
+# This is to load the dates to remove from Browne df from when it was used as indoor ref (for comparing CN's across entire sampling time)
+Browne_start_1 = '2019-09-01 00:00'
+Browne_end_1 = '2020-10-22 00:00'
 
+Browne_start_2 = '2021-01-15 00:00'
+Browne_end_2 = '2021-02-21 00:00'
+
+Browne_1 = Browne.loc[Browne_start_1:Browne_end_1]
+Browne_2 = Browne.loc[Browne_start_2:Browne_end_2]
+
+Browne = Browne_1.append(Browne_2)
+Browne = Browne.sort_index()
+#Browne_delete = pd.date_range(start="2020-10-22",end="2021-01-15").to_pydatetime().tolist()
+#Browne = Browne[~(Browne.index.strftime('%Y-%m-%d').isin(Browne_delete))]
+#%%
+# remove smoke event days to see if there were any other more localized events between the clarity nodes
+Audubon = remove_smoke(Audubon)
+Adams = remove_smoke(Adams)
+Balboa = remove_smoke(Balboa)
+Browne = remove_smoke(Browne)
+Grant = remove_smoke(Grant)
+Jefferson = remove_smoke(Jefferson)
+Lidgerwood = remove_smoke(Lidgerwood)
+Regal = remove_smoke(Regal)
+Sheridan = remove_smoke(Sheridan)
+Stevens = remove_smoke(Stevens)
 #%%
 
 # apply calibration for lower values during the winter using the calibration from SRCAA overlap
@@ -581,7 +644,9 @@ Stevens_copy2 = Stevens.copy()
 Audubon_low = outdoor_cal_low(Audubon, 'Audubon', time_period = sampling_period)
 Adams_low = outdoor_cal_low(Adams, 'Adams', time_period = sampling_period)
 Balboa_low = outdoor_cal_low(Balboa, 'Balboa', time_period = sampling_period)
+#%%
 Browne_low = outdoor_cal_low(Browne, 'Browne', time_period = sampling_period)
+#%%
 Grant_low = outdoor_cal_low(Grant, 'Grant', time_period = sampling_period)
 Jefferson_low = outdoor_cal_low(Jefferson, 'Jefferson', time_period = sampling_period)
 Lidgerwood_low= outdoor_cal_low(Lidgerwood, 'Lidgerwood', time_period = sampling_period)
@@ -592,7 +657,9 @@ Stevens_low = outdoor_cal_low(Stevens, 'Stevens', time_period = sampling_period)
 outdoor_low_uncertainty(2, Audubon_low)
 outdoor_low_uncertainty(2, Adams_low)
 outdoor_low_uncertainty(2, Balboa_low)
+#%%
 outdoor_low_uncertainty(2, Browne_low)
+#%%
 outdoor_low_uncertainty(2, Grant_low)
 outdoor_low_uncertainty(2, Jefferson_low)
 outdoor_low_uncertainty(2, Lidgerwood_low)
@@ -611,6 +678,7 @@ Lidgerwood_smoke = outdoor_cal_smoke(Lidgerwood, 'Lidgerwood', mlr_high_lidgerwo
 Regal_smoke = outdoor_cal_smoke(Regal, 'Regal', mlr_high_regal)
 Sheridan_smoke = outdoor_cal_smoke(Sheridan, 'Sheridan', mlr_high_sheridan)
 Stevens_smoke = outdoor_cal_smoke(Stevens, 'Stevens', mlr_high_stevens)
+
 #%%
 # only use this if the time period includes the smoke period (otherwise will get error)
 outdoor_smoke_uncertainty(2, Audubon_smoke)
@@ -628,7 +696,9 @@ outdoor_smoke_uncertainty(2, Stevens_smoke)
 Audubon = Audubon_low
 Adams = Adams_low
 Balboa = Balboa_low
+#%%
 Browne = Browne_low
+#%%
 Grant = Grant_low
 Jefferson = Jefferson_low
 Lidgerwood = Lidgerwood_low
@@ -648,6 +718,18 @@ Regal = Regal_smoke
 Sheridan = Sheridan_smoke
 Stevens = Stevens_smoke
 #%%
+print('Audubon',round(Audubon['PM2_5_corrected'].mean(),2))
+print('Adams',round(Adams['PM2_5_corrected'].mean(),2))
+print('Balboa',round(Balboa['PM2_5_corrected'].mean(),2))
+print('Browne',round(Browne['PM2_5_corrected'].mean(),2))
+print('Grant',round(Grant['PM2_5_corrected'].mean(),2))
+print('Jefferson',round(Jefferson['PM2_5_corrected'].mean(),2))
+print('Lidgerwood',round(Lidgerwood['PM2_5_corrected'].mean(),2))
+print('Regal',round(Regal['PM2_5_corrected'].mean(),2))
+print('Sheridan',round(Sheridan['PM2_5_corrected'].mean(),2))
+print('Stevens',round(Stevens['PM2_5_corrected'].mean(),2))
+#%%
+# use this when comparing CN's across entire sampling time
 Audubon = Audubon_low.append(Audubon_smoke)
 Adams = Adams_low.append(Adams_smoke)
 Balboa = Balboa_low.append(Balboa_smoke)
@@ -662,13 +744,29 @@ Stevens = Stevens_low.append(Stevens_smoke)
 Audubon = Audubon.sort_index()
 Adams = Adams.sort_index()
 Balboa = Balboa.sort_index()
+#%%
 Browne = Browne.sort_index()
+#%%
 Grant = Grant.sort_index()
 Jefferson = Jefferson.sort_index()
 Lidgerwood = Lidgerwood.sort_index()
 Regal = Regal.sort_index()
 Sheridan = Sheridan.sort_index()
 Stevens = Stevens.sort_index()
+#%%
+# save calibrate CN data to csv's to send to Solmaz
+#date_range = '9_01_19_to_3_09_21'
+
+#Audubon.to_csv('/Users/matthew/Desktop/Calibrated_Clarity_Node_Data/Audubon' + '_' + date_range + '.csv', index=True)
+#Adams.to_csv('/Users/matthew/Desktop/Calibrated_Clarity_Node_Data/Adams' + '_' + date_range + '.csv', index=True)
+#Balboa.to_csv('/Users/matthew/Desktop/Calibrated_Clarity_Node_Data/Balboa' + '_' + date_range + '.csv', index=True)
+#Browne.to_csv('/Users/matthew/Desktop/Calibrated_Clarity_Node_Data/Browne' + '_' + date_range + '.csv', index=True)
+#Grant.to_csv('/Users/matthew/Desktop/Calibrated_Clarity_Node_Data/Grant' + '_' + date_range + '.csv', index=True)
+#Jefferson.to_csv('/Users/matthew/Desktop/Calibrated_Clarity_Node_Data/Jefferson' + '_' + date_range + '.csv', index=True)
+#Lidgerwood.to_csv('/Users/matthew/Desktop/Calibrated_Clarity_Node_Data/Lidgerwood' + '_' + date_range + '.csv', index=True)
+#Regal.to_csv('/Users/matthew/Desktop/Calibrated_Clarity_Node_Data/Regal' + '_' + date_range + '.csv', index=True)
+#Sheridan.to_csv('/Users/matthew/Desktop/Calibrated_Clarity_Node_Data/Sheridan' + '_' + date_range + '.csv', index=True)
+#Stevens.to_csv('/Users/matthew/Desktop/Calibrated_Clarity_Node_Data/Stevens' + '_' + date_range + '.csv', index=True)
 
 #%%
 #Just for recreating the gridplot for comparing Calibration approaches
@@ -1188,17 +1286,25 @@ Regal_good_aqi = good_aqi(Regal)
 Sheridan_good_aqi = good_aqi(Sheridan)
 Stevens_good_aqi = good_aqi(Stevens)
 
-good_aqi_list = [Audubon_good_aqi, Adams_good_aqi, Balboa_good_aqi, Browne_good_aqi, Grant_good_aqi,
+good_aqi_list = [Audubon_good_aqi, 
+                 Adams_good_aqi, 
+                 Balboa_good_aqi, 
+                 Browne_good_aqi, 
+                 Grant_good_aqi,
                  Jefferson_good_aqi, Lidgerwood_good_aqi, Regal_good_aqi, Sheridan_good_aqi, Stevens_good_aqi]
 
-total_measurements = [len(Audubon), len(Adams), len(Balboa), len(Browne), len(Grant), len(Jefferson), len(Lidgerwood),
+total_measurements = [len(Audubon), len(Adams), len(Balboa), 
+                      len(Browne), 
+                      len(Grant), len(Jefferson), len(Lidgerwood),
                       len(Regal), len(Sheridan), len(Stevens)]
 
 nan_values = [sum(pd.isnull(Audubon['PM2_5_corrected'])), sum(pd.isnull(Adams['PM2_5_corrected'])), sum(pd.isnull(Balboa['PM2_5_corrected'])),
-              sum(pd.isnull(Browne['PM2_5_corrected'])), sum(pd.isnull(Grant['PM2_5_corrected'])), sum(pd.isnull(Jefferson['PM2_5_corrected'])),
+              sum(pd.isnull(Browne['PM2_5_corrected'])), 
+              sum(pd.isnull(Grant['PM2_5_corrected'])), sum(pd.isnull(Jefferson['PM2_5_corrected'])),
               sum(pd.isnull(Lidgerwood['PM2_5_corrected'])), sum(pd.isnull(Regal['PM2_5_corrected'])), sum(pd.isnull(Sheridan['PM2_5_corrected'])),
               sum(pd.isnull(Stevens['PM2_5_corrected']))]
 
+# if took out Browne for burn ban, need to go into good_aqi_metrics and comment out Browne
 good_aqi_metrics = metrics(good_aqi_list, total_measurements, nan_values)
 
 # checks for metrics function
@@ -1220,7 +1326,9 @@ Regal_moderate_aqi = moderate_aqi(Regal)
 Sheridan_moderate_aqi = moderate_aqi(Sheridan)
 Stevens_moderate_aqi = moderate_aqi(Stevens)
 
-moderate_aqi_list = [Audubon_moderate_aqi, Adams_moderate_aqi, Balboa_moderate_aqi, Browne_moderate_aqi, Grant_moderate_aqi,
+moderate_aqi_list = [Audubon_moderate_aqi, Adams_moderate_aqi, Balboa_moderate_aqi, 
+                     Browne_moderate_aqi, 
+                     Grant_moderate_aqi,
                  Jefferson_moderate_aqi, Lidgerwood_moderate_aqi, Regal_moderate_aqi, Sheridan_moderate_aqi, Stevens_moderate_aqi]
 
 moderate_aqi_metrics = metrics(moderate_aqi_list, total_measurements, nan_values)
@@ -1239,7 +1347,8 @@ Sheridan_unhealthy_for_sensitive_aqi = unhealthy_for_sensitive_aqi(Sheridan)
 Stevens_unhealthy_for_sensitive_aqi = unhealthy_for_sensitive_aqi(Stevens)
 
 sensitive_aqi_list = [Audubon_unhealthy_for_sensitive_aqi, Adams_unhealthy_for_sensitive_aqi, Balboa_unhealthy_for_sensitive_aqi,
-                      Browne_unhealthy_for_sensitive_aqi, Grant_unhealthy_for_sensitive_aqi, Jefferson_unhealthy_for_sensitive_aqi, 
+                      Browne_unhealthy_for_sensitive_aqi, 
+                      Grant_unhealthy_for_sensitive_aqi, Jefferson_unhealthy_for_sensitive_aqi, 
                       Lidgerwood_unhealthy_for_sensitive_aqi, Regal_unhealthy_for_sensitive_aqi, Sheridan_unhealthy_for_sensitive_aqi, 
                       Stevens_unhealthy_for_sensitive_aqi]
 
@@ -1258,10 +1367,48 @@ Regal_unhealthy_aqi = unhealthy_aqi(Regal)
 Sheridan_unhealthy_aqi = unhealthy_aqi(Sheridan)
 Stevens_unhealthy_aqi = unhealthy_aqi(Stevens)
 
-unhealthy_aqi_list = [Audubon_unhealthy_aqi, Adams_unhealthy_aqi, Balboa_unhealthy_aqi, Browne_unhealthy_aqi, Grant_unhealthy_aqi,
+unhealthy_aqi_list = [Audubon_unhealthy_aqi, Adams_unhealthy_aqi, Balboa_unhealthy_aqi, 
+                      Browne_unhealthy_aqi, 
+                      Grant_unhealthy_aqi,
                  Jefferson_unhealthy_aqi, Lidgerwood_unhealthy_aqi, Regal_unhealthy_aqi, Sheridan_unhealthy_aqi, Stevens_unhealthy_aqi]
 
 unhealthy_aqi_metrics = metrics(unhealthy_aqi_list, total_measurements, nan_values)
+
+#%%
+# Very Unhealthy AQI
+Audubon_very_unhealthy_aqi = very_unhealthy_aqi(Audubon)
+Adams_very_unhealthy_aqi = very_unhealthy_aqi(Adams)
+Balboa_very_unhealthy_aqi = very_unhealthy_aqi(Balboa)
+Browne_very_unhealthy_aqi = very_unhealthy_aqi(Browne)
+Grant_very_unhealthy_aqi = very_unhealthy_aqi(Grant)
+Jefferson_very_unhealthy_aqi = very_unhealthy_aqi(Jefferson)
+Lidgerwood_very_unhealthy_aqi = very_unhealthy_aqi(Lidgerwood)
+Regal_very_unhealthy_aqi = very_unhealthy_aqi(Regal)
+Sheridan_very_unhealthy_aqi = very_unhealthy_aqi(Sheridan)
+Stevens_very_unhealthy_aqi = very_unhealthy_aqi(Stevens)
+
+very_unhealthy_aqi_list = [Audubon_very_unhealthy_aqi, Adams_very_unhealthy_aqi, Balboa_very_unhealthy_aqi, Browne_very_unhealthy_aqi, Grant_very_unhealthy_aqi,
+                 Jefferson_very_unhealthy_aqi, Lidgerwood_very_unhealthy_aqi, Regal_very_unhealthy_aqi, Sheridan_very_unhealthy_aqi, Stevens_very_unhealthy_aqi]
+
+very_unhealthy_aqi_metrics = metrics(very_unhealthy_aqi_list, total_measurements, nan_values)
+
+#%%
+# Hazardous AQI
+Audubon_hazardous_aqi = hazardous_aqi(Audubon)
+Adams_hazardous_aqi = hazardous_aqi(Adams)
+Balboa_hazardous_aqi = hazardous_aqi(Balboa)
+Browne_hazardous_aqi = hazardous_aqi(Browne)
+Grant_hazardous_aqi = hazardous_aqi(Grant)
+Jefferson_hazardous_aqi = hazardous_aqi(Jefferson)
+Lidgerwood_hazardous_aqi = hazardous_aqi(Lidgerwood)
+Regal_hazardous_aqi = hazardous_aqi(Regal)
+Sheridan_hazardous_aqi = hazardous_aqi(Sheridan)
+Stevens_hazardous_aqi = hazardous_aqi(Stevens)
+
+hazardous_aqi_list = [Audubon_hazardous_aqi, Adams_hazardous_aqi, Balboa_hazardous_aqi, Browne_hazardous_aqi, Grant_hazardous_aqi,
+                 Jefferson_hazardous_aqi, Lidgerwood_hazardous_aqi, Regal_hazardous_aqi, Sheridan_hazardous_aqi, Stevens_hazardous_aqi]
+
+hazardous_aqi_metrics = metrics(hazardous_aqi_list, total_measurements, nan_values)
 #%%
 # Read in Airport Data
 
@@ -1290,11 +1437,13 @@ airport['snow_depth'] = airport['SNWD']
 plot_stat_diff(Audubon_filtered, df_dictionary)
 #%%
 plot_stat_diff(Adams_filtered, df_dictionary)
+#%%
 plot_stat_diff(Balboa_filtered, df_dictionary)
 plot_stat_diff(Browne_filtered, df_dictionary)
 plot_stat_diff(Grant_filtered, df_dictionary)
 plot_stat_diff(Jefferson_filtered, df_dictionary)
 plot_stat_diff(Lidgerwood_filtered, df_dictionary)
+#%%
 plot_stat_diff(Regal_filtered, df_dictionary)
 plot_stat_diff(Sheridan_filtered, df_dictionary)
 plot_stat_diff(Stevens_filtered, df_dictionary)
@@ -1406,18 +1555,19 @@ p1 = figure(plot_width=900,
 
 #p1.title.text = 'Clarity Calibrated PM 2.5'
 
-#p1.line(Audubon.index,     Audubon.PM2_5_corrected,     legend='Audubon',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
-#p1.line(Adams.index,       Adams.PM2_5_corrected,       legend='Adams',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
-#p1.line(Balboa.index,      Balboa.PM2_5_corrected,      legend='Balboa',        color='red',         line_width=2, muted_color='red', muted_alpha=0.2)
-#p1.line(Browne.index,      Browne.PM2_5_corrected,      legend='Browne',        color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
-#p1.line(Grant.index,       Grant.PM2_5_corrected,       legend='Grant',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
+
+p1.line(Audubon.index,     Audubon.PM2_5_corrected,           color='green',       line_width=2, muted_color='green', muted_alpha=0.2, line_alpha = 0)
+p1.line(Adams.index,       Adams.PM2_5_corrected,       legend='Adams',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
+p1.line(Balboa.index,      Balboa.PM2_5_corrected,      legend='Balboa',        color='red',         line_width=2, muted_color='red', muted_alpha=0.2)
+p1.line(Browne.index,      Browne.PM2_5_corrected,      legend='Browne',        color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
+p1.line(Grant.index,       Grant.PM2_5_corrected,       legend='Grant',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
 p1.line(Jefferson.index,   Jefferson.PM2_5_corrected,   legend='Jefferson',     color='brown',       line_width=2, muted_color='brown', muted_alpha=0.2)
-#p1.line(Lidgerwood.index,  Lidgerwood.PM2_5_corrected,  legend='Lidgerwood',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
-#p1.line(Regal.index,       Regal.PM2_5_corrected,       legend='Regal',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
-#p1.line(Sheridan.index,    Sheridan.PM2_5_corrected,    legend='CN-8',      color='black', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
-#p1.line(Stevens.index,     Stevens.PM2_5_corrected,     legend='Stevens',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
+p1.line(Lidgerwood.index,  Lidgerwood.PM2_5_corrected,  legend='Lidgerwood',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
+p1.line(Regal.index,       Regal.PM2_5_corrected,       legend='Regal',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
+p1.line(Sheridan.index,    Sheridan.PM2_5_corrected,    legend='CN-8',      color='black', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
+p1.line(Stevens.index,     Stevens.PM2_5_corrected,     legend='Stevens',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
 p1.line(Reference.index,  Reference.PM2_5_corrected,    legend='Reference',     color='red',       line_width=2, muted_color='red', muted_alpha=0.2)
-p1.line(jefferson.index,  jefferson.PM2_5_corrected,    legend='IAQU',     color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
+#p1.line(jefferson.index,  jefferson.PM2_5_corrected,    legend='IAQU',     color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
 
 #p1.line(Paccar.index,     Paccar.PM2_5_corrected,       legend='Paccar',        color='lime',        line_width=2, muted_color='lime', muted_alpha=0.2)
 #p1.line(Augusta.index,     Augusta.PM2_5,               legend='SRCAA BAM',       color='red',         muted_color='teal', muted_alpha=0.2,     line_width=2)
@@ -1835,7 +1985,7 @@ regal['Location'] = 'Regal'
 #%%
 
 # just used to resample indoor data to lower frequency so doesnt take so long to load in each time
-date_range = '1_15_to_1_21_21'
+date_range = '2_21_to_3_09_21'
 
 
 audubon.to_csv('/Users/matthew/Desktop/data/urbanova/ramboll/Audubon/resample_15_min_audubon' + '_' + date_range + '.csv', index=False)
@@ -2119,16 +2269,16 @@ stevens['Location'] = 'Stevens'
 #%%
 # add indoor calibration - use low calibration for all data except defined smoke event
 
-audubon_low = indoor_cal_low(audubon, 'Audubon')
-adams_low = indoor_cal_low(adams, 'Adams')
-balboa_low = indoor_cal_low(balboa, 'Balboa')
-browne_low = indoor_cal_low(browne, 'Browne')
-grant_low = indoor_cal_low(grant, 'Grant')
-jefferson_low = indoor_cal_low(jefferson, 'Jefferson')
-lidgerwood_low = indoor_cal_low(lidgerwood, 'Lidgerwood')
-regal_low = indoor_cal_low(regal, 'Regal')
-sheridan_low = indoor_cal_low(sheridan, 'Sheridan')
-stevens_low = indoor_cal_low(stevens, 'Stevens')
+audubon_low = indoor_cal_low(audubon, 'Audubon', '4')
+adams_low = indoor_cal_low(adams, 'Adams', '4')
+balboa_low = indoor_cal_low(balboa, 'Balboa', '4')
+browne_low = indoor_cal_low(browne, 'Browne', '4')
+grant_low = indoor_cal_low(grant, 'Grant', '4')
+jefferson_low = indoor_cal_low(jefferson, 'Jefferson', '4')
+lidgerwood_low = indoor_cal_low(lidgerwood, 'Lidgerwood', '4')
+regal_low = indoor_cal_low(regal, 'Regal', '4')
+sheridan_low = indoor_cal_low(sheridan, 'Sheridan', '4')
+stevens_low = indoor_cal_low(stevens, 'Stevens', '4')
 
 #%%
 audubon_smoke = indoor_cal_smoke(audubon, 'Audubon')
@@ -2190,9 +2340,30 @@ lidgerwood = lidgerwood.sort_index()
 regal = regal.sort_index()
 sheridan = sheridan.sort_index()
 stevens = stevens.sort_index()
+#%%
+# save calibrate IAQU data to csv's to send to Solmaz
+date_range = '2_15_20_to_3_09_21'
 
+audubon.to_csv('/Users/matthew/Desktop/Calibrated_Indoor_Data/audubon' + '_' + date_range + '.csv', index=True)
+adams.to_csv('/Users/matthew/Desktop/Calibrated_Indoor_Data/adams' + '_' + date_range + '.csv', index=True)
+balboa.to_csv('/Users/matthew/Desktop/Calibrated_Indoor_Data/balboa' + '_' + date_range + '.csv', index=True)
+browne.to_csv('/Users/matthew/Desktop/Calibrated_Indoor_Data/browne' + '_' + date_range + '.csv', index=True)
+grant.to_csv('/Users/matthew/Desktop/Calibrated_Indoor_Data/grant' + '_' + date_range + '.csv', index=True)
+jefferson.to_csv('/Users/matthew/Desktop/Calibrated_Indoor_Data/jefferson' + '_' + date_range + '.csv', index=True)
+lidgerwood.to_csv('/Users/matthew/Desktop/Calibrated_Indoor_Data/lidgerwood' + '_' + date_range + '.csv', index=True)
+regal.to_csv('/Users/matthew/Desktop/Calibrated_Indoor_Data/regal' + '_' + date_range + '.csv', index=True)
+sheridan.to_csv('/Users/matthew/Desktop/Calibrated_Indoor_Data/sheridan' + '_' + date_range + '.csv', index=True)
+stevens.to_csv('/Users/matthew/Desktop/Calibrated_Indoor_Data/stevens' + '_' + date_range + '.csv', index=True)
 
+#%%
+# just used to create calibrated data sets for comparison between indoor units and Ref nodes
+#jefferson.to_csv('/Users/matthew/Desktop/data/Ref_node_IAQU_compare/jefferson/jefferson_period_4.csv', index=True)
+#Reference.to_csv('/Users/matthew/Desktop/data/Ref_node_IAQU_compare/jefferson/Reference_period_4.csv', index=True)
+#Jefferson.to_csv('/Users/matthew/Desktop/data/Ref_node_IAQU_compare/jefferson/CN_Jefferson_period_4.csv', index=True)
 
+#audubon.to_csv('/Users/matthew/Desktop/data/Ref_node_IAQU_compare/audubon/audubon_period_4.csv', index=True)
+#Audubon.to_csv('/Users/matthew/Desktop/data/Ref_node_IAQU_compare/audubon/CN_Audubon_period_4.csv', index=True)
+#Reference.to_csv('/Users/matthew/Desktop/data/Ref_node_IAQU_compare/audubon/Reference_period_4.csv', index=True)
 #%%
 ########## This was used before the indoor calibration test was performed in Nov - Dec 2020, now use the linear adjustments instead
 # Add specific humidity to indoor units so can use in MLR calibration
@@ -2248,6 +2419,7 @@ stevens = stevens.sort_index()
 #used for testing whether the daily hour averages in average_day function are correct (they are)
 #Audubon.to_csv('/Users/matthew/Desktop/daily_test/Audubon.csv',  index=True , date_format='%Y-%m-%d %H:%M:%S')
 #audubon.to_csv('/Users/matthew/Desktop/daily_test/audubon_1.csv',  index=True , date_format='%Y-%m-%d %H:%M:%S')
+#balboa.to_csv('/Users/matthew/Desktop/daily_test/balboa_1.csv',  index=True , date_format='%Y-%m-%d %H:%M:%S')
 
 
 #%%
@@ -2288,6 +2460,7 @@ outdoor_averages['Site #10'] = stevens_averages['Stevens_CN']
 
 
 p11 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
+#p11 = gridplot([[p4,p7], [p8, p9], [p10]], plot_width = 500, plot_height = 260, toolbar_location=None)  # for plotting ATP 5 where it is just the 5 schools where both units functioning during smoke event
 
 # make sure to change the In_out_compare number to put in correct folder based on the time period
 export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_' + sampling_period + '/hourly_averages_all_sites_gridplot.png')
@@ -2297,14 +2470,53 @@ tab1 = Panel(child=p11, title="Indoor Outdoor Comparison")
 tabs = Tabs(tabs=[ tab1])
 
 show(tabs)
+#%%
+# Plotting CN only
+p1, Audubon_averages = average_day_CN( Audubon, 'Site #1', sampling_period, 'no')
+p2, Adams_averages = average_day_CN(Adams, 'Site #2', sampling_period, 'no')
+p3, Balboa_averages = average_day_CN(Balboa, 'Site #3', sampling_period, 'no')
+#p4, Browne_averages = average_day_CN(Browne, 'Site #4', sampling_period, 'no')
+p5, Grant_averages = average_day_CN(Grant, 'Site #5', sampling_period, 'no')
+p6, Jefferson_averages = average_day_CN(Jefferson, 'Site #6', sampling_period, 'no')
+p7, Lidgerwood_averages = average_day_CN(Lidgerwood, 'Site #7', sampling_period, 'no')
+p8, Regal_averages = average_day_CN(Regal, 'Site #8', sampling_period, 'no')
+p9, Sheridan_averages = average_day_CN(Sheridan, 'Site #9', sampling_period, 'no')
+p10, Stevens_averages = average_day_CN(Stevens, 'Site #10', sampling_period, 'no')
 
+outdoor_averages = pd.DataFrame({})
+outdoor_averages['Site #1'] = Audubon_averages['Audubon_CN']
+outdoor_averages['Site #2'] = Adams_averages['Adams_CN']
+outdoor_averages['Site #3'] = Balboa_averages['Balboa_CN']
+#outdoor_averages['Site #4'] = Browne_averages['Browne_CN']
+outdoor_averages['Site #5'] = Grant_averages['Grant_CN']
+outdoor_averages['Site #6'] = Jefferson_averages['Jefferson_CN']
+outdoor_averages['Site #7'] = Lidgerwood_averages['Lidgerwood_CN']
+outdoor_averages['Site #8'] = Regal_averages['Regal_CN']
+outdoor_averages['Site #9'] = Sheridan_averages['Sheridan_CN']
+outdoor_averages['Site #10'] = Stevens_averages['Stevens_CN']
+
+#p11 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
+# for when in burn ban and don't have Browne
+p11 = gridplot([[p1,p2], [p3, p5], [p6, p7], [p8, p9], [p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
+
+# make sure to change the In_out_compare number to put in correct folder based on the time period
+export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/Burn_ban/hourly_avg_day.png')
+#export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/All_data/hourly_avg_day.png')
+#export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/All_without_smoke/hourly_avg_day.png')
+
+tab1 = Panel(child=p11, title="CN Average Day")
+
+tabs = Tabs(tabs=[ tab1])
+
+show(tabs)
 #%%
 
 # calculate indoor/outdoor correlation at each location (note that this acutally shifts the indoor dataframes as well!!! so make sure to reset after calling this)
 # Should recalc this each time that the overall dataset being looked at changes
 
 corr_df = pd.DataFrame({})
-corr_df['offset'] = [0,-1,-2,-3,-4,-5, -6 , -7, -8, -9 , -10, -11, -12]
+corr_df['offset'] = [0,-1,-2,-3,-4,-5, -6 , -7, -8, -9 , -10, -11, -12]#,
+                    # -13,-14,-15,-16,-17,-18]
     
 in_out_corr(corr_df, audubon, Audubon)
 in_out_corr(corr_df, adams, Adams)
@@ -2397,9 +2609,9 @@ df_list = in_out_histogram(browne, Browne, df_list)
 df_list = in_out_histogram(grant, Grant,df_list)
 
 df_list = in_out_histogram(jefferson, Jefferson, df_list)
-
+#%%
 df_list = in_out_histogram(lidgerwood, Lidgerwood, df_list)
-
+#%%
 df_list = in_out_histogram(regal, Regal, df_list)
 
 df_list = in_out_histogram(sheridan, Sheridan, df_list)
@@ -2409,26 +2621,37 @@ df_list = in_out_histogram(stevens, Stevens, df_list)
 
 #%%
 # input arg 3 is the plot title, arg 4 is the in/out compare time period (for saving png's of figures to correct folder) make sure to change based on the selected time period so don't overwrite figures
-indoor_outdoor_plot(audubon, Audubon, 'Site #1', sampling_period)
+p1 = indoor_outdoor_plot(audubon, Audubon, 'Site #1', sampling_period, shift = 'no')
 #%%
-indoor_outdoor_plot(adams, Adams, 'Site #2', sampling_period)
+p2 = indoor_outdoor_plot(adams, Adams, 'Site #2', sampling_period, shift = 'no')
 #%%
-indoor_outdoor_plot(balboa, Balboa, 'Site #3', sampling_period)
+p3 = indoor_outdoor_plot(balboa, Balboa, 'Site #3', sampling_period, shift = 'no')
 #%%
-indoor_outdoor_plot(browne, Browne, 'Site #4', sampling_period)
+p4 = indoor_outdoor_plot(browne, Browne, 'Site #4', sampling_period, shift = 'no')
 #%%
-indoor_outdoor_plot(grant, Grant, 'Site #5', sampling_period)
+p5 = indoor_outdoor_plot(grant, Grant, 'Site #5', sampling_period, shift = 'no')
 #%%
-indoor_outdoor_plot(jefferson, Jefferson, 'Site #6', sampling_period)
+p6 = indoor_outdoor_plot(jefferson, Jefferson, 'Site #6', sampling_period, shift = 'no')
 #%%
-indoor_outdoor_plot(lidgerwood, Lidgerwood, 'Site #7', sampling_period)
+p7 = indoor_outdoor_plot(lidgerwood, Lidgerwood, 'Site #7', sampling_period, shift = 'no')
 #%%
-indoor_outdoor_plot(regal, Regal, 'Site #8', sampling_period)
+p8 = indoor_outdoor_plot(regal, Regal, 'Site #8', sampling_period, shift = 'no')
 #%%
-indoor_outdoor_plot(sheridan, Sheridan, 'Site #9', sampling_period)
+p9 = indoor_outdoor_plot(sheridan, Sheridan, 'Site #9', sampling_period, shift = 'no')
 #%%
-indoor_outdoor_plot(stevens, Stevens, 'Site #10', sampling_period)
+p10 = indoor_outdoor_plot(stevens, Stevens, 'Site #10', sampling_period, shift = 'no')
+#%%
+p11 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
+#p11 = gridplot([[p4,p7], [p8, p9], [p10]], plot_width = 500, plot_height = 260, toolbar_location=None)  # for plotting ATP 5 where it is just the 5 schools where both units functioning during smoke event
 
+# make sure to change the In_out_compare number to put in correct folder based on the time period
+export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_' + sampling_period + '/all_sites_gridplot_unshifted.png')
+
+tab1 = Panel(child=p11, title="Indoor Outdoor Comparison")
+
+tabs = Tabs(tabs=[ tab1])
+
+show(tabs)
 #%%
 
 
@@ -3131,19 +3354,24 @@ particle_distribution(Sheridan_df_list, param_1, param_2, param_3, param_4, para
 #%%
 particle_distribution(Stevens_df_list, param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, Stevens_name_list, param_9)
 #%%
+if PlotType=='notebook':
+    output_notebook()
+else:
+    output_file('/Users/matthew/Desktop/clarity_PM2_5_time_series_legend_mute.html')
 
 p1 = figure(title = 'Site #1',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
+            y_axis_label='PM 2.5 (ug/m3)',
+            y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban
 p1.title.text_font_size = '14pt' 
         
-#p1.line(audubon.index,     audubon.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
-p1.line(Audubon.index,     Audubon.PM2_5_corrected,           legend='Calibrated CN',       color='red', muted_color='red', muted_alpha=0.4, line_alpha=0.4,     line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Audubon.index, lower=Audubon.lower_uncertainty, upper=Audubon.upper_uncertainty))
-p1.line(audubon.index,     audubon.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+p1.line(audubon.index,     audubon.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
+#p1.line(Audubon.index,     Audubon.PM2_5_corrected,           legend='Calibrated CN',       color='black', muted_color='red', muted_alpha=0.4, line_alpha=0.4,     line_width=2) 
+#source_error = ColumnDataSource(data=dict(base=Audubon.index, lower=Audubon.lower_uncertainty, upper=Audubon.upper_uncertainty))
+#p1.line(audubon.index,     audubon.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 #p1.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
@@ -3158,13 +3386,14 @@ p2 = figure(title = 'Site #2',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
+            y_axis_label='PM 2.5 (ug/m3)',
+            y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban)
 p2.title.text_font_size = '14pt' 
         
-#p2.line(adams.index,     adams.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',   muted_color='black', muted_alpha=0.2,  line_width=2)
-p2.line(Adams.index,     Adams.PM2_5_corrected,           legend='Calibrated CN',       color='red',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Adams.index, lower=Adams.lower_uncertainty, upper=Adams.upper_uncertainty))
-p2.line(adams.index,     adams.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+p2.line(adams.index,     adams.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',   muted_color='black', muted_alpha=0.2,  line_width=2)
+#p2.line(Adams.index,     Adams.PM2_5_corrected,           legend='Calibrated CN',       color='black',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    line_width=2) 
+#source_error = ColumnDataSource(data=dict(base=Adams.index, lower=Adams.lower_uncertainty, upper=Adams.upper_uncertainty))
+#p2.line(adams.index,     adams.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 
 #p2.add_layout(
@@ -3180,13 +3409,14 @@ p3 = figure(title = 'Site #3',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
+            y_axis_label='PM 2.5 (ug/m3)',
+            y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
 p3.title.text_font_size = '14pt' 
         
-#p3.line(balboa.index,     balboa.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
-p3.line(Balboa.index,     Balboa.PM2_5_corrected,           legend='Calibrated CN',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   color='red',       line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Balboa.index, lower=Balboa.lower_uncertainty, upper=Balboa.upper_uncertainty))
-p3.line(balboa.index,     balboa.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+p3.line(balboa.index,     balboa.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
+#p3.line(Balboa.index,     Balboa.PM2_5_corrected,           legend='Calibrated CN',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   color='black',       line_width=2) 
+#source_error = ColumnDataSource(data=dict(base=Balboa.index, lower=Balboa.lower_uncertainty, upper=Balboa.upper_uncertainty))
+#p3.line(balboa.index,     balboa.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 
 #p3.add_layout(
@@ -3201,13 +3431,14 @@ p4 = figure(title = 'Site# 4',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
+            y_axis_label='PM 2.5 (ug/m3)',
+            y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
 p4.title.text_font_size = '14pt' 
         
-#p4.line(browne.index,     browne.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
-p4.line(Browne.index,     Browne.PM2_5_corrected,           legend='Calibrated CN',       color='red', muted_color='red', muted_alpha=0.4,  line_alpha=0.4,    line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Browne.index, lower=Browne.lower_uncertainty, upper=Browne.upper_uncertainty))
-p4.line(browne.index,     browne.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+p4.line(browne.index,     browne.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
+#p4.line(Browne.index,     Browne.PM2_5_corrected,           legend='Calibrated CN',       color='red', muted_color='red', muted_alpha=0.4,  line_alpha=0.4,    line_width=2) 
+#source_error = ColumnDataSource(data=dict(base=Browne.index, lower=Browne.lower_uncertainty, upper=Browne.upper_uncertainty))
+#p4.line(browne.index,     browne.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 #p4.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
@@ -3221,15 +3452,16 @@ p5 = figure(title = 'Site #5',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)') 
+            y_axis_label='PM 2.5 (ug/m3)',
+            y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban)) 
 p5.title.text_font_size = '14pt'
         
-#p5.line(grant.index,     grant.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.2,     color='black',     line_width=2)
+p5.line(grant.index,     grant.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.2,     color='black',     line_width=2)
 #p5.line(Paccar.index,        Paccar.PM2_5,              legend='Clarity',       color='blue',      line_width=2) 
-p5.line(Grant.index,     Grant.PM2_5_corrected,           legend='Calibrated CN',  muted_color='red', muted_alpha=0.4,  line_alpha=0.4,   color='red',       line_width=2) 
-p5.line(grant.index,     grant.PM2_5_corrected_shift,  legend='Calirbated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+#p5.line(Grant.index,     Grant.PM2_5_corrected,           legend='Calibrated CN',  muted_color='red', muted_alpha=0.4,  line_alpha=0.4,   color='black',       line_width=2) 
+#p5.line(grant.index,     grant.PM2_5_corrected_shift,  legend='Calirbated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
-source_error = ColumnDataSource(data=dict(base=Grant.index, lower=Grant.lower_uncertainty, upper=Grant.upper_uncertainty))
+#source_error = ColumnDataSource(data=dict(base=Grant.index, lower=Grant.lower_uncertainty, upper=Grant.upper_uncertainty))
 
 #p5.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
@@ -3243,14 +3475,15 @@ p6 = figure(title = 'Site #6',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
+            y_axis_label='PM 2.5 (ug/m3)',
+            y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
 p6.title.text_font_size = '14pt' 
    
-#p6.line(jefferson.index,     jefferson.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.2,     color='black',     line_width=2)
-p6.line(Jefferson.index,     Jefferson.PM2_5_corrected,           legend='Calibrated CN',    muted_color='red', muted_alpha=0.4,   color='red', line_alpha=0.4,      line_width=2) 
+p6.line(jefferson.index,     jefferson.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.2,     color='black',     line_width=2)
+#p6.line(Jefferson.index,     Jefferson.PM2_5_corrected,           legend='Calibrated CN',    muted_color='red', muted_alpha=0.4,   color='black', line_alpha=0.4,      line_width=2) 
 #p6.line(Reference.index,     Reference.PM2_5_corrected,        legend = 'Clarity Reference',       color='blue',  muted_color='blue', muted_alpha=0.2  ,   line_width=2)
-source_error = ColumnDataSource(data=dict(base=Jefferson.index, lower=Jefferson.lower_uncertainty, upper=Jefferson.upper_uncertainty))
-p6.line(jefferson.index,     jefferson.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+#source_error = ColumnDataSource(data=dict(base=Jefferson.index, lower=Jefferson.lower_uncertainty, upper=Jefferson.upper_uncertainty))
+#p6.line(jefferson.index,     jefferson.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 
 #p6.add_layout(
@@ -3266,12 +3499,14 @@ p7 = figure(title = 'Site #7',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
-p7.title.text_font_size = '14pt'      
-#p7.line(lidgerwood.index,     lidgerwood.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
-p7.line(Lidgerwood.index,     Lidgerwood.PM2_5_corrected,           legend='Calibrated CN',       color='red',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Lidgerwood.index, lower=Lidgerwood.lower_uncertainty, upper=Lidgerwood.upper_uncertainty))
-p7.line(lidgerwood.index,     lidgerwood.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+            y_axis_label='PM 2.5 (ug/m3)',
+            y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
+p7.title.text_font_size = '14pt'     
+ 
+p7.line(lidgerwood.index,     lidgerwood.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
+#p7.line(Lidgerwood.index,     Lidgerwood.PM2_5_corrected,           legend='Calibrated CN',       color='black',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    line_width=2) 
+#source_error = ColumnDataSource(data=dict(base=Lidgerwood.index, lower=Lidgerwood.lower_uncertainty, upper=Lidgerwood.upper_uncertainty))
+#p7.line(lidgerwood.index,     lidgerwood.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 #p7.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
@@ -3286,13 +3521,14 @@ p8 = figure(title = 'Site #8',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
+            y_axis_label='PM 2.5 (ug/m3)',
+            y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
 p8.title.text_font_size = '14pt'  
 
-#p8.line(regal.index,     regal.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
-p8.line(Regal.index,     Regal.PM2_5_corrected,           legend='Calibrated CN',       color='red',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Regal.index, lower=Regal.lower_uncertainty, upper=Regal.upper_uncertainty))
-p8.line(regal.index,     regal.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+p8.line(regal.index,     regal.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
+#p8.line(Regal.index,     Regal.PM2_5_corrected,           legend='Calibrated CN',       color='black',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   line_width=2) 
+#source_error = ColumnDataSource(data=dict(base=Regal.index, lower=Regal.lower_uncertainty, upper=Regal.upper_uncertainty))
+#p8.line(regal.index,     regal.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 #p8.add_layout(
 #    Whisker(source=source_error, base="base", upper="upper", lower="lower")
@@ -3307,12 +3543,14 @@ p9 = figure(title = 'Site  #9',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
+            y_axis_label='PM 2.5 (ug/m3)',
+            y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
 p9.title.text_font_size = '14pt'
-#p9.line(sheridan.index,     sheridan.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
-p9.line(Sheridan.index,     Sheridan.PM2_5_corrected,           legend='Calibrated CN',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   color='red',       line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Sheridan.index, lower=Sheridan.lower_uncertainty, upper=Sheridan.upper_uncertainty))
-p9.line(sheridan.index,     sheridan.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+
+p9.line(sheridan.index,     sheridan.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
+#p9.line(Sheridan.index,     Sheridan.PM2_5_corrected,           legend='Calibrated CN',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   color='black',       line_width=2) 
+#source_error = ColumnDataSource(data=dict(base=Sheridan.index, lower=Sheridan.lower_uncertainty, upper=Sheridan.upper_uncertainty))
+#p9.line(sheridan.index,     sheridan.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 
 #p9.add_layout(
@@ -3329,23 +3567,28 @@ p10 = figure(title = 'Site #10',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
+            y_axis_label='PM 2.5 (ug/m3)',
+            y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
         
 p10.title.text_font_size = '14pt'
-#p10.line(stevens.index,     stevens.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
-p10.line(Stevens.index,     Stevens.PM2_5_corrected,           legend='Calibrated CN',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    color='red',       line_width=2) 
-source_error = ColumnDataSource(data=dict(base=Stevens.index, lower=Stevens.lower_uncertainty, upper=Stevens.upper_uncertainty))
-p10.line(stevens.index,     stevens.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
+
+p10.line(stevens.index,     stevens.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
+#p10.line(Stevens.index,     Stevens.PM2_5_corrected,           legend='Calibrated CN',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    color='black',       line_width=2) 
+#source_error = ColumnDataSource(data=dict(base=Stevens.index, lower=Stevens.lower_uncertainty, upper=Stevens.upper_uncertainty))
+#p10.line(stevens.index,     stevens.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 figure_format(p10)
 
 #p7 = gridplot([[p1,p2, p3], [p4, p5, p6]], plot_width = 400, plot_height = 300, toolbar_location=None)
 
-p7 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
+#p7 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
+p7 = gridplot([[p1,p2], [p3, p5], [p6, p7], [p8, p9], [p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
 
 # make sure to change the In_out_compare number to put in correct folder based on the time period
 #export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_1/sites_1_to_6_gridplot.png')
-export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_' + sampling_period + '/all_sites_gridplot.png')
+#export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_' + sampling_period + '/all_sites_gridplot.png')
+#export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_' + sampling_period + '/all_sites_gridplot_unshifted.png')
+#export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/Burn_ban/time_series.png')
 
 tab1 = Panel(child=p7, title="Indoor Outdoor Comparison")
 
@@ -3615,10 +3858,10 @@ show(tabs)
 #%%
 # Calculate average and median PM 2.5 measurements for each Clarity Node
 
-Node = [Audubon,
-        Adams,
+Node = [Adams,
+        Audubon,
         Balboa,
-        Browne,
+  #      Browne,
         Grant,
         Jefferson,
         Lidgerwood,
@@ -3632,29 +3875,40 @@ Node = [Audubon,
     #    Broadway,
     #    Greenbluff]
 
-Node_name = ['Audubon',
-             'Adams',
-             'Balboa',
-             'Browne',
-             'Grant',
-             'Jefferson',
-             'Lidgerwood',
-             'Regal',
-             'Sheridan',
-             'Stevens']#,
+Node_name = ['2',       #Adams
+             '1',     # Audubon
+             '3',     #Balboa
+       #      '4',     #Browne
+             '5',    # Grant
+             '6', #Jefferson
+             '7', #Lidgerwood
+             '8',     #Regal
+             '9',  #sheridan
+             '10']#,  #stevens
          #    'Reference',
          #    'Paccar',
          #    'Augusta',
          #    'Monroe',
          #    'Broadway',
          #    'Greenbluff']
+# this has to be ordered so matches with the two arrays above (this is so can plot with shortened labels so dont overlap)
+School_Type = ['N-P',
+               'P',
+               'N-P',
+         #      'N-P',
+               'P',
+               'N-P',
+               'N-P',
+               'P',
+               'P',
+               'P']
 #%%
 
 #For checking loop
 audubon_avg = np.mean(Audubon['PM2_5'])
 adams_avg = np.mean(Adams['PM2_5'])
 balboa_avg = np.mean(Balboa['PM2_5'])
-browne_avg = np.mean(Browne['PM2_5'])
+#browne_avg = np.mean(Browne['PM2_5'])
 grant_avg = np.mean(Grant['PM2_5'])
 jefferson_avg = np.mean(Jefferson['PM2_5'])
 lidgerwood_avg = np.mean(Lidgerwood['PM2_5'])
@@ -3668,7 +3922,7 @@ stevens_avg = np.mean(Stevens['PM2_5'])
 audubon_avg_adj = np.mean(Audubon['PM2_5_corrected'])
 adams_avg_adj = np.mean(Adams['PM2_5_corrected'])
 balboa_avg_adj = np.mean(Balboa['PM2_5_corrected'])
-browne_avg_adj = np.mean(Browne['PM2_5_corrected'])
+#browne_avg_adj = np.mean(Browne['PM2_5_corrected'])
 grant_avg_adj = np.mean(Grant['PM2_5_corrected'])
 jefferson_avg_adj = np.mean(Jefferson['PM2_5_corrected'])
 lidgerwood_avg_adj = np.mean(Lidgerwood['PM2_5_corrected'])
@@ -3727,8 +3981,9 @@ stats_table_adj['median'] = median_adj
 stats_table_adj['var'] = var_adj
 stats_table_adj['stdev'] = stdev_adj
 stats_table_adj['std_err'] = std_err_adj
+stats_table_adj['School_Type'] = School_Type
 #%%
-stats_table_adj = stats_table_adj.sort_values('avg', ascending=False)
+#stats_table_adj = stats_table_adj.sort_values('avg', ascending=False)
 #%%
 stats_table_adj = stats_table_adj.reset_index(drop=True)
 
@@ -3759,6 +4014,8 @@ df = df.sort_values('School')
 df = df.reset_index(drop=True)
 df['avg_PM2_5'] = stats_table_adj['avg']
 df['stdev'] = stats_table_adj['stdev']
+df['Site'] = stats_table_adj['location']
+df['School_type_short'] = stats_table_adj['School_Type']
 
 #%%
 print(df.dtypes)
@@ -3797,51 +4054,170 @@ hv.save(test.options(toolbar=None), '/Users/matthew/Desktop/IDW_new_test.png', f
 show(hv.render(test))
 
 #%%
+#source = ColumnDataSource(data=dict(free_meal_percentage = np.array(df.free_meal_percentage),
+#                                    avg_PM2_5 = np.array(df.avg_PM2_5),
+#                                    School = np.array(df.School)))
 
-p1 = figure(plot_width=1100,
-            plot_height=450,
-         #   x_axis_type='datetime',
-            x_axis_label='Distance to Freeway (ft)',
-            y_axis_label='Average PM 2.5 (ug/m3)')
+#def source_func(x_data,y_data,df,x_label,y_label):
+#    source = ColumnDataSource(data=dict(x_label = np.array(x_data),
+#                                    y_label = np.array(y_data),
+#                                    School = np.array(df.School)))
+#    return source
 
-p1.title.text = 'PM2.5 vs Distance to Freeway'    
+def characteristic_plot(x_data,y_data,df,x_label,y_label):
+    if PlotType=='notebook':
+        output_notebook()
+    else:
+        output_file('/Users/matthew/Desktop/characteristic_correlations.html')
 
-p1.scatter(df.Distance_to_freeway,    df.avg_PM2_5,     color='black',   muted_color='black', muted_alpha=0.1 , line_width=0.2)
+    df = df.copy()
+    y_range=(7.5, 19)  # for burn ban
+  #  y_range=(6.2, 9.7) # for all data
+ #   y_range=(3.4, 7)  # for all data without smoke
+    if x_label == 'Distance_to_freeway':
+        x_axis_label_option='Distance to Freeway (ft)'
+        title_text_option = 'Average PM 2.5 vs Distance to Freeway'
+     #   y_range=(5.5, 10.5)
+        x_offset=-5
+    elif x_label == 'Distance_to_major_arterial': 
+        x_axis_label_option = 'Distance to Major Arterial (ft)'
+        title_text_option = 'Average PM 2.5 vs Distance to Major Arterial'
+    elif x_label == 'Distance_to_highway':
+      #  y_range=(5.5, 10.5)
+        x_axis_label_option = 'Distance to Highway (ft)'
+        title_text_option = 'Average PM 2.5 vs Distance to Highway'
+    elif x_label == 'Elevation':
+   #     print(1)
+   #     df = df[~df.School.str.contains("Lidgerwood")]   # take out lidgerwood so don't have overlapping labels (sites 3 and 7 have same elevation)
+   #     print(df)
+        x_axis_label_option = 'Elevation (ft)'
+        title_text_option = 'Average PM 2.5 vs Elevation'
+    elif x_label == 'free_meal_percentage':
+      #  y_range=(5.5, 10.5)
+        x_axis_label_option = 'Free Meal Percentage (%)'
+        title_text_option = 'Free Meal Percentage'
+        
+
+    p1 = figure(plot_width=600,
+            plot_height=400,
+            x_axis_label = x_axis_label_option,
+            y_axis_label='Average PM 2.5 (ug/m3)',
+            y_range = y_range)
+
+    p1.title.text = title_text_option   
+    p1.title.text_font_size = '14pt'
+
+    p1.scatter(x_data,    y_data,     color='black',   muted_color='black', muted_alpha=0.1 , line_width=0.2)
+
+    source = ColumnDataSource(data=dict(x_label = np.array(x_data),
+                                    y_label = np.array(y_data),
+                                    Site = np.array(df.Site)))
+
+    labels = LabelSet(x='x_label', y='y_label', text='Site', level='glyph',
+         x_offset=-5, 
+        # x_offset=x_offset,
+         y_offset=-1, 
+         source=source,
+         text_font_size='14pt',
+         text_font = 'times')
+
+    p1.add_layout(labels)
+
+    p1.xaxis.axis_label_text_font_size = "14pt"
+    p1.xaxis.major_label_text_font_size = "14pt"
+    p1.xaxis.axis_label_text_font = "times"
+    p1.xaxis.axis_label_text_color = "black"
+    
+    p1.yaxis.axis_label_text_font_size = "14pt"
+    p1.yaxis.major_label_text_font_size = "14pt"
+    p1.yaxis.axis_label_text_font = "times"
+    p1.yaxis.axis_label_text_color = "black"
+    
+    p1.toolbar.logo = None
+    p1.toolbar_location = None
+    p1.xgrid.grid_line_color = None
+    p1.ygrid.grid_line_color = None
+    p1.min_border_right = 30
+
+    p1.legend.click_policy="mute"
+
+    
+    return p1
+
+#%%
+p1 = characteristic_plot(df.Distance_to_freeway,df.avg_PM2_5,df,'Distance_to_freeway','avg_PM2_5')
+#%%
+p2 = characteristic_plot(df.Distance_to_highway,df.avg_PM2_5,df,'Distance_to_highway','avg_PM2_5')
+#%%
+p3 = characteristic_plot(df.Distance_to_major_arterial,df.avg_PM2_5,df,'Distance_to_major_arterial','avg_PM2_5')
+#%%
+df_el = df
+#df_el = df[~df.School.str.contains("Lidgerwood")]   # take out lidgerwood so don't have overlapping labels (sites 3 and 7 have same elevation) - only for all data and smoke removed, dont run this for burn ban
+#df_el['Site'] = df_el['Site'].replace(['3'], '3,7')
+p4 = characteristic_plot(df_el.Elevation,df_el.avg_PM2_5,df_el,'Elevation','avg_PM2_5')
+#%%
+p5 = characteristic_plot(df.free_meal_percentage,df.avg_PM2_5,df,'free_meal_percentage','avg_PM2_5')
+#%%
+from bokeh.models import ColumnDataSource, ranges, LabelSet
+
+df1 = df.sort_values(['Type_of_School', 'avg_PM2_5'], ascending=[False, False])
 
 
-source = ColumnDataSource(data=dict(Distance_to_freeway = np.array(df.Distance_to_freeway),
-                                    avg_PM2_5 = np.array(df.avg_PM2_5),
-                                    School = np.array(df.School)))
-
-labels = LabelSet(x='Distance_to_freeway', y='avg_PM2_5', text='School', level='glyph',
-         x_offset=-4, y_offset=2, source=source)
-
-p1.add_layout(labels)
-
-p1.legend.click_policy="mute"
-
-tab1 = Panel(child=p1, title="PM 2.5 vs Atm Conditions Time Series")
+source = ColumnDataSource(dict(x=np.array(df1.Site),y=np.array(df1.avg_PM2_5), text=np.array(df1.School_type_short)))
 
 
+p6 = figure(plot_width=600, plot_height=400, tools="save",
+        x_axis_label = 'Site #',
+        y_axis_label = 'Average PM 2.5 (ug/m3)',
+        title='Type of School',
+        x_minor_ticks=2,
+        x_range = source.data["x"],
+        #y_range= ranges.Range1d(start=6.2,end=9.7)   # for all data
+        #y_range= ranges.Range1d(start=3.4,end=7)    # for smoke removed 
+        y_range= ranges.Range1d(start=7.5,end=19)   # for burn ban
+        )
 
-location = df.School
-avg_PM2_5 = df.avg_PM2_5
+p6.title.text_font_size = '14pt'
 
-p2 = figure(x_range=location, plot_height=250, title="Locations",
-           toolbar_location=None, tools="")
+labels = LabelSet(x='x', y='y', text='text', level='glyph',
+        x_offset=-13.5, y_offset=-1, source=source, render_mode='canvas',text_font_size='14pt',text_font = 'times')
+
+p6.vbar(source=source,x='x',top='y',bottom=0,width=0.9)
+
+p6.add_layout(labels)
+p6.xaxis.axis_label_text_font_size = "14pt"
+p6.xaxis.major_label_text_font_size = "14pt"
+p6.xaxis.axis_label_text_font = "times"
+p6.xaxis.axis_label_text_color = "black"
+    
+p6.yaxis.axis_label_text_font_size = "14pt"
+p6.yaxis.major_label_text_font_size = "14pt"
+p6.yaxis.axis_label_text_font = "times"
+p6.yaxis.axis_label_text_color = "black"
+    
+p6.toolbar.logo = None
+#p6.toolbar_location = None
+p6.xgrid.grid_line_color = None
+p6.ygrid.grid_line_color = None
+p6.min_border_right = 30
+
+p6.legend.click_policy="mute"
 
 
-p2.vbar(x=location, top=avg_PM2_5, width=0.9)
+#%%
+p7 = gridplot([[p1,p4], [p5, p6]], plot_width = 500, plot_height = 300, toolbar_location=None)
 
-p2.x_range.range_padding = 0
-p2.xgrid.grid_line_color = None
-p2.y_range.start = 0
+#export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/All_without_smoke/hourly.png')
+export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/Burn_ban/hourly.png')
+#export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/All_data/hourly.png')
 
-tab2 = Panel(child=p2, title="PM 2.5 vs Location")
+tab1 = Panel(child=p7, title="Site Characteristic Summary")
 
-tabs = Tabs(tabs=[ tab1,tab2])
+tabs = Tabs(tabs=[ tab1])
 
 show(tabs)
+
+
 
 #%%
 
@@ -3927,3 +4303,30 @@ for rect, label in zip(rects, labels):
     
     
 #%%
+from bokeh.palettes import PuBu
+from bokeh.io import show, output_notebook
+from bokeh.models import ColumnDataSource, ranges, LabelSet
+from bokeh.plotting import figure
+output_notebook()
+
+source = ColumnDataSource(dict(x=['Áætlaðir','Unnir'],y=[576,608]))
+
+x_label = ""
+y_label = "Tímar (klst)"
+title = "Tímar; núllti til þriðji sprettur."
+plot = figure(plot_width=600, plot_height=300, tools="save",
+        x_axis_label = x_label,
+        y_axis_label = y_label,
+        title=title,
+        x_minor_ticks=2,
+        x_range = source.data["x"],
+        y_range= ranges.Range1d(start=0,end=700))
+
+
+labels = LabelSet(x='x', y='y', text='y', level='glyph',
+        x_offset=-13.5, y_offset=0, source=source, render_mode='canvas')
+
+plot.vbar(source=source,x='x',top='y',bottom=0,width=0.3,color=PuBu[7][2])
+
+plot.add_layout(labels)
+show(plot)

@@ -13,6 +13,7 @@ def in_out_corr(corr_df, indoor, outdoor):
     
     location_name = indoor.iloc[0]['Location']
     shifts = [0, -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
+            #  -1,-1,-1,-1,-1]
  #   offsets = [0, -1, -2, -3, -4, -5]
     
     corr_list = []

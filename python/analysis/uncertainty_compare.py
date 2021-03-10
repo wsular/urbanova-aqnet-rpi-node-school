@@ -145,6 +145,7 @@ def uncertainty_compare(df, df_dictionary):
       #  print(under.head())
         
         combined = over.append(under)
+        combined = combined.dropna()
         combined = combined.sort_index()
       #  print(type(combined))
         

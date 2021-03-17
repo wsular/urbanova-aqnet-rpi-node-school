@@ -30,7 +30,20 @@ def indoor_outdoor_plot(indoor, outdoor, site_number, time_period, shift):
         y_scale_option = (0, 500)
     elif time_period == '4':
         filepath = '/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_4/'
-        y_scale_option = (-0.5, 30)
+        y_scale_option = (-1.5, 30)
+        indoor_start_1 = '2020-09-21 20:00'
+        indoor_end_1 = '2020-10-22 07:00'
+        
+        indoor_start_2 = '2021-01-15 07:00'
+        indoor_end_2 = '2021-02-21 00:00'   # for end of analysis period
+      #  indoor_end_3 = '2021-03-09 00:00'   # for end of data for sending to solmaz
+      #  indoor_1 = indoor.loc[indoor_start_1:indoor_end_1]
+        indoor_1 = indoor.loc[indoor_start_1:indoor_end_1]
+        indoor_2 = indoor.loc[indoor_start_2:indoor_end_2]
+        
+        outdoor_1 = outdoor.loc[indoor_start_1:indoor_end_1]
+        outdoor_2 = outdoor.loc[indoor_start_2:indoor_end_2]
+        
     elif time_period == '5':
         filepath = '/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_5/'
         y_scale_option = (0, 200)
@@ -58,10 +71,20 @@ def indoor_outdoor_plot(indoor, outdoor, site_number, time_period, shift):
         
     # just plotting the calibrated shifted indoor pm2.5 so not so cluttered, unless the shift doesn't make any sense and need a visual to explain
     if shift == 'no':
-        p1.line(indoor.index,     indoor.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.3,     color='black',     line_width=2)
+        if time_period == '4':
+            p1.line(indoor_1.index,     indoor_1.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.3,     color='black',     line_width=2)
+            p1.line(indoor_2.index,     indoor_2.PM2_5_corrected,    muted_color='black', muted_alpha=0.3,     color='black',     line_width=2)
+        else:
+            p1.line(indoor.index,     indoor.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.3,     color='black',     line_width=2)
     else:
         pass
-    p1.line(outdoor.index,     outdoor.PM2_5_corrected,   legend='Calibrated CN',  muted_color='red', alpha=0.4,     color='red',       line_width=2)
+    
+    if time_period == '4':
+        p1.line(outdoor_1.index,     outdoor_1.PM2_5_corrected,   legend='Calibrated C-Node',  muted_color='red', alpha=0.4,     color='red',       line_width=2)
+        p1.line(outdoor_2.index,     outdoor_2.PM2_5_corrected,     muted_color='red', alpha=0.4,     color='red',       line_width=2)
+    else:
+        p1.line(outdoor.index,     outdoor.PM2_5_corrected,   legend='Calibrated C-Node',  muted_color='red', alpha=0.4,     color='red',       line_width=2)
+        
    # p1.line(indoor.index,     indoor.out_PM2_5_corrected,   legend='Outdoor Clarity Calibrated',  muted_color='black', alpha=0.2,     color='black',       line_width=2)
     if shift == 'yes':
         p1.line(indoor.index,     indoor.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black',     color='black',  line_width=2)#, alpha=0.5)

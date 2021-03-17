@@ -27,8 +27,8 @@ def outdoor_cal_low(outdoor, name, time_period):
         outdoor_end_1 = '2020-09-10 23:00'
         
         outdoor_start_2 = '2020-09-21 20:00'
-     #   outdoor_end_2 = '2021-02-21 00:00'   # for end of analysis period
-        outdoor_end_2 = '2021-03-09 00:00'    # for end of data for sending to solmaz
+        outdoor_end_2 = '2021-02-21 00:00'   # for end of analysis period
+      #  outdoor_end_2 = '2021-03-09 00:00'    # for end of data for sending to solmaz
         outdoor_1 = outdoor.loc[outdoor_start_1:outdoor_end_1]
         outdoor_2 = outdoor.loc[outdoor_start_2:outdoor_end_2]
         

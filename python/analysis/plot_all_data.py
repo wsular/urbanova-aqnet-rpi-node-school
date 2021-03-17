@@ -133,16 +133,16 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #sampling_period = '3'
 
 #Indoor/outdoor compare #4 - part 1
-#start_time_1 = '2020-09-22 07:00'# start time for analysis period 4 
+start_time_1 = '2020-09-22 07:00'# start time for analysis period 4 
 #start_time_1 = '2020-02-15 07:00'# start time for sending all calibrated indoor data to Solmaz
-#end_time_1 = '2020-10-22 07:00'
+end_time_1 = '2020-10-22 07:00'
 
 #Indoor/outdoor compare #4 - part 2
-#start_time_2 = '2021-01-15 07:00'   # indoor units re-installed in schools after calibration
-#end_time_2 = '2021-02-21 07:00'   # end time for analysis
+start_time_2 = '2021-01-15 07:00'   # indoor units re-installed in schools after calibration
+end_time_2 = '2021-02-21 07:00'   # end time for analysis
 #end_time_2 = '2021-03-09 00:00'   # end time for sending calibrated indoor data to Solmaz
 
-#sampling_period = '4'
+sampling_period = '4'
 
 #Smoke event all indoor overlap
 #start_time = '2020-09-16 08:00'   
@@ -151,11 +151,11 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #sampling_period = '5'
 
 #Complete sampling time for outdoor
-start_time = '2019-09-01 07:00'
+#start_time = '2019-09-01 07:00'
 #end_time = '2021-02-21 07:00'  # end time of analysis
-end_time = '2021-03-09 07:00'   # end time for sending data to Solmaz
+#end_time = '2021-03-09 07:00'   # end time for sending data to Solmaz
 
-sampling_period = '6'
+#sampling_period = '6'
 
 # Stage 1 burn ban
 #start_time = '2019-10-31 07:00'
@@ -2494,13 +2494,41 @@ outdoor_averages['Site #7'] = Lidgerwood_averages['Lidgerwood_CN']
 outdoor_averages['Site #8'] = Regal_averages['Regal_CN']
 outdoor_averages['Site #9'] = Sheridan_averages['Sheridan_CN']
 outdoor_averages['Site #10'] = Stevens_averages['Stevens_CN']
-
+#%%
+Audubon_hourly_min_max_diff = Audubon_averages.max() - Audubon_averages.min()
+Adams_hourly_min_max_diff = Adams_averages.max() - Adams_averages.min()
+Balboa_hourly_min_max_diff = Balboa_averages.max() - Balboa_averages.min()
+#Browne_hourly_min_max_diff = Browne_averages.max() - Browne_averages.min()
+Grant_hourly_min_max_diff = Grant_averages.max() - Grant_averages.min()
+Jefferson_hourly_min_max_diff = Jefferson_averages.max() - Jefferson_averages.min()
+Lidgerwood_hourly_min_max_diff = Lidgerwood_averages.max() - Lidgerwood_averages.min()
+Regal_hourly_min_max_diff = Regal_averages.max() - Regal_averages.min()
+Sheridan_hourly_min_max_diff = Sheridan_averages.max() - Sheridan_averages.min()
+Stevens_hourly_min_max_diff = Stevens_averages.max() - Stevens_averages.min()
+#%%
+# make sure in same order as CN characteristics (ie adams 1st, all alphabetical not auduebon first)
+hourly_max_min = pd.concat([Adams_hourly_min_max_diff,
+                            Audubon_hourly_min_max_diff,
+                            Balboa_hourly_min_max_diff,
+                    #        Browne_hourly_min_max_diff,
+                            Grant_hourly_min_max_diff,
+                            Jefferson_hourly_min_max_diff,
+                            Lidgerwood_hourly_min_max_diff,
+                            Regal_hourly_min_max_diff,
+                            Sheridan_hourly_min_max_diff,
+                            Stevens_hourly_min_max_diff
+                            ], axis=0)
+#%%
+hourly_max_min = pd.DataFrame(hourly_max_min)
+#%%
+hourly_max_min.columns = ['hourly_avg_max_min_diff']
+#%%
 #p11 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
 # for when in burn ban and don't have Browne
 p11 = gridplot([[p1,p2], [p3, p5], [p6, p7], [p8, p9], [p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
 
 # make sure to change the In_out_compare number to put in correct folder based on the time period
-export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/Burn_ban/hourly_avg_day.png')
+#export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/Burn_ban/hourly_avg_day.png')
 #export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/All_data/hourly_avg_day.png')
 #export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/All_without_smoke/hourly_avg_day.png')
 
@@ -3861,7 +3889,7 @@ show(tabs)
 Node = [Adams,
         Audubon,
         Balboa,
-  #      Browne,
+     #   Browne,
         Grant,
         Jefferson,
         Lidgerwood,
@@ -3878,7 +3906,7 @@ Node = [Adams,
 Node_name = ['2',       #Adams
              '1',     # Audubon
              '3',     #Balboa
-       #      '4',     #Browne
+        #     '4',     #Browne
              '5',    # Grant
              '6', #Jefferson
              '7', #Lidgerwood
@@ -3895,7 +3923,7 @@ Node_name = ['2',       #Adams
 School_Type = ['N-P',
                'P',
                'N-P',
-         #      'N-P',
+           #    'N-P',
                'P',
                'N-P',
                'N-P',
@@ -4016,6 +4044,8 @@ df['avg_PM2_5'] = stats_table_adj['avg']
 df['stdev'] = stats_table_adj['stdev']
 df['Site'] = stats_table_adj['location']
 df['School_type_short'] = stats_table_adj['School_Type']
+df['Hourly_min_max_diff'] = hourly_max_min['hourly_avg_max_min_diff'].values
+
 
 #%%
 print(df.dtypes)
@@ -4071,37 +4101,56 @@ def characteristic_plot(x_data,y_data,df,x_label,y_label):
         output_file('/Users/matthew/Desktop/characteristic_correlations.html')
 
     df = df.copy()
+    y_axis_label_option ='Average PM 2.5 (ug/m3)'
     y_range=(7.5, 19)  # for burn ban
-  #  y_range=(6.2, 9.7) # for all data
- #   y_range=(3.4, 7)  # for all data without smoke
+   # y_range=(6.2, 9.7) # for all data
+    #y_range=(3.4, 7)  # for all data without smoke
     if x_label == 'Distance_to_freeway':
         x_axis_label_option='Distance to Freeway (ft)'
         title_text_option = 'Average PM 2.5 vs Distance to Freeway'
+        y_axis_label_option ='Average PM 2.5 (ug/m3)'
      #   y_range=(5.5, 10.5)
         x_offset=-5
     elif x_label == 'Distance_to_major_arterial': 
         x_axis_label_option = 'Distance to Major Arterial (ft)'
         title_text_option = 'Average PM 2.5 vs Distance to Major Arterial'
+        y_axis_label_option ='Average PM 2.5 (ug/m3)'
     elif x_label == 'Distance_to_highway':
       #  y_range=(5.5, 10.5)
         x_axis_label_option = 'Distance to Highway (ft)'
         title_text_option = 'Average PM 2.5 vs Distance to Highway'
+        y_axis_label_option ='Average PM 2.5 (ug/m3)'
     elif x_label == 'Elevation':
-   #     print(1)
-   #     df = df[~df.School.str.contains("Lidgerwood")]   # take out lidgerwood so don't have overlapping labels (sites 3 and 7 have same elevation)
-   #     print(df)
-        x_axis_label_option = 'Elevation (ft)'
-        title_text_option = 'Average PM 2.5 vs Elevation'
+        if y_label == 'Hourly_min_max_diff':
+            #y_range=(1, 5) # for all data
+            y_range=(3, 17) # for burn ban
+            x_axis_label_option = 'Elevation (ft)'
+            title_text_option = 'Hourly Avg. PM2.5 Max/Min Diff vs Elevation'
+            y_axis_label_option ='Hourly Avg. PM2.5 Diff (ug/m3)'
+        else:
+            #     print(1)
+            #     df = df[~df.School.str.contains("Lidgerwood")]   # take out lidgerwood so don't have overlapping labels (sites 3 and 7 have same elevation)
+            #     print(df)
+            x_axis_label_option = 'Elevation (ft)'
+            title_text_option = 'Average PM 2.5 vs Elevation'
+            y_axis_label_option ='Average PM 2.5 (ug/m3)'
     elif x_label == 'free_meal_percentage':
       #  y_range=(5.5, 10.5)
         x_axis_label_option = 'Free Meal Percentage (%)'
         title_text_option = 'Free Meal Percentage'
-        
+        y_axis_label_option ='Average PM 2.5 (ug/m3)'
+  #  elif x_label == 'Elevation' and y_label == 'Hourly_min_max_diff':
+   #     y_range=(1, 5) # for all data
+       # y_range=(1, 5) # for burn ban
+   #     x_axis_label_option = 'Elevation (ft)'
+   #     title_text_option = 'Hourly Avg. PM2.5 Max/Min Diff vs Elevation'
+   #     y_axis_label_option ='Hourly Avg. PM2.5 Max/Min (ug/m3)'
+    
 
     p1 = figure(plot_width=600,
             plot_height=400,
             x_axis_label = x_axis_label_option,
-            y_axis_label='Average PM 2.5 (ug/m3)',
+            y_axis_label=y_axis_label_option,
             y_range = y_range)
 
     p1.title.text = title_text_option   
@@ -4158,6 +4207,8 @@ p4 = characteristic_plot(df_el.Elevation,df_el.avg_PM2_5,df_el,'Elevation','avg_
 #%%
 p5 = characteristic_plot(df.free_meal_percentage,df.avg_PM2_5,df,'free_meal_percentage','avg_PM2_5')
 #%%
+p8 = characteristic_plot(df.Elevation,df.Hourly_min_max_diff,df,'Elevation','Hourly_min_max_diff')
+#%%
 from bokeh.models import ColumnDataSource, ranges, LabelSet
 
 df1 = df.sort_values(['Type_of_School', 'avg_PM2_5'], ascending=[False, False])
@@ -4173,7 +4224,7 @@ p6 = figure(plot_width=600, plot_height=400, tools="save",
         x_minor_ticks=2,
         x_range = source.data["x"],
         #y_range= ranges.Range1d(start=6.2,end=9.7)   # for all data
-        #y_range= ranges.Range1d(start=3.4,end=7)    # for smoke removed 
+       # y_range= ranges.Range1d(start=3.4,end=7)    # for smoke removed 
         y_range= ranges.Range1d(start=7.5,end=19)   # for burn ban
         )
 
@@ -4205,10 +4256,12 @@ p6.legend.click_policy="mute"
 
 
 #%%
-p7 = gridplot([[p1,p4], [p5, p6]], plot_width = 500, plot_height = 300, toolbar_location=None)
+#p7 = gridplot([[p1,p4], [p5, p6]], plot_width = 500, plot_height = 300, toolbar_location=None)
+# see what hourly max min diff plot looks like
+p7 = gridplot([[p1,p4], [p6, p8]], plot_width = 500, plot_height = 300, toolbar_location=None)
 
-#export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/All_without_smoke/hourly.png')
-export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/Burn_ban/hourly.png')
+#export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/All_without_smoke/hourly_min_max_elevation_compare.png')
+export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/Burn_ban/hourly_min_max_elevation_compare.png')
 #export_png(p7, filename='/Users/matthew/Desktop/thesis/Final_Figures/CN_only/All_data/hourly.png')
 
 tab1 = Panel(child=p7, title="Site Characteristic Summary")

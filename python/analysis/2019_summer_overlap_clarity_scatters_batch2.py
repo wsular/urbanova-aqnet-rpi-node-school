@@ -25,6 +25,7 @@ from bokeh.layouts import row
 from bokeh.layouts import gridplot
 from linear_plot_function import linear_plot
 from gaussian_fit_function import gaussian_fit
+from figure_format import figure_format
 #%%
 
 Adams_All = pd.DataFrame({})
@@ -1053,67 +1054,72 @@ p2.toolbar_location = None
 p3 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='Adams (ug/m^3)')
+            y_axis_label='IAQU-2 (ug/m^3)')
 
-p3.circle(df.Reference, df.Adams, legend='Adams', color='black')
+p3.circle(df.Reference, df.Adams, color='black')
 p3.legend.label_text_font_size = "10px"
-p3.line(x1,y1_predicted,color='blue',legend='y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)))
+p3.line(x1,y1_predicted,color='black',legend='y = '+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)))
 
 p3.legend.location='top_left'
 p3.toolbar.logo = None
-p2.toolbar_location = None
+p3.toolbar_location = None
+figure_format(p3)
 
 p4 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='Grant (ug/m^3)')
+            y_axis_label='IAQU-5 (ug/m^3)')
 
-p4.circle(df.Reference, df.Grant, legend='Grant', color='black')
-p4.line(x2,y2_predicted,color='black',legend='y='+str(round(slope2,2))+'x+'+str(round(intercept2,2))+ '  ' + 'r^2 = ' + str(round(r_squared2,3)))
+p4.circle(df.Reference, df.Grant,  color='black')
+p4.line(x2,y2_predicted,color='black',legend='y = '+str(round(slope2,2))+'x+'+str(round(intercept2,2))+ '  ' + 'r^2 = ' + str(round(r_squared2,3)))
 p4.legend.label_text_font_size = "10px"
 
 p4.legend.location='top_left'
 p4.toolbar.logo = None
-p2.toolbar_location = None
+p4.toolbar_location = None
+figure_format(p4)
 
 p5 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='Jefferson (ug/m^3)')
+            y_axis_label='IAQU-6 (ug/m^3)')
 
-p5.circle(df.Reference, df.Jefferson, legend='Jefferson', color='black')
-p5.line(x3,y3_predicted,color='black',legend='y='+str(round(slope3,2))+'x+'+str(round(intercept3,2))+ '  ' + 'r^2 = ' + str(round(r_squared3,3)))
+p5.circle(df.Reference, df.Jefferson, color='black')
+p5.line(x3,y3_predicted,color='black',legend='y = '+str(round(slope3,2))+'x+'+str(round(intercept3,2))+ '  ' + 'r^2 = ' + str(round(r_squared3,3)))
 p5.legend.label_text_font_size = "10px"
 
 p5.legend.location='top_left'
 p5.toolbar.logo = None
 p5.toolbar_location = None
+figure_format(p5)
 
 p6 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='Sheridan (ug/m^3)')
+            y_axis_label='IAQU-9 (ug/m^3)')
 
-p6.circle(df.Reference, df.Sheridan, legend='Sheridan', color='black')
-p6.line(x4,y4_predicted,color='black',legend='y='+str(round(slope4,2))+'x+'+str(round(intercept4,2))+ '  ' + 'r^2 = ' + str(round(r_squared4,3)))
+p6.circle(df.Reference, df.Sheridan, color='black')
+p6.line(x4,y4_predicted,color='black',legend='y = '+str(round(slope4,2))+'x+'+str(round(intercept4,2))+ '  ' + 'r^2 = ' + str(round(r_squared4,3)))
 p6.legend.label_text_font_size = "10px"
 
 p6.legend.location='top_left'
 p6.toolbar.logo = None
 p6.toolbar_location = None
+figure_format(p6)
 
 p7 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='Stevens (ug/m^3)')
+            y_axis_label='IAQU-10 (ug/m^3)')
 
-p7.circle(df.Reference, df.Stevens, legend='Stevens', color='black')
-p7.line(x5,y5_predicted,color='black',legend='y='+str(round(slope5,2))+'x+'+str(round(intercept5,2))+ '  ' + 'r^2 = ' + str(round(r_squared5,3)))
+p7.circle(df.Reference, df.Stevens,  color='black')
+p7.line(x5,y5_predicted,color='black',legend='y = '+str(round(slope5,2))+'x+'+str(round(intercept5,2))+ '  ' + 'r^2 = ' + str(round(r_squared5,3)))
 p7.legend.label_text_font_size = "10px"
 
 p7.legend.location='top_left'
 p7.toolbar.logo = None
 p7.toolbar_location = None
+figure_format(p7)
 
 p8 = figure(plot_width=900,
             plot_height=450,
@@ -1127,8 +1133,9 @@ p8.legend.label_text_font_size = "10px"
 p8.legend.location='top_left'
 p8.toolbar.logo = None
 p8.toolbar_location = None
+figure_format(p8)
 
-p9 = gridplot([[p3,p4, p5], [p6, p7, p8]], plot_width = 400, plot_height = 300)
+p9 = gridplot([[p3,p4],[ p5, p6], [p7]], plot_width = 400, plot_height = 300,toolbar_location=None)
 
 
 tab2 = Panel(child=p9, title="Clarity Scatter Comparison")

@@ -91,10 +91,11 @@ def average_day(indoor, outdoor, site_number, time_period, shift):
                         y_range = y_scale_option)
     p1.title.text = site_number
     p1.title.text_font_size = '14pt'
+    p1.title.text_font = 'times'
             
-    p1.triangle(indoor_average_day.index,     indoor_average_day.PM2_5_hourly_avg, size = 8,     legend='IAQU',        color='black',             line_width=2, muted_color='black', muted_alpha=0.2)
+    p1.triangle(indoor_average_day.index,     indoor_average_day.PM2_5_hourly_avg, size = 8,             color='black',             line_width=2, muted_color='black', muted_alpha=0.2)
     p1.line(indoor_average_day.index,     indoor_average_day.PM2_5_hourly_avg,             color='black',             line_width=2, muted_color='black', muted_alpha=0.2)
-    p1.circle(outdoor_average_day.index,       outdoor_average_day.PM2_5_hourly_avg,    size = 8,   legend='CN',        color='black',              line_width=2, muted_color='blue', muted_alpha=0.2)
+    p1.circle(outdoor_average_day.index,       outdoor_average_day.PM2_5_hourly_avg,    size = 8,          color='black',              line_width=2, muted_color='blue', muted_alpha=0.2)
     p1.line(outdoor_average_day.index,       outdoor_average_day.PM2_5_hourly_avg,              color='black',              line_width=2, muted_color='blue', muted_alpha=0.2)
     
     
@@ -102,6 +103,9 @@ def average_day(indoor, outdoor, site_number, time_period, shift):
     figure_format(p1)
     p1.legend.location='top_center'
     p1.xaxis.formatter = DatetimeTickFormatter(days="", hours="%H", seconds="" )
+    
+    p1.yaxis.major_label_text_font = "times"
+    p1.xaxis.major_label_text_font = "times"
     
     if shift == 'unshifted':
         export_png(p1, filename=filepath + 'hourly_averages_' + indoor.iloc[0]['Location'] + '.png')

@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Sun Mar 21 12:24:17 2021
+
+@author: matthew
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 Created on Sun Jan 31 10:10:59 2021
 
 @author: matthew
@@ -35,69 +43,69 @@ import matplotlib.pyplot as plt
 #sigma_i_BAM = uncertainty of the BAM at the Augusta site as recorded for April which was 1 sigma of 1.74 and 2 sigmas as 3.48 (established as the noise during a zero air test)
 
 
-def outdoor_low_uncertainty(stdev_number,location):
+def indoor_low_uncertainty(stdev_number,location):
     
     sensor = location
     
     if stdev_number == 1 and sensor['Location'].str.contains('Audubon').any():
-        uncertainty = 2.61
+        uncertainty = 2.33
      
     elif stdev_number == 2 and sensor['Location'].str.contains('Audubon').any():
-        uncertainty = 5.22
+        uncertainty = 4.66
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Balboa').any():
-        uncertainty = 2.03
+        uncertainty = 2.34
       
     elif stdev_number == 2 and sensor['Location'].str.contains('Balboa').any():
-        uncertainty = 4.07
+        uncertainty = 4.67
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Browne').any():
-        uncertainty = 2.03
+        uncertainty = 2.23
         
     elif stdev_number == 2 and sensor['Location'].str.contains('Browne').any():
-        uncertainty = 4.05
+        uncertainty = 4.47
     
     elif stdev_number == 1 and sensor['Location'].str.contains('Lidgerwood').any():
-        uncertainty = 2.22
+        uncertainty = 2.32
     
     elif stdev_number == 2 and sensor['Location'].str.contains('Lidgerwood').any():
-        uncertainty = 4.44
+        uncertainty = 4.64
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Regal').any():
-        uncertainty = 2.06
+        uncertainty = 2.33
         
     elif stdev_number == 2 and sensor['Location'].str.contains('Regal').any():
-        uncertainty = 4.12
+        uncertainty = 4.66
     
     elif stdev_number == 1 and sensor['Location'].str.contains('Adams').any():
-        uncertainty = 2.02
+        uncertainty = 2.38
        
     elif stdev_number == 2 and sensor['Location'].str.contains('Adams').any():
-        uncertainty = 4.04
+        uncertainty = 4.77
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Grant').any():
-        uncertainty = 2.47
+        uncertainty = 2.25
         
     elif stdev_number == 2 and sensor['Location'].str.contains('Grant').any():
-        uncertainty = 4.95
+        uncertainty = 4.51
     
     elif stdev_number == 1 and sensor['Location'].str.contains('Jefferson').any():
-        uncertainty = 2.59
+        uncertainty = 2.31
     
     elif stdev_number == 2 and sensor['Location'].str.contains('Jefferson').any():
-        uncertainty = 5.18
+        uncertainty = 4.62
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Sheridan').any():
-        uncertainty = 2.58
+        uncertainty = 2.42
     
     elif stdev_number == 2 and sensor['Location'].str.contains('Sheridan').any():
-        uncertainty = 5.16
+        uncertainty = 4.83
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Stevens').any():
-        uncertainty = 2.55
+        uncertainty = 2.32
     
     elif stdev_number == 2 and sensor['Location'].str.contains('Stevens').any():
-        uncertainty = 5.10
+        uncertainty = 4.65
         
     
     

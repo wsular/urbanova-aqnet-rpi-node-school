@@ -23,6 +23,7 @@ import copy
 from load_indoor_data import load_indoor
 from linear_plot_function import linear_plot
 from bokeh.io import export_png, output_file
+from figure_format import figure_format
 
 # Function to calculate the power-law with constants a and b
 def power_law(x, a, b):
@@ -430,14 +431,14 @@ files   = glob('/Users/matthew/Desktop/data/urbanova/ramboll/Browne/indoor_cal/*
 files.sort()
 for file in files:
     browne = pd.concat([browne, pd.read_csv(file)], sort=False)
-
+#%%
 
 audubon = pd.DataFrame({})
 files   = glob('/Users/matthew/Desktop/data/urbanova/ramboll/Audubon/indoor_cal/*.csv')
 files.sort()
 for file in files:
     audubon = pd.concat([audubon, pd.read_csv(file)], sort=False)
-
+#%%
 
 lidgerwood = pd.DataFrame({})
 files   = glob('/Users/matthew/Desktop/data/urbanova/ramboll/Lidgerwood/indoor_cal/*.csv')
@@ -557,7 +558,7 @@ browne = browne.resample(interval).mean()
 browne['Datetime'] = browne.index
 browne['Location'] = 'Browne'
 
-
+#%%
 audubon['Datetime'] = pd.to_datetime(audubon['Datetime'])
 audubon = audubon.sort_values('Datetime')
 
@@ -571,7 +572,7 @@ audubon = audubon.loc[start_time:end_time]
 audubon = audubon.resample(interval).mean()
 audubon['Datetime'] = audubon.index
 audubon['Location'] = 'Audubon'
-
+#%%
 
 lidgerwood['Datetime'] = pd.to_datetime(lidgerwood['Datetime'])
 lidgerwood = lidgerwood.sort_values('Datetime')
@@ -609,7 +610,7 @@ regal['Location'] = 'Regal'
 
 audubon_bme = pd.DataFrame({})
 audubon_bme_json = pd.DataFrame({})
-audubon_bme, audubon_bme_json = load_indoor('Audubon', audubon_bme,audubon_bme_json, interval, start_time, end_time)
+audubon_bme, audubon_bme_json = load_indoor('Audubon', audubon_bme,audubon_bme_json, interval, time_period_4 = 'no', start = start_time, stop = end_time)
 audubon_bme = audubon_bme.loc[start_time:end_time] 
 #audubon_bme = audubon_bme.resample(interval).mean()
 #audubon['temp'] = audubon_bme['temp']
@@ -619,7 +620,7 @@ audubon_bme = audubon_bme.loc[start_time:end_time]
 
 adams_bme = pd.DataFrame({})
 adams_bme_json = pd.DataFrame({})
-adams_bme, adams_bme_json = load_indoor('Adams', adams_bme,adams_bme_json, interval, start_time, end_time)
+adams_bme, adams_bme_json = load_indoor('Adams', adams_bme,adams_bme_json, interval, time_period_4 = 'no', start = start_time, stop = end_time)
 adams_bme = adams_bme.loc[start_time:end_time] 
 #adams_bme = adams_bme.resample(interval).mean()
 #adams['temp'] = adams_bme['temp']
@@ -629,7 +630,7 @@ adams_bme = adams_bme.loc[start_time:end_time]
 
 balboa_bme = pd.DataFrame({})
 balboa_bme_json = pd.DataFrame({})
-balboa_bme, balboa_bme_json = load_indoor('Balboa', balboa_bme,balboa_bme_json, interval, start_time, end_time)
+balboa_bme, balboa_bme_json = load_indoor('Balboa', balboa_bme,balboa_bme_json, interval, time_period_4 = 'no', start = start_time, stop = end_time)
 balboa_bme = balboa_bme.loc[start_time:end_time] 
 #balboa_bme = balboa_bme.resample(interval).mean()
 #balboa['temp'] = balboa_bme['temp']
@@ -639,7 +640,7 @@ balboa_bme = balboa_bme.loc[start_time:end_time]
 
 browne_bme = pd.DataFrame({})
 browne_bme_json = pd.DataFrame({})
-browne_bme, browne_bme_json = load_indoor('Browne', browne_bme,browne_bme_json, interval, start_time, end_time)
+browne_bme, browne_bme_json = load_indoor('Browne', browne_bme,browne_bme_json, interval, time_period_4 = 'no', start = start_time, stop = end_time)
 browne_bme = browne_bme.loc[start_time:end_time] 
 #browne_bme = browne_bme.resample(interval).mean()
 #browne['temp'] = browne_bme['temp']
@@ -649,7 +650,7 @@ browne_bme = browne_bme.loc[start_time:end_time]
 
 grant_bme = pd.DataFrame({})
 grant_bme_json = pd.DataFrame({})
-grant_bme, grant_bme_json = load_indoor('Grant', grant_bme,grant_bme_json, interval, start_time, end_time)
+grant_bme, grant_bme_json = load_indoor('Grant', grant_bme,grant_bme_json, interval, time_period_4 = 'no', start = start_time, stop = end_time)
 grant_bme = grant_bme.loc[start_time:end_time] 
 #grant_bme = grant_bme.resample(interval).mean()
 #grant['temp'] = grant_bme['temp']
@@ -659,7 +660,7 @@ grant_bme = grant_bme.loc[start_time:end_time]
 
 jefferson_bme = pd.DataFrame({})
 jefferson_bme_json = pd.DataFrame({})
-jefferson_bme, jefferson_bme_json = load_indoor('Jefferson', jefferson_bme,jefferson_bme_json, interval, start_time, end_time)
+jefferson_bme, jefferson_bme_json = load_indoor('Jefferson', jefferson_bme,jefferson_bme_json, interval, time_period_4 = 'no', start = start_time, stop = end_time)
 jefferson_bme = jefferson_bme.loc[start_time:end_time] 
 #jefferson_bme = jefferson_bme.resample(interval).mean()
 #jefferson['temp'] = jefferson_bme['temp']
@@ -669,7 +670,7 @@ jefferson_bme = jefferson_bme.loc[start_time:end_time]
 
 lidgerwood_bme = pd.DataFrame({})
 lidgerwood_bme_json = pd.DataFrame({})
-lidgerwood_bme, lidgerwood_bme_json = load_indoor('Lidgerwood', lidgerwood_bme,lidgerwood_bme_json, interval, start_time, end_time)
+lidgerwood_bme, lidgerwood_bme_json = load_indoor('Lidgerwood', lidgerwood_bme,lidgerwood_bme_json, interval, time_period_4 = 'no', start = start_time, stop = end_time)
 lidgerwood_bme = lidgerwood_bme.loc[start_time:end_time] 
 #lidgerwood_bme = lidgerwood_bme.resample(interval).mean()
 #lidgerwood['temp'] = lidgerwood_bme['temp']
@@ -679,7 +680,7 @@ lidgerwood_bme = lidgerwood_bme.loc[start_time:end_time]
 
 regal_bme = pd.DataFrame({})
 regal_bme_json = pd.DataFrame({})
-regal_bme, regal_bme_json = load_indoor('Regal', regal_bme,regal_bme_json, interval, start_time, end_time)
+regal_bme, regal_bme_json = load_indoor('Regal', regal_bme,regal_bme_json, interval, time_period_4 = 'no', start = start_time, stop = end_time)
 regal_bme = regal_bme.loc[start_time:end_time] 
 #regal_bme = regal_bme.resample(interval).mean()
 #regal['temp'] = regal_bme['temp']
@@ -689,7 +690,7 @@ regal_bme = regal_bme.loc[start_time:end_time]
 
 sheridan_bme = pd.DataFrame({})
 sheridan_bme_json = pd.DataFrame({})
-sheridan_bme, sheridan_bme_json = load_indoor('Sheridan', sheridan_bme,sheridan_bme_json, interval, start_time, end_time)
+sheridan_bme, sheridan_bme_json = load_indoor('Sheridan', sheridan_bme,sheridan_bme_json, interval, time_period_4 = 'no', start = start_time, stop = end_time)
 sheridan_bme = sheridan_bme.loc[start_time:end_time] 
 sheridan_bme = sheridan_bme.resample(interval).mean()
 #sheridan['temp'] = sheridan_bme['temp']
@@ -699,7 +700,7 @@ sheridan_bme = sheridan_bme.resample(interval).mean()
 
 stevens_bme = pd.DataFrame({})
 stevens_bme_json = pd.DataFrame({})
-stevens_bme, stevens_bme_json = load_indoor('Stevens', stevens_bme,stevens_bme_json, interval, start_time, end_time)
+stevens_bme, stevens_bme_json = load_indoor('Stevens', stevens_bme,stevens_bme_json, interval, time_period_4 = 'no', start = start_time, stop = end_time)
 stevens_bme = stevens_bme.loc[start_time:end_time] 
 #stevens_bme = stevens_bme.resample(interval).mean()
 #stevens['temp'] = stevens_bme['temp']
@@ -758,6 +759,7 @@ Stevens_match_Browne = data_match(dt, Browne, stevens)
 # create df's with final raw calibration data to be used (indoor data matched with correct Clarity node data)
             
 Audubon_final = final_df_cal_data(Audubon_match_Ref, Audubon_match_Browne)
+#%%
 Adams_final = final_df_cal_data(Adams_match_Ref, Adams_match_Browne)
 Balboa_final = final_df_cal_data(Balboa_match_Ref, Balboa_match_Browne)
 Browne_final = final_df_cal_data(Browne_match_Ref, Browne_match_Browne)
@@ -808,15 +810,20 @@ if PlotType=='notebook':
 else:
     output_file('/Users/matthew/Desktop/clarity_PM2_5_time_series_legend_mute.html')
 
+start_time = '2020-11-22 00:00'
+end_time = '2020-12-01 00:00'
+Audubon_final = Audubon_final.loc[start_time:end_time]
+
 p1 = figure(plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
+            y_axis_label='PM 2.5 (ug/m3)',
+            y_range=(0, 110))
 
-p1.title.text = 'Clarity Calibrated PM 2.5'
+#p1.title.text = 'Clarity Calibrated PM 2.5'
 
-p1.line(audubon.index,     audubon.PM2_5_env,     legend='Audubon',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
+#p1.line(audubon.index,     audubon.PM2_5_env,     legend='Audubon',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
 #p1.line(adams.index,       adams.PM2_5_env,       legend='Adams',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
 #p1.line(balboa.index,      balboa.PM2_5_env,      legend='Balboa',        color='red',         line_width=2, muted_color='red', muted_alpha=0.2)
 #p1.line(browne.index,      browne.PM2_5_env,      legend='Browne',        color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
@@ -826,14 +833,14 @@ p1.line(audubon.index,     audubon.PM2_5_env,     legend='Audubon',       color=
 #p1.line(regal.index,       regal.PM2_5_env,       legend='Regal',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
 #p1.line(sheridan.index,    sheridan.PM2_5_env,    legend='Sheridan',      color='deepskyblue', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
 #p1.line(stevens.index,     stevens.PM2_5_env,     legend='Stevens',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
-p1.line(Reference.index,   Reference.PM2_5_corrected,    legend='Reference',     color='olive',       line_width=2, muted_color='olive', muted_alpha=0.2)
-p1.line(Browne.index,      Browne.PM2_5_corrected,    legend='Browne outside',     color='gold',       line_width=2, muted_color='gold', muted_alpha=0.2)
+#p1.line(Reference.index,   Reference.PM2_5_corrected,    legend='Reference',     color='olive',       line_width=2, muted_color='olive', muted_alpha=0.2)
+#p1.line(Browne.index,      Browne.PM2_5_corrected,    legend='Browne outside',     color='gold',       line_width=2, muted_color='gold', muted_alpha=0.2)
 
 
 # For plotting matched data to ensure it looks good 
-p1.line(Audubon_match_Ref.index,      Audubon_match_Ref.indoor_PM2_5_avg,    legend='Audubon averaged ref match',     color='purple',       line_width=2, muted_color='olive', muted_alpha=0.2)
+#p1.line(Audubon_match_Ref.index,      Audubon_match_Ref.indoor_PM2_5_avg,    legend='Audubon averaged ref match',     color='purple',       line_width=2, muted_color='olive', muted_alpha=0.2)
 #p1.line(Audubon_match_Ref.index,      Audubon_match_Ref.Reference_node_PM2_5_corrected,    legend='Reference Check func',     color='lime',       line_width=2, muted_color='olive', muted_alpha=0.2)
-p1.line(Audubon_match_Browne.index,      Audubon_match_Browne.indoor_PM2_5_avg,    legend='Audubon averaged Browne match',     color='black',       line_width=2, muted_color='olive', muted_alpha=0.2)
+#p1.line(Audubon_match_Browne.index,      Audubon_match_Browne.indoor_PM2_5_avg,    legend='Audubon averaged Browne match',     color='black',       line_width=2, muted_color='olive', muted_alpha=0.2)
 #p1.line(Audubon_match_Browne.index,      Audubon_match_Browne.Reference_node_PM2_5_corrected,    legend='Browne Check func',     color='lime',       line_width=2, muted_color='olive', muted_alpha=0.2)
 #p1.line(Adams_match_Ref.index,      Adams_match_Ref.indoor_PM2_5_avg,    legend='Adams averaged ref match',     color='purple',       line_width=2, muted_color='olive', muted_alpha=0.2)
 #p1.line(Adams_match_Browne.index,      Adams_match_Browne.indoor_PM2_5_avg,    legend='Adams averaged Browne match',     color='black',       line_width=2, muted_color='olive', muted_alpha=0.2)
@@ -855,8 +862,8 @@ p1.line(Audubon_match_Browne.index,      Audubon_match_Browne.indoor_PM2_5_avg, 
 #p1.line(Stevens_match_Browne.index,      Stevens_match_Browne.indoor_PM2_5_avg,    legend='Stevens averaged Browne match',     color='black',       line_width=2, muted_color='olive', muted_alpha=0.2)
 
 # For plotting the final cal data set where the indoor data has been averaged and the data points selected based on the appropriate calibration regime
-p1.line(Audubon_final.index,      Audubon_final.indoor,    legend='Audubon final',     color='orange',       line_width=2, muted_color='olive', muted_alpha=0.2)
-p1.line(Audubon_final.index,      Audubon_final.ref_value,    legend='Selected Ref Final',     color='lime',       line_width=2, muted_color='olive', muted_alpha=0.2)
+p1.line(Audubon_final.index,      Audubon_final.indoor,    legend='IN-1',     color='black',       line_width=2, muted_color='olive', muted_alpha=0.2)
+p1.line(Audubon_final.index,      Audubon_final.ref_value,    legend='Ref. Value',     color='red',       line_width=2, muted_color='olive', muted_alpha=0.2)
 #p1.line(Adams_final.index,      Adams_final.indoor,    legend='Adams final',     color='orange',       line_width=2, muted_color='olive', muted_alpha=0.2)
 #p1.line(Adams_final.index,      Adams_final.ref_value,    legend='Selected Ref Final',     color='lime',       line_width=2, muted_color='olive', muted_alpha=0.2)
 #p1.line(Balboa_final.index,      Balboa_final.indoor,    legend='Balboa final',     color='orange',       line_width=2, muted_color='olive', muted_alpha=0.2)
@@ -879,6 +886,10 @@ p1.line(Audubon_final.index,      Audubon_final.ref_value,    legend='Selected R
 
 
 p1.legend.click_policy="mute"
+
+figure_format(p1)
+p1.legend.location='top_right'
+export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/Typical_outdoor_conditions_indoor_cal.png')
 
 tab1 = Panel(child=p1, title="Calibrated PM 2.5")
 
@@ -915,22 +926,22 @@ p1 = figure(plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='RH (%)')
+            y_axis_label='Temp (ºC)')
 
 #p1.title.text = 'RH'
 
-p1.line(audubon_bme.index,     audubon_bme.temp,     legend='IAQU-2',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
-p1.line(adams_bme.index,       adams_bme.temp,       legend='IAQU-1',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
-p1.line(balboa_bme.index,      balboa_bme.temp,      legend='IAQU-3',        color='teal',         line_width=2, muted_color='teal', muted_alpha=0.2)
-p1.line(browne_bme.index,      browne_bme.temp,      legend='IAQU-4',        color='gold',       line_width=2, muted_color='gold', muted_alpha=0.2)
-p1.line(grant_bme.index,       grant_bme.temp,       legend='IAQU-5',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
-p1.line(jefferson_bme.index,   jefferson_bme.temp,   legend='IAQU-6',     color='brown',       line_width=2, muted_color='brown', muted_alpha=0.2)
-p1.line(lidgerwood_bme.index,  lidgerwood_bme.temp,  legend='IAQU-7',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
-p1.line(regal_bme.index,       regal_bme.temp,       legend='IAQU-8',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
-p1.line(sheridan_bme.index,    sheridan_bme.temp,    legend='IAQU-9',      color='deepskyblue', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
-p1.line(stevens_bme.index,     stevens_bme.temp,     legend='IAQU-10',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
-p1.line(Reference.index,   Reference.temp,    legend='Reference',     color='red',       line_width=2, muted_color='red', muted_alpha=0.2)
-p1.line(Browne.index,      Browne.temp,    legend='CN-4',     color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
+p1.line(audubon_bme.index,     audubon_bme.temp,     legend='IN-1',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
+p1.line(adams_bme.index,       adams_bme.temp,       legend='IN-2',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
+p1.line(balboa_bme.index,      balboa_bme.temp,      legend='IN-3',        color='teal',         line_width=2, muted_color='teal', muted_alpha=0.2)
+p1.line(browne_bme.index,      browne_bme.temp,      legend='IN-4',        color='gold',       line_width=2, muted_color='gold', muted_alpha=0.2)
+p1.line(grant_bme.index,       grant_bme.temp,       legend='IN-5',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
+p1.line(jefferson_bme.index,   jefferson_bme.temp,   legend='IN-6',     color='brown',       line_width=2, muted_color='brown', muted_alpha=0.2)
+p1.line(lidgerwood_bme.index,  lidgerwood_bme.temp,  legend='IN-7',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
+p1.line(regal_bme.index,       regal_bme.temp,       legend='IN-8',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
+p1.line(sheridan_bme.index,    sheridan_bme.temp,    legend='IN-9',      color='deepskyblue', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
+p1.line(stevens_bme.index,     stevens_bme.temp,     legend='IN-10',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
+p1.line(Reference.index,   Reference.temp,    legend='Reference Node',     color='red',       line_width=2, muted_color='red', muted_alpha=0.2)
+p1.line(Browne.index,      Browne.temp,    legend='ON-4',     color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
 
 
 p1.legend.click_policy="mute"
@@ -1183,7 +1194,10 @@ stevens = stevens[stevens['indoor_remaining'] != -100]
 # for typical outdoor concentrations
 #start_time = '2020-11-22 07:00'
 #end_time = '2020-12-01 07:00'
-
+if PlotType=='notebook':
+    output_notebook()
+else:
+    output_file('/Users/matthew/Desktop/clarity_PM2_5_time_series_legend_mute.html')
 # for example of chamber test
 start_time = '2020-12-01 09:15'
 end_time = '2020-12-01 09:45'
@@ -1209,7 +1223,7 @@ p1 = figure(plot_width=900,
 
 #p1.title.text = 'Indoor PM2.5'
 
-p1.line(audubon.index,     audubon.indoor,     legend='IAQU-1',        color='black',             line_width=2, muted_color='black', muted_alpha=0.6, )
+p1.line(audubon.index,     audubon.indoor,     legend='IN-1',        color='black',             line_width=2, muted_color='black', muted_alpha=0.6, )
 #p1.line(adams.index,       adams.indoor,       legend='IAQU-2',        color='blue',              line_width=2, muted_color='blue', muted_alpha=0.2)
 #p1.line(balboa.index,      balboa.indoor,      legend='IAQU-3',        color='red',               line_width=2, muted_color='red', muted_alpha=0.2)
 #p1.line(browne.index,      browne.indoor,      legend='IAQU-4',        color='black',             line_width=2, muted_color='black', muted_alpha=0.2)

@@ -536,8 +536,8 @@ p1.line(Sheridan.index,     Sheridan.PM2_5,  legend='Sheridan',       color='ora
 p1.line(Stevens.index,     Stevens.PM2_5,  legend='Stevens',       color='brown',     line_width=2)
 
 p1.legend.location='top_left'
-p1.toolbar.logo = None
-p1.toolbar_location = None
+#p1.toolbar.logo = None
+#p1.toolbar_location = None
 
 
 tab1 = Panel(child=p1, title="Clarity Comparison")
@@ -1054,7 +1054,7 @@ p2.toolbar_location = None
 p3 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='IAQU-2 (ug/m^3)')
+            y_axis_label='IN-2 (ug/m^3)')
 
 p3.circle(df.Reference, df.Adams, color='black')
 p3.legend.label_text_font_size = "10px"
@@ -1068,7 +1068,7 @@ figure_format(p3)
 p4 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='IAQU-5 (ug/m^3)')
+            y_axis_label='IN-5 (ug/m^3)')
 
 p4.circle(df.Reference, df.Grant,  color='black')
 p4.line(x2,y2_predicted,color='black',legend='y = '+str(round(slope2,2))+'x+'+str(round(intercept2,2))+ '  ' + 'r^2 = ' + str(round(r_squared2,3)))
@@ -1082,7 +1082,7 @@ figure_format(p4)
 p5 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='IAQU-6 (ug/m^3)')
+            y_axis_label='IN-6 (ug/m^3)')
 
 p5.circle(df.Reference, df.Jefferson, color='black')
 p5.line(x3,y3_predicted,color='black',legend='y = '+str(round(slope3,2))+'x+'+str(round(intercept3,2))+ '  ' + 'r^2 = ' + str(round(r_squared3,3)))
@@ -1096,7 +1096,7 @@ figure_format(p5)
 p6 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='IAQU-9 (ug/m^3)')
+            y_axis_label='IN-9 (ug/m^3)')
 
 p6.circle(df.Reference, df.Sheridan, color='black')
 p6.line(x4,y4_predicted,color='black',legend='y = '+str(round(slope4,2))+'x+'+str(round(intercept4,2))+ '  ' + 'r^2 = ' + str(round(r_squared4,3)))
@@ -1110,7 +1110,7 @@ figure_format(p6)
 p7 = figure(plot_width=900,
             plot_height=450,
             x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='IAQU-10 (ug/m^3)')
+            y_axis_label='IN-10 (ug/m^3)')
 
 p7.circle(df.Reference, df.Stevens,  color='black')
 p7.line(x5,y5_predicted,color='black',legend='y = '+str(round(slope5,2))+'x+'+str(round(intercept5,2))+ '  ' + 'r^2 = ' + str(round(r_squared5,3)))

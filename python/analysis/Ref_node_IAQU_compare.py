@@ -119,7 +119,15 @@ Reference_jefferson = Reference_jefferson[~(Reference_jefferson.index.strftime('
 Jefferson = Jefferson_All.loc[start_time_1_zoom:end_time_1_zoom]
 jefferson = jefferson_all.loc[start_time_1_zoom:end_time_1_zoom]
 Reference_jefferson = Reference_All.loc[start_time_1_zoom:end_time_1_zoom]
+#%%
+# split jefferson into two time series so when plotting dont have connecting line between the periods where indoor data dropped because between 70-120
+start_time_1_jefferson = '2020-09-11 00:00'   
+end_time_1_jefferson = '2020-09-18 12:00'
+start_time_2_jefferson = '2020-09-18 16:00'   
+end_time_2_jefferson = '2020-09-20 00:00'
 
+jefferson_1 = jefferson_all.loc[start_time_1_jefferson:end_time_1_jefferson]
+jefferson_2 = jefferson_all.loc[start_time_2_jefferson:end_time_2_jefferson]
 #%%
 print('jefferson avg. = ', np.nanmean(jefferson['PM2_5_corrected']).round(2))
 print('Jefferson avg. = ', np.nanmean(Jefferson['PM2_5_corrected']).round(2))
@@ -146,14 +154,19 @@ p1 = figure(
             )
         
 # just plotting the calibrated shifted indoor pm2.5 so not so cluttered, unless the shift doesn't make any sense and need a visual to explain
-p1.line(jefferson.index,     jefferson.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.3,     color='black',     line_width=2)
-p1.line(Reference_jefferson.index,     Reference_jefferson.PM2_5_corrected,   legend='Calibrated RN',  muted_color='red', alpha=0.4,     color='red',       line_width=2)
-p1.line(Jefferson.index,     Jefferson.PM2_5_corrected,   legend='Calibrated Outdoor CN',  muted_color='black', alpha=0.2,     color='black',       line_width=2) 
+#p1.line(jefferson.index,     jefferson.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.3,     color='black',     line_width=2)
+p1.line(jefferson_1.index,     jefferson_1.PM2_5_corrected,  legend='IN-6',  muted_color='black', muted_alpha=0.3,     color='black',     line_width=2)
+p1.line(jefferson_2.index,     jefferson_2.PM2_5_corrected,  muted_color='black', muted_alpha=0.3,     color='black',     line_width=2)
+p1.line(Reference_jefferson.index,     Reference_jefferson.PM2_5_corrected,   legend='Reference Node',  muted_color='red', alpha=0.4,     color='red',       line_width=2)
+p1.line(Jefferson.index,     Jefferson.PM2_5_corrected,   legend='ON-6',  muted_color='black', alpha=0.2,     color='black',       line_width=2) 
 
-#figure_format(p1)
+figure_format(p1)
+p1.legend.location='top_right'
+p1.yaxis.major_label_text_font = "times"
+p1.xaxis.major_label_text_font = "times"
 #export_png(p1, filename='/Users/matthew/Desktop/thesis/Final_Figures/Ref_node_jefferson_compare/Ref_jefferson_zoom_1.png')
 #export_png(p1, filename='/Users/matthew/Desktop/thesis/Final_Figures/Ref_node_jefferson_compare/Ref_jefferson_zoom_2.png')
-#export_png(p1, filename='/Users/matthew/Desktop/thesis/Final_Figures/Ref_node_jefferson_compare/Ref_jefferson.png')
+export_png(p1, filename='/Users/matthew/Desktop/thesis/Final_Figures/Ref_node_jefferson_compare/Ref_jefferson.png')
         
 tab1 = Panel(child=p1, title="Indoor Jefferson Comparison")
     
@@ -175,11 +188,14 @@ p1 = figure(
             y_axis_label='PM 2.5 (ug/m3)')
         
 # just plotting the calibrated shifted indoor pm2.5 so not so cluttered, unless the shift doesn't make any sense and need a visual to explain
-p1.line(audubon.index,     audubon.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.3,     color='black',     line_width=2)
-p1.line(Reference_audubon.index,     Reference_audubon.PM2_5_corrected,   legend='Calibrated RN',  muted_color='red', alpha=0.4,     color='red',       line_width=2)
-p1.line(Audubon.index,     Audubon.PM2_5_corrected,   legend='Calibrated Outdoor CN',  muted_color='black', alpha=0.2,     color='black',       line_width=2) 
+p1.line(audubon.index,     audubon.PM2_5_corrected,  legend='IN-1',  muted_color='black', muted_alpha=0.3,     color='black',     line_width=2)
+p1.line(Reference_audubon.index,     Reference_audubon.PM2_5_corrected,   legend='Reference Node',  muted_color='red', alpha=0.4,     color='red',       line_width=2)
+p1.line(Audubon.index,     Audubon.PM2_5_corrected,   legend='ON-1',  muted_color='black', alpha=0.2,     color='black',       line_width=2) 
 
 figure_format(p1)
+p1.legend.location='top_right'
+p1.yaxis.major_label_text_font = "times"
+p1.xaxis.major_label_text_font = "times"
 export_png(p1, filename='/Users/matthew/Desktop/thesis/Final_Figures/Ref_node_audubon_compare/Ref_audubon.png')
         
 tab1 = Panel(child=p1, title="Indoor Audubon Comparison")

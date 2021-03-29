@@ -141,15 +141,15 @@ tab1 = Panel(child=p1, title="bscat and Neph PM2.5 time series")
 p2 = figure(plot_width=900,
             plot_height=450,
        #     x_axis_type='datetime',
-            x_axis_label='bscat (m^-1',
+            x_axis_label='scattering coefficient (m^-1)',
             y_axis_label='PM 2.5 (ug/m^3)')
 
 #p2.title.text = 'bscat vs Neph PM2.5'
 p2.title.text = '.'      # for final png so axis label isnt cut off  
 
 # for setting zoomed axis limits to save as png
-p2.x_range=Range1d(0, 3.2)
-p2.y_range=Range1d(0, 80)
+#p2.x_range=Range1d(0, 3.2)
+#p2.y_range=Range1d(0, 80)
 
 p2.scatter(Monroe_winter.bscat,     Monroe_winter.PM2_5,  legend='Winter 2019',     color='red',   muted_color='red', muted_alpha=0.2 , line_width=2, size = 12, alpha = 1)
 #p2.scatter(Monroe_All.bscat,     Monroe_All.PM2_5,  legend='All',     color='gray',   muted_color='gray', muted_alpha=0.1 , line_width=2)
@@ -182,9 +182,9 @@ p2.toolbar_location = None
 p2.xgrid.grid_line_color = None
 p2.ygrid.grid_line_color = None
 # for all bscat data
-#export_png(p2,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/neph_all_bscat.png')
+export_png(p2,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/neph_all_bscat.png')
 
-export_png(p2,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/neph_zoomed_bscat.png')
+#export_png(p2,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/neph_zoomed_bscat.png')
 
 tab2 = Panel(child=p2, title="bscat vs PM 2.5")
 
@@ -193,7 +193,7 @@ tab2 = Panel(child=p2, title="bscat vs PM 2.5")
 p3 = figure(plot_width=900,
             plot_height=450,
        #     x_axis_type='datetime',
-            x_axis_label='bscat (m^-1',
+            x_axis_label='scattering coefficient (m^-1)',
             y_axis_label='PM 2.5 (ug/m^3)')
 
 p3.title.text = 'bscat vs BAM PM2.5'    

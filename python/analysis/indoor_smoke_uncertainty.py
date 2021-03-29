@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Sun Mar 21 12:39:41 2021
+
+@author: matthew
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 Created on Sun Jan 31 10:29:39 2021
 
 @author: matthew
@@ -8,108 +16,108 @@ Created on Sun Jan 31 10:29:39 2021
 
 import numpy as np
 
-def outdoor_smoke_uncertainty(stdev_number,location):
+def indoor_smoke_uncertainty(stdev_number,location):
     
     sensor = location
     
     if stdev_number == 1 and sensor['Location'].str.contains('Audubon').any():
-        uncertainty_low = 2.61
-        uncertainty_high = 22.80
+        uncertainty_low = 2.33
+        uncertainty_high = 113.41
         threshold = 51
      
     elif stdev_number == 2 and sensor['Location'].str.contains('Audubon').any():
-        uncertainty_low = 5.22
-        uncertainty_high = 45.60
+        uncertainty_low = 4.66
+        uncertainty_high = 226.82
         threshold = 51
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Balboa').any():
-        uncertainty_low = 2.03
-        uncertainty_high = 18.90
+        uncertainty_low = 2.34
+        uncertainty_high = 109
         threshold = 58
       
     elif stdev_number == 2 and sensor['Location'].str.contains('Balboa').any():
-        uncertainty_low = 4.07
-        uncertainty_high = 37.80
+        uncertainty_low = 4.67
+        uncertainty_high = 218
         threshold = 58
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Browne').any():
-        uncertainty_low = 2.03
-        uncertainty_high = 20.69
+        uncertainty_low = 2.23
+        uncertainty_high = 103
         threshold = 74
         
     elif stdev_number == 2 and sensor['Location'].str.contains('Browne').any():
-        uncertainty_low = 4.05
-        uncertainty_high = 41.38
+        uncertainty_low = 4.47
+        uncertainty_high = 206
         threshold = 74
     
     elif stdev_number == 1 and sensor['Location'].str.contains('Lidgerwood').any():
-        uncertainty_low = 2.22
-        uncertainty_high = 18.20
+        uncertainty_low = 2.32
+        uncertainty_high = 105
         threshold = 66
     
     elif stdev_number == 2 and sensor['Location'].str.contains('Lidgerwood').any():
-        uncertainty_low = 4.44
-        uncertainty_high = 36.39
+        uncertainty_low = 4.64
+        uncertainty_high = 210
         threshold = 66
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Regal').any():
-        uncertainty_low = 2.06
-        uncertainty_high = 19.79
+        uncertainty_low = 2.33
+        uncertainty_high = 126
         threshold = 54
         
     elif stdev_number == 2 and sensor['Location'].str.contains('Regal').any():
-        uncertainty_low = 4.12
-        uncertainty_high = 39.57
+        uncertainty_low = 4.66
+        uncertainty_high = 253
         threshold = 54
     
     elif stdev_number == 1 and sensor['Location'].str.contains('Adams').any():
-        uncertainty_low = 2.02
-        uncertainty_high = 16.35
+        uncertainty_low = 2.38
+        uncertainty_high = 146
         threshold = 75
        
     elif stdev_number == 2 and sensor['Location'].str.contains('Adams').any():
-        uncertainty_low = 4.04
-        uncertainty_high = 32.70
+        uncertainty_low = 4.77
+        uncertainty_high = 293
         threshold = 75
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Grant').any():
-        uncertainty_low = 2.47
-        uncertainty_high = 18.12
+        uncertainty_low = 2.25
+        uncertainty_high = 102
         threshold = 77
         
     elif stdev_number == 2 and sensor['Location'].str.contains('Grant').any():
-        uncertainty_low = 4.95
-        uncertainty_high = 36.24
+        uncertainty_low = 4.51
+        uncertainty_high = 205
         threshold = 77
     
     elif stdev_number == 1 and sensor['Location'].str.contains('Jefferson').any():
-        uncertainty_low = 2.59
-        uncertainty_high = 16.41
+        uncertainty_low = 2.31
+        uncertainty_high = 118
         threshold = 73
     
     elif stdev_number == 2 and sensor['Location'].str.contains('Jefferson').any():
-        uncertainty_low = 5.18
-        uncertainty_high = 32.81
+        uncertainty_low = 4.62
+        uncertainty_high = 237
         threshold = 73
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Sheridan').any():
-        uncertainty_low = 2.58
-        uncertainty_high = 17.81
+        uncertainty_low = 2.42
+        uncertainty_high = 207
         threshold = 82
     
     elif stdev_number == 2 and sensor['Location'].str.contains('Sheridan').any():
-        uncertainty_low = 5.16
-        uncertainty_high = 35.62
+        uncertainty_low = 4.83
+        uncertainty_high = 415
         threshold = 82
         
     elif stdev_number == 1 and sensor['Location'].str.contains('Stevens').any():
-        uncertainty_low = 2.55
-        uncertainty_high = 24.47
+        uncertainty_low = 2.32
+        uncertainty_high = 145
         threshold = 86
     
     elif stdev_number == 2 and sensor['Location'].str.contains('Stevens').any():
-        uncertainty_low = 5.10
-        uncertainty_high = 48.94
+        uncertainty_low = 4.65
+        uncertainty_high = 291
         threshold = 86
         
     

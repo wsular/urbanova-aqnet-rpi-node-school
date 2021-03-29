@@ -70,9 +70,10 @@ def average_day_CN(outdoor, site_number, time_period, smoke):
     
     p1.title.text = site_number
     p1.title.text_font_size = '14pt'
+    p1.title.text_font = 'time'
 
             
-    p1.circle(outdoor_average_day.index,       outdoor_average_day.PM2_5_hourly_avg,    size = 8,   legend='CN',        color='black',              line_width=2, muted_color='blue', muted_alpha=0.2)
+    p1.circle(outdoor_average_day.index,       outdoor_average_day.PM2_5_hourly_avg,    size = 8,           color='black',              line_width=2, muted_color='blue', muted_alpha=0.2)
     p1.line(outdoor_average_day.index,       outdoor_average_day.PM2_5_hourly_avg,              color='black',              line_width=2, muted_color='blue', muted_alpha=0.2)
     
     

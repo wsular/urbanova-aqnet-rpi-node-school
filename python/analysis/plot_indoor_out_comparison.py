@@ -64,7 +64,7 @@ def indoor_outdoor_plot(indoor, outdoor, site_number, stdev_number, time_period,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range = y_scale_option)
     
     p1.title.text = site_number
@@ -95,21 +95,22 @@ def indoor_outdoor_plot(indoor, outdoor, site_number, stdev_number, time_period,
     
     indoor['time'] = indoor.index
 
-    source = ColumnDataSource(indoor.reset_index())
+# add uncertainty bars
+ #   source = ColumnDataSource(indoor.reset_index())
 
-    band_indoor = Band(base= 'time', lower='lower_uncertainty', upper='upper_uncertainty', source=source, level='underlay',
-            fill_alpha=0.5, line_width=1, line_color='black', fill_color = 'green')
-   ### p1.add_layout(band_indoor)
+ #   band_indoor = Band(base= 'time', lower='lower_uncertainty', upper='upper_uncertainty', source=source, level='underlay',
+ #           fill_alpha=0.5, line_width=1, line_color='black', fill_color = 'green')
+ #   p1.add_layout(band_indoor)
     
     
-    outdoor['Datetime'] = outdoor.index
+  #  outdoor['Datetime'] = outdoor.index
     
-    source2 = ColumnDataSource(outdoor.reset_index())
+  #  source2 = ColumnDataSource(outdoor.reset_index())
 
-
-    band_outdoor = Band(base= 'Datetime', lower='lower_uncertainty', upper='upper_uncertainty', source=source2, level='underlay',
-            fill_alpha=0.8, line_width=1, line_color='black')
-   ### p1.add_layout(band_outdoor)
+# add uncertainty bars
+  #  band_outdoor = Band(base= 'Datetime', lower='lower_uncertainty', upper='upper_uncertainty', source=source2, level='underlay',
+  #          fill_alpha=0.8, line_width=1, line_color='black')
+  #  p1.add_layout(band_outdoor)
     
    # source_error = ColumnDataSource(data=dict(base=outdoor.index, lower=outdoor.lower_uncertainty, upper=outdoor.upper_uncertainty))
 

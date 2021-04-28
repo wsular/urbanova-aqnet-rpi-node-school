@@ -129,10 +129,9 @@ def indoor_smoke_uncertainty(stdev_number,location):
                                       sensor.PM2_5_corrected + uncertainty_low)
     
     
+
     
-    location = sensor
-    
-    return location
+    return sensor
 
 
 

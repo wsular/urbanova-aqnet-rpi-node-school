@@ -65,7 +65,7 @@ def average_day_CN(outdoor, site_number, time_period, smoke):
                         plot_height=450,
                         x_axis_type='datetime',
                         x_axis_label='Time (hrs)',
-                        y_axis_label='PM2.5 (ug/m^3)',
+                        y_axis_label='PM2.5 (ug/m³)',
                         y_range = y_scale_option)
     
     p1.title.text = site_number
@@ -81,6 +81,9 @@ def average_day_CN(outdoor, site_number, time_period, smoke):
     figure_format(p1)
     p1.legend.location='top_left'
     p1.xaxis.formatter = DatetimeTickFormatter(days="", hours="%H", seconds="" )
+    p1.yaxis.major_label_text_font = "times"
+    p1.xaxis.major_label_text_font = "times"
+
         
     
     tab1 = Panel(child=p1, title="Average Hour Values")

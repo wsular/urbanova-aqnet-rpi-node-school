@@ -103,12 +103,12 @@ p1 = figure(plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='bscat (m^-1)')
+            y_axis_label='bscat (m⁻¹)')
 
 p1.title.text = 'Nephelometer Back Scatter Coefficients'    
 
 p1.extra_y_ranges['bscat'] = Range1d(start=-1, end=25)
-p1.add_layout(LinearAxis(y_range_name='bscat', axis_label=' PM2.5 (ug/m^3)'), 'right')
+p1.add_layout(LinearAxis(y_range_name='bscat', axis_label=' PM2.5 (ug/m³)'), 'right')
 
 
 #p1.line(Monroe_winter.index,     Monroe_winter.bscat,  legend='Winter bscat',     color='red',   muted_color='red', muted_alpha=0.1 , line_width=2)
@@ -141,8 +141,8 @@ tab1 = Panel(child=p1, title="bscat and Neph PM2.5 time series")
 p2 = figure(plot_width=900,
             plot_height=450,
        #     x_axis_type='datetime',
-            x_axis_label='scattering coefficient (m^-1)',
-            y_axis_label='PM 2.5 (ug/m^3)')
+            x_axis_label='scattering coefficient (m⁻¹)',
+            y_axis_label='PM 2.5 (ug/m³)')
 
 #p2.title.text = 'bscat vs Neph PM2.5'
 p2.title.text = '.'      # for final png so axis label isnt cut off  
@@ -169,12 +169,14 @@ p2.xaxis.axis_label_text_font_size = "14pt"
 p2.xaxis.major_label_text_font_size = "14pt"
 p2.xaxis.axis_label_text_font = "times"
 p2.xaxis.axis_label_text_color = "black"
+p2.xaxis.major_label_text_font = "times"
 
    # p1.yaxis.axis_label="yaxis_name"
 p2.yaxis.axis_label_text_font_size = "14pt"
 p2.yaxis.major_label_text_font_size = "14pt"
 p2.yaxis.axis_label_text_font = "times"
 p2.yaxis.axis_label_text_color = "black"
+p2.yaxis.major_label_text_font = "times"
 
     
 p2.toolbar.logo = None
@@ -193,8 +195,8 @@ tab2 = Panel(child=p2, title="bscat vs PM 2.5")
 p3 = figure(plot_width=900,
             plot_height=450,
        #     x_axis_type='datetime',
-            x_axis_label='scattering coefficient (m^-1)',
-            y_axis_label='PM 2.5 (ug/m^3)')
+            x_axis_label='scattering coefficient (m⁻¹)',
+            y_axis_label='PM 2.5 (ug/m³)')
 
 p3.title.text = 'bscat vs BAM PM2.5'    
 
@@ -214,8 +216,8 @@ tab3 = Panel(child=p3, title="bscat vs BAM PM 2.5")
 p4 = figure(plot_width=900,
             plot_height=450,
        #     x_axis_type='datetime',
-            x_axis_label='BAM PM 2.5 (ug/m^3)',
-            y_axis_label='bscat (m^-1)')
+            x_axis_label='BAM PM 2.5 (ug/m³)',
+            y_axis_label='bscat (m⁻¹)')
 
 p4.title.text = 'bscat vs BAM PM2.5'    
 
@@ -226,14 +228,14 @@ p4.scatter(Augusta_sept_under_35.PM2_5,       Augusta_sept_under_35.Monroe_neph_
 
 
 p4.legend.click_policy="hide"
-tab4 = Panel(child=p4, title="bscat vs BAM PM 2.5 under 35ug/m^3")
+tab4 = Panel(child=p4, title="bscat vs BAM PM 2.5 under 35ug/m³")
 
 
 p5 = figure(plot_width=900,
             plot_height=450,
        #     x_axis_type='datetime',
-            x_axis_label='BAM PM 2.5 (ug/m^3)',
-            y_axis_label='Monroe Neph PM 2.5 (ug/m^3)')
+            x_axis_label='BAM PM 2.5 (ug/m³)',
+            y_axis_label='Monroe Neph PM 2.5 (ug/m³)')
 
 #p5.title.text = 'Neph vs BAM PM2.5'   # take out for saving final png
 # for setting zoomed axis limits to save as png
@@ -258,12 +260,14 @@ p5.xaxis.axis_label_text_font_size = "14pt"
 p5.xaxis.major_label_text_font_size = "14pt"
 p5.xaxis.axis_label_text_font = "times"
 p5.xaxis.axis_label_text_color = "black"
+p5.xaxis.major_label_text_font = "times"
 
    # p1.yaxis.axis_label="yaxis_name"
 p5.yaxis.axis_label_text_font_size = "14pt"
 p5.yaxis.major_label_text_font_size = "14pt"
 p5.yaxis.axis_label_text_font = "times"
 p5.yaxis.axis_label_text_color = "black"
+p5.yaxis.major_label_text_font = "times"
 
     
 p5.toolbar.logo = None

@@ -818,7 +818,7 @@ p1 = figure(plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range=(0, 110))
 
 #p1.title.text = 'Clarity Calibrated PM 2.5'
@@ -863,7 +863,7 @@ p1 = figure(plot_width=900,
 
 # For plotting the final cal data set where the indoor data has been averaged and the data points selected based on the appropriate calibration regime
 p1.line(Audubon_final.index,      Audubon_final.indoor,    legend='IN-1',     color='black',       line_width=2, muted_color='olive', muted_alpha=0.2)
-p1.line(Audubon_final.index,      Audubon_final.ref_value,    legend='Ref. Value',     color='red',       line_width=2, muted_color='olive', muted_alpha=0.2)
+p1.line(Audubon_final.index,      Audubon_final.ref_value,    legend='Reference Value',     color='red',       line_width=2, muted_color='olive', muted_alpha=0.2)
 #p1.line(Adams_final.index,      Adams_final.indoor,    legend='Adams final',     color='orange',       line_width=2, muted_color='olive', muted_alpha=0.2)
 #p1.line(Adams_final.index,      Adams_final.ref_value,    legend='Selected Ref Final',     color='lime',       line_width=2, muted_color='olive', muted_alpha=0.2)
 #p1.line(Balboa_final.index,      Balboa_final.indoor,    legend='Balboa final',     color='orange',       line_width=2, muted_color='olive', muted_alpha=0.2)
@@ -888,6 +888,17 @@ p1.line(Audubon_final.index,      Audubon_final.ref_value,    legend='Ref. Value
 p1.legend.click_policy="mute"
 
 figure_format(p1)
+p1.xaxis.axis_label_text_font_size = "14pt"
+p1.xaxis.major_label_text_font_size = "14pt"
+p1.xaxis.axis_label_text_font = "times"
+p1.xaxis.axis_label_text_color = "black"
+p1.xaxis.major_label_text_font = "times"
+
+p1.yaxis.axis_label_text_font_size = "14pt"
+p1.yaxis.major_label_text_font_size = "14pt"
+p1.yaxis.axis_label_text_font = "times"
+p1.yaxis.axis_label_text_color = "black"
+p1.yaxis.major_label_text_font = "times"
 p1.legend.location='top_right'
 export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/Typical_outdoor_conditions_indoor_cal.png')
 
@@ -930,18 +941,18 @@ p1 = figure(plot_width=900,
 
 #p1.title.text = 'RH'
 
-p1.line(audubon_bme.index,     audubon_bme.temp,     legend='IN-1',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
-p1.line(adams_bme.index,       adams_bme.temp,       legend='IN-2',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
-p1.line(balboa_bme.index,      balboa_bme.temp,      legend='IN-3',        color='teal',         line_width=2, muted_color='teal', muted_alpha=0.2)
-p1.line(browne_bme.index,      browne_bme.temp,      legend='IN-4',        color='gold',       line_width=2, muted_color='gold', muted_alpha=0.2)
-p1.line(grant_bme.index,       grant_bme.temp,       legend='IN-5',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
-p1.line(jefferson_bme.index,   jefferson_bme.temp,   legend='IN-6',     color='brown',       line_width=2, muted_color='brown', muted_alpha=0.2)
-p1.line(lidgerwood_bme.index,  lidgerwood_bme.temp,  legend='IN-7',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
-p1.line(regal_bme.index,       regal_bme.temp,       legend='IN-8',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
-p1.line(sheridan_bme.index,    sheridan_bme.temp,    legend='IN-9',      color='deepskyblue', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
-p1.line(stevens_bme.index,     stevens_bme.temp,     legend='IN-10',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
-p1.line(Reference.index,   Reference.temp,    legend='Reference Node',     color='red',       line_width=2, muted_color='red', muted_alpha=0.2)
-p1.line(Browne.index,      Browne.temp,    legend='ON-4',     color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
+p1.line(audubon_bme.index,     audubon_bme.RH,     legend='IN-1',       color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
+p1.line(adams_bme.index,       adams_bme.RH,       legend='IN-2',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
+p1.line(balboa_bme.index,      balboa_bme.RH,      legend='IN-3',        color='teal',         line_width=2, muted_color='teal', muted_alpha=0.2)
+p1.line(browne_bme.index,      browne_bme.RH,      legend='IN-4',        color='gold',       line_width=2, muted_color='gold', muted_alpha=0.2)
+p1.line(grant_bme.index,       grant_bme.RH,       legend='IN-5',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
+p1.line(jefferson_bme.index,   jefferson_bme.RH,   legend='IN-6',     color='brown',       line_width=2, muted_color='brown', muted_alpha=0.2)
+p1.line(lidgerwood_bme.index,  lidgerwood_bme.RH,  legend='IN-7',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
+p1.line(regal_bme.index,       regal_bme.RH,       legend='IN-8',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
+p1.line(sheridan_bme.index,    sheridan_bme.RH,    legend='IN-9',      color='deepskyblue', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
+p1.line(stevens_bme.index,     stevens_bme.RH,     legend='IN-10',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
+p1.line(Reference.index,   Reference.Rel_humid,    legend='Reference Node',     color='red',       line_width=2, muted_color='red', muted_alpha=0.2)
+p1.line(Browne.index,      Browne.Rel_humid,    legend='ON-4',     color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
 
 
 p1.legend.click_policy="mute"
@@ -953,11 +964,13 @@ p1.xaxis.axis_label_text_font_size = "14pt"
 p1.xaxis.major_label_text_font_size = "14pt"
 p1.xaxis.axis_label_text_font = "times"
 p1.xaxis.axis_label_text_color = "black"
+p1.xaxis.major_label_text_font = "times"
 
 p1.yaxis.axis_label_text_font_size = "14pt"
 p1.yaxis.major_label_text_font_size = "14pt"
 p1.yaxis.axis_label_text_font = "times"
 p1.yaxis.axis_label_text_color = "black"
+p1.yaxis.major_label_text_font = "times"
 
 p1.toolbar.logo = None
 p1.toolbar_location = None
@@ -965,9 +978,9 @@ p1.xgrid.grid_line_color = None
 p1.ygrid.grid_line_color = None
 
 # for saving RH
-#export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/indoor_cal_RH.png')
+export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/indoor_cal_RH.png')
 # for saving Temp
-export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/indoor_cal_temp.png')
+#export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/indoor_cal_temp.png')
 
 tab1 = Panel(child=p1, title="RH")
 
@@ -1219,11 +1232,12 @@ p1 = figure(plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM2.5 (ug/m^3)')
+            y_axis_label='PM2.5 (ug/m³)')
 
 #p1.title.text = 'Indoor PM2.5'
 
-p1.line(audubon.index,     audubon.indoor,     legend='IN-1',        color='black',             line_width=2, muted_color='black', muted_alpha=0.6, )
+p1.line(audubon.index,     audubon.indoor,           color='black',             line_width=2, muted_color='black', muted_alpha=0.6)
+p1.scatter(audubon.index,     audubon.indoor,     legend='IN-1',        color='black',             line_width=2, muted_color='black', muted_alpha=0.6, size=9)
 #p1.line(adams.index,       adams.indoor,       legend='IAQU-2',        color='blue',              line_width=2, muted_color='blue', muted_alpha=0.2)
 #p1.line(balboa.index,      balboa.indoor,      legend='IAQU-3',        color='red',               line_width=2, muted_color='red', muted_alpha=0.2)
 #p1.line(browne.index,      browne.indoor,      legend='IAQU-4',        color='black',             line_width=2, muted_color='black', muted_alpha=0.2)
@@ -1235,13 +1249,14 @@ p1.line(audubon.index,     audubon.indoor,     legend='IN-1',        color='blac
 #p1.line(stevens.index,     stevens.indoor,     legend='IAQU-10',       color='grey',              line_width=2, muted_color='grey', muted_alpha=0.2)
 
 # all ref values are the same between units
-p1.line(audubon.index,     audubon.ref_value,     legend='Ref. Value',        color='red',             line_width=2, muted_color='red', muted_alpha=0.6, line_alpha=0.6)
+p1.line(audubon.index,     audubon.ref_value,           color='red',             line_width=2, muted_color='red', muted_alpha=0.6, line_alpha=0.6)
+p1.scatter(audubon.index,     audubon.ref_value,     legend='Reference Value',        color='red',             line_width=2, muted_color='red', muted_alpha=0.6, line_alpha=0.6, size=9)
 
 
 
 p1.legend.click_policy="mute"
 
-p1.legend.location='top_left'
+p1.legend.location='top_right'
 p1.legend.label_text_font_size = "14pt"
 p1.legend.label_text_font = "times"
 p1.legend.label_text_color = "black" 
@@ -1249,11 +1264,13 @@ p1.xaxis.axis_label_text_font_size = "14pt"
 p1.xaxis.major_label_text_font_size = "14pt"
 p1.xaxis.axis_label_text_font = "times"
 p1.xaxis.axis_label_text_color = "black"
+p1.xaxis.major_label_text_font = "times"
 
 p1.yaxis.axis_label_text_font_size = "14pt"
 p1.yaxis.major_label_text_font_size = "14pt"
 p1.yaxis.axis_label_text_font = "times"
 p1.yaxis.axis_label_text_color = "black"
+p1.yaxis.major_label_text_font = "times"
 
 p1.toolbar.logo = None
 p1.toolbar_location = None
@@ -1496,8 +1513,8 @@ stevens = stevens[stevens['ref_value'] > 35]
 
 # if calculating the performance of the calibrated data, use #lines = 1 and residuals check =1, and add in residuals = indoor.prediction_residuals
 
-linear_plot(audubon_low.ref_value, audubon_low.indoor, audubon_high.ref_value, audubon_high.indoor,'audubon', 2)   # used for determining the correction equations
-#linear_plot(audubon_low.ref_value, audubon_low.indoor_corrected, audubon_high.ref_value, audubon_high.indoor_corrected,'audubon', 2)   # used for plotting the corrected data with 1 equation for each region
+#linear_plot(audubon_low.ref_value, audubon_low.indoor, audubon_high.ref_value, audubon_high.indoor,'audubon', 2)   # used for determining the correction equations
+linear_plot(audubon_low.ref_value, audubon_low.indoor_corrected, audubon_high.ref_value, audubon_high.indoor_corrected,'audubon', 2)   # used for plotting the corrected data with 1 equation for each region
 #linear_plot(audubon.ref_value, audubon.indoor_corrected, audubon.ref_value, audubon.indoor,'audubon', 1, residuals_check = 1, residuals = audubon.prediction_residuals)
 #%%
 linear_plot(adams_low.ref_value, adams_low.indoor, adams_high.ref_value, adams_high.indoor,'adams', 2)

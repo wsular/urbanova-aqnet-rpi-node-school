@@ -27,6 +27,8 @@ from high_cal_mlr_function_generator import high_cal_setup, generate_mlr_functio
 from mlr_function_for_combined_data import mlr_function_general
 # Import curve fitting package from scipy
 from scipy.optimize import curve_fit
+from figure_format import figure_format
+from bokeh.io import export_png, output_file
 
 
 # Function to calculate the power-law with constants a and b
@@ -426,7 +428,29 @@ p3.scatter(Browne_df.ref_avg,    Browne_df.ref_avg,     legend='1 to 1 line',   
 
 tab3 = Panel(child=p3, title="Combined Browne Calibrated Data")
 
-tabs = Tabs(tabs=[ tab1, tab2, tab3])
+p4 = figure(plot_width=900,
+            plot_height=450,
+            #x_axis_type='datetime',
+            x_axis_label='Reference (ug/m³)',
+            y_axis_label='ON-1 PM 2.5 (ug/m³)')
+
+#p4.title.text = 'Browne Combined Power Cal PM 2.5'
+
+# plot combined calibration data
+p4.circle(winter_calibration_df.ref_avg,    winter_calibration_df.Audubon,     legend='SRCAA BAM',       color='black',       line_width=2, muted_color='green', muted_alpha=0.2)
+p4.triangle(high_calibration_df.ref_avg,    high_calibration_df.Audubon,     legend='Wildfire Event',       color='grey',   size=6,    line_width=2, muted_color='green', muted_alpha=0.2)
+
+figure_format(p4)
+p4.yaxis.major_label_text_font = "times"
+p4.xaxis.major_label_text_font = "times"
+p4.legend.location='top_left'
+
+export_png(p4, filename='/Users/matthew/Desktop/monroe_neph_bscat/combined_cal.png') #'_unshifted_uncertainty_2''
+
+tab4 = Panel(child=p4, title="Combined Browne Calibrated Data")
+
+
+tabs = Tabs(tabs=[ tab1, tab2, tab3, tab4])
 
 show(tabs)
 

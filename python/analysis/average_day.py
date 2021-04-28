@@ -87,7 +87,7 @@ def average_day(indoor, outdoor, site_number, time_period, shift):
                         plot_height=450,
                         x_axis_type='datetime',
                         x_axis_label='Time (hrs)',
-                        y_axis_label='PM2.5 (ug/m^3)',
+                        y_axis_label='PM2.5 (ug/m³)',
                         y_range = y_scale_option)
     p1.title.text = site_number
     p1.title.text_font_size = '14pt'

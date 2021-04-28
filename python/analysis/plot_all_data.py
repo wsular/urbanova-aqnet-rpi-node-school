@@ -130,9 +130,9 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #sampling_period = '2'
 
 # smoke event (in/out period 3)
-#start_time = '2020-09-11 00:00'
-#end_time = '2020-09-21 19:00'
-#sampling_period = '3'
+start_time = '2020-09-11 00:00'
+end_time = '2020-09-21 19:00'
+sampling_period = '3'
 
 #Indoor/outdoor compare #4 - part 1
 #start_time_1 = '2020-09-22 07:00'# start time for analysis period 4 
@@ -160,10 +160,10 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #sampling_period = '6'
 
 # Stage 1 burn ban
-start_time = '2019-10-31 07:00'
-end_time = '2019-11-08 19:00'
+#start_time = '2019-10-31 07:00'
+#end_time = '2019-11-08 19:00'
 
-sampling_period = '7'
+#sampling_period = '7'
 
 # Complete sampling time for indoor/outdoor
 #start_time = '2020-02-15 07:00'
@@ -1558,28 +1558,29 @@ p1 = figure(plot_width=900,
 #p1.title.text = 'Clarity Calibrated PM 2.5'
 
 
-p1.line(Audubon.index,     Audubon.PM2_5_corrected,           color='green',       line_width=2, muted_color='green', muted_alpha=0.2, line_alpha = 0)
-p1.line(Adams.index,       Adams.PM2_5_corrected,       legend='Adams',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
-p1.line(Balboa.index,      Balboa.PM2_5_corrected,      legend='Balboa',        color='red',         line_width=2, muted_color='red', muted_alpha=0.2)
-p1.line(Browne.index,      Browne.PM2_5_corrected,      legend='Browne',        color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
-p1.line(Grant.index,       Grant.PM2_5_corrected,       legend='Grant',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
-p1.line(Jefferson.index,   Jefferson.PM2_5_corrected,   legend='Jefferson',     color='brown',       line_width=2, muted_color='brown', muted_alpha=0.2)
-p1.line(Lidgerwood.index,  Lidgerwood.PM2_5_corrected,  legend='Lidgerwood',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
-p1.line(Regal.index,       Regal.PM2_5_corrected,       legend='Regal',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
-p1.line(Sheridan.index,    Sheridan.PM2_5_corrected,    legend='CN-8',      color='black', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
-p1.line(Stevens.index,     Stevens.PM2_5_corrected,     legend='Stevens',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
-p1.line(Reference.index,  Reference.PM2_5_corrected,    legend='Reference',     color='red',       line_width=2, muted_color='red', muted_alpha=0.2)
+p1.line(Audubon.index,     Audubon.PM2_5_corrected,     legend = 'Site 1',      color='green',       line_width=2, muted_color='green', muted_alpha=0.2)
+p1.line(Adams.index,       Adams.PM2_5_corrected,       legend='Site 2',         color='blue',        line_width=2, muted_color='blue', muted_alpha=0.2)
+p1.line(Balboa.index,      Balboa.PM2_5_corrected,      legend='Site 3',        color='red',         line_width=2, muted_color='red', muted_alpha=0.2)
+p1.line(Browne.index,      Browne.PM2_5_corrected,      legend='Site 4',        color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
+p1.line(Grant.index,       Grant.PM2_5_corrected,       legend='Site 5',         color='purple',      line_width=2, muted_color='purple', muted_alpha=0.2)
+p1.line(Jefferson.index,   Jefferson.PM2_5_corrected,   legend='Site 6',     color='brown',       line_width=2, muted_color='brown', muted_alpha=0.2)
+p1.line(Lidgerwood.index,  Lidgerwood.PM2_5_corrected,  legend='Site 7',    color='orange',      line_width=2, muted_color='orange', muted_alpha=0.2)
+p1.line(Regal.index,       Regal.PM2_5_corrected,       legend='Site 8',         color='khaki',       line_width=2, muted_color='khaki', muted_alpha=0.2)
+p1.line(Sheridan.index,    Sheridan.PM2_5_corrected,    legend='Site 9',      color='black', line_width=2, muted_color='deepskyblue', muted_alpha=0.2)
+p1.line(Stevens.index,     Stevens.PM2_5_corrected,     legend='Site 10',       color='grey',        line_width=2, muted_color='grey', muted_alpha=0.2)
+#p1.line(Reference.index,  Reference.PM2_5_corrected,    legend='Reference',     color='red',       line_width=2, muted_color='red', muted_alpha=0.2)
 #p1.line(jefferson.index,  jefferson.PM2_5_corrected,    legend='IAQU',     color='black',       line_width=2, muted_color='black', muted_alpha=0.2)
 
 #p1.line(Paccar.index,     Paccar.PM2_5_corrected,       legend='Paccar',        color='lime',        line_width=2, muted_color='lime', muted_alpha=0.2)
-#p1.line(Augusta.index,     Augusta.PM2_5,               legend='SRCAA BAM',       color='red',         muted_color='teal', muted_alpha=0.2,     line_width=2)
-#p1.line(Broadway.index,    Broadway.PM2_5,              legend='Broadway BAM',  color='black',        muted_color='black', muted_alpha=0.2, line_width=2)
-#p1.line(Greenbluff.index,    Greenbluff.PM2_5,          legend='Greenbluff TEOM',  color='red',       muted_color='red', muted_alpha=0.2, line_width=2)
+p1.line(Augusta.index,     Augusta.PM2_5,               legend='Augusta BAM',       color='gray',         muted_color='teal', muted_alpha=0.2,     line_width=2)
+p1.line(Broadway.index,    Broadway.PM2_5,              legend='Broadway BAM',  color='black',        muted_color='black', muted_alpha=0.2, line_width=2)
+p1.line(Greenbluff.index,    Greenbluff.PM2_5,          legend='Colbert TEOM',  color='red',       muted_color='red', muted_alpha=0.2, line_width=2)
 #p1.line(Monroe.index,       Monroe.PM2_5,               legend='Monroe Neph',   color='blue',         muted_color='blue', muted_alpha=0.2, line_width=2)
 
 p1.legend.click_policy="hide"
 
-#figure_format(p1)
+figure_format(p1)
+p1.legend.location='top_right'
 
 tab1 = Panel(child=p1, title="Calibrated PM 2.5")
 
@@ -2284,14 +2285,23 @@ stevens_low = indoor_cal_low(stevens, 'Stevens', sampling_period)
 
 #%%
 audubon_smoke = indoor_cal_smoke(audubon, 'Audubon')
+#%%
 adams_smoke = indoor_cal_smoke(adams, 'Adams')
+#%%
 balboa_smoke = indoor_cal_smoke(balboa, 'Balboa')
+#%%
 browne_smoke = indoor_cal_smoke(browne, 'Browne')
+#%%
 grant_smoke = indoor_cal_smoke(grant, 'Grant')
+#%%
 jefferson_smoke = indoor_cal_smoke(jefferson, 'Jefferson')
+#%%
 lidgerwood_smoke = indoor_cal_smoke(lidgerwood, 'Lidgerwood')
+#%%
 regal_smoke = indoor_cal_smoke(regal, 'Regal')
+#%%
 sheridan_smoke = indoor_cal_smoke(sheridan, 'Sheridan')
+#%%
 stevens_smoke = indoor_cal_smoke(stevens, 'Stevens')
 #%%
 audubon_low = indoor_low_uncertainty(stdev_number, audubon)
@@ -2305,16 +2315,17 @@ regal_low = indoor_low_uncertainty(stdev_number, regal)
 sheridan_low = indoor_low_uncertainty(stdev_number, sheridan)
 stevens_low = indoor_low_uncertainty(stdev_number, stevens)
 #%%
-audubon_smoke = indoor_smoke_uncertainty(stdev_number, audubon)
-adams_smoke = indoor_smoke_uncertainty(stdev_number, adams)
-balboa_smoke = indoor_smoke_uncertainty(stdev_number, balboa)
-browne_smoke = indoor_smoke_uncertainty(stdev_number, browne)
-grant_smoke = indoor_smoke_uncertainty(stdev_number, grant)
-jefferson_smoke = indoor_smoke_uncertainty(stdev_number, jefferson)
-lidgerwood_smoke = indoor_smoke_uncertainty(stdev_number, lidgerwood)
-regal_smoke = indoor_smoke_uncertainty(stdev_number, regal)
-sheridan_smoke = indoor_smoke_uncertainty(stdev_number, sheridan)
-stevens_smoke = indoor_smoke_uncertainty(stdev_number, stevens)
+audubon_smoke = indoor_smoke_uncertainty(stdev_number, audubon_smoke)
+#%%
+adams_smoke = indoor_smoke_uncertainty(stdev_number, adams_smoke)
+balboa_smoke = indoor_smoke_uncertainty(stdev_number, balboa_smoke)
+browne_smoke = indoor_smoke_uncertainty(stdev_number, browne_smoke)
+grant_smoke = indoor_smoke_uncertainty(stdev_number, grant_smoke)
+jefferson_smoke = indoor_smoke_uncertainty(stdev_number, jefferson_smoke)
+lidgerwood_smoke = indoor_smoke_uncertainty(stdev_number, lidgerwood_smoke)
+regal_smoke = indoor_smoke_uncertainty(stdev_number, regal_smoke)
+sheridan_smoke = indoor_smoke_uncertainty(stdev_number, sheridan_smoke)
+stevens_smoke = indoor_smoke_uncertainty(stdev_number, stevens_smoke)
 #%%
 
 audubon = audubon_low.append(audubon_smoke)
@@ -2328,8 +2339,9 @@ regal = regal_low.append(regal_smoke)
 sheridan = sheridan_low.append(sheridan_smoke)
 stevens = stevens_low.append(stevens_smoke)
 #%%
-# use when not in sampling period 3
+# use when  in sampling period 3
 audubon = audubon_smoke
+#%%
 adams = adams_smoke
 balboa = balboa_smoke
 browne = browne_smoke
@@ -2355,6 +2367,7 @@ stevens = stevens_low
 #%%
 
 audubon = audubon.sort_index()
+#%%
 adams = adams.sort_index()
 balboa = balboa.sort_index()
 browne = browne.sort_index()
@@ -2483,10 +2496,11 @@ outdoor_averages['Site #9'] = sheridan_averages['Sheridan_CN']
 outdoor_averages['Site #10'] = stevens_averages['Stevens_CN']
 
 
-p11 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
-#p11 = gridplot([[p4,p7], [p8, p9], [p10]], plot_width = 500, plot_height = 260, toolbar_location=None)  # for plotting ATP 5 where it is just the 5 schools where both units functioning during smoke event
+#p11 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
+p11 = gridplot([[p4,p7], [p8, p9], [p10]], plot_width = 500, plot_height = 260, toolbar_location=None)  # for plotting ATP 5 where it is just the 5 schools where both units functioning during smoke event
 
 # make sure to change the In_out_compare number to put in correct folder based on the time period
+
 export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_' + sampling_period + '/hourly_averages_all_sites_gridplot.png')
 
 tab1 = Panel(child=p11, title="Indoor Outdoor Comparison")
@@ -2534,7 +2548,7 @@ Stevens_hourly_min_max_diff = Stevens_averages.max() - Stevens_averages.min()
 hourly_max_min = pd.concat([Adams_hourly_min_max_diff,
                             Audubon_hourly_min_max_diff,
                             Balboa_hourly_min_max_diff,
-                         #   Browne_hourly_min_max_diff,
+                            Browne_hourly_min_max_diff,
                             Grant_hourly_min_max_diff,
                             Jefferson_hourly_min_max_diff,
                             Lidgerwood_hourly_min_max_diff,
@@ -2693,11 +2707,12 @@ p9 = indoor_outdoor_plot(sheridan, Sheridan, 'Site #9', stdev_number, sampling_p
 #%%
 p10 = indoor_outdoor_plot(stevens, Stevens, 'Site #10', stdev_number, sampling_period, shift = 'no')
 #%%
+
 #p11 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
 p11 = gridplot([[p4,p7], [p8, p9], [p10]], plot_width = 500, plot_height = 260, toolbar_location=None)  # for plotting ATP 5 where it is just the 5 schools where both units functioning during smoke event
 
 # make sure to change the In_out_compare number to put in correct folder based on the time period
-export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_' + sampling_period + '/all_sites_gridplot_unshifted_uncertainty_2.png')
+export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_' + sampling_period + '/all_sites_gridplot_unshifted.png')
 
 tab1 = Panel(child=p11, title="Indoor Outdoor Comparison")
 
@@ -3416,9 +3431,10 @@ p1 = figure(title = 'Site #1',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban
 p1.title.text_font_size = '14pt' 
+p1.title.text_font = 'times'
         
 #p1.line(audubon.index,     audubon.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
 p1.line(Audubon.index,     Audubon.PM2_5_corrected,                 color='black', muted_color='red', muted_alpha=0.4, line_alpha=0.4,     line_width=2) #legend='Calibrated CN', 
@@ -3431,6 +3447,8 @@ p1.line(Audubon.index,     Audubon.PM2_5_corrected,                 color='black
 p1.legend.click_policy="mute"
 p1.legend.location='top_right'
 figure_format(p1)
+p1.xaxis.major_label_text_font = "times"
+p1.yaxis.major_label_text_font = "times"
 
 
 p2 = figure(title = 'Site #2',
@@ -3438,9 +3456,10 @@ p2 = figure(title = 'Site #2',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban)
 p2.title.text_font_size = '14pt' 
+p2.title.text_font = 'times'
         
 #p2.line(adams.index,     adams.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',   muted_color='black', muted_alpha=0.2,  line_width=2)
 p2.line(Adams.index,     Adams.PM2_5_corrected,                 color='black',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    line_width=2) #legend='Calibrated CN', 
@@ -3454,6 +3473,8 @@ p2.line(Adams.index,     Adams.PM2_5_corrected,                 color='black',  
 p2.legend.click_policy="mute"
 p2.legend.location='top_right'
 figure_format(p2)
+p2.xaxis.major_label_text_font = "times"
+p2.yaxis.major_label_text_font = "times"
 
 
 p3 = figure(title = 'Site #3',
@@ -3461,9 +3482,10 @@ p3 = figure(title = 'Site #3',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
 p3.title.text_font_size = '14pt' 
+p3.title.text_font = 'times'
         
 #p3.line(balboa.index,     balboa.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
 p3.line(Balboa.index,     Balboa.PM2_5_corrected,            muted_color='red', muted_alpha=0.4, line_alpha=0.4,   color='black',       line_width=2) # legend='Calibrated CN', 
@@ -3477,15 +3499,18 @@ p3.line(Balboa.index,     Balboa.PM2_5_corrected,            muted_color='red', 
 p3.legend.click_policy="mute"
 p3.legend.location='top_right'
 figure_format(p3)
+p3.xaxis.major_label_text_font = "times"
+p3.yaxis.major_label_text_font = "times"
 
 p4 = figure(title = 'Site# 4',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
 p4.title.text_font_size = '14pt' 
+p4.title.text_font = 'times'
         
 #p4.line(browne.index,     browne.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
 #p4.line(Browne.index,     Browne.PM2_5_corrected,           legend='Calibrated CN',       color='red', muted_color='red', muted_alpha=0.4,  line_alpha=0.4,    line_width=2) 
@@ -3498,15 +3523,18 @@ p4.title.text_font_size = '14pt'
 p4.legend.click_policy="mute"
 p4.legend.location='top_right'
 figure_format(p4)
+p4.xaxis.major_label_text_font = "times"
+p4.yaxis.major_label_text_font = "times"
 
 p5 = figure(title = 'Site #5',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban)) 
 p5.title.text_font_size = '14pt'
+p5.title.text_font = 'times'
         
 #p5.line(grant.index,     grant.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.2,     color='black',     line_width=2)
 #p5.line(Paccar.index,        Paccar.PM2_5,              legend='Clarity',       color='blue',      line_width=2) 
@@ -3521,15 +3549,18 @@ p5.line(Grant.index,     Grant.PM2_5_corrected,             muted_color='red', m
 p5.legend.click_policy="mute"
 p5.legend.location='top_right'
 figure_format(p5)
+p5.xaxis.major_label_text_font = "times"
+p5.yaxis.major_label_text_font = "times"
     
 p6 = figure(title = 'Site #6',
             plot_width=900,
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
 p6.title.text_font_size = '14pt' 
+p6.title.text_font = 'times'
    
 #p6.line(jefferson.index,     jefferson.PM2_5_corrected,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.2,     color='black',     line_width=2)
 p6.line(Jefferson.index,     Jefferson.PM2_5_corrected,              muted_color='red', muted_alpha=0.4,   color='black', line_alpha=0.4,      line_width=2) # legend='Calibrated CN',
@@ -3544,6 +3575,8 @@ p6.line(Jefferson.index,     Jefferson.PM2_5_corrected,              muted_color
 p6.legend.click_policy="mute"
 p6.legend.location='top_right'
 figure_format(p6)
+p6.xaxis.major_label_text_font = "times"
+p6.yaxis.major_label_text_font = "times"
 
 
 p7 = figure(title = 'Site #7',
@@ -3551,9 +3584,10 @@ p7 = figure(title = 'Site #7',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
 p7.title.text_font_size = '14pt'     
+p7.title.text_font = 'times'
  
 #p7.line(lidgerwood.index,     lidgerwood.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
 p7.line(Lidgerwood.index,     Lidgerwood.PM2_5_corrected,                  color='black',  muted_color='red', muted_alpha=0.4, line_alpha=0.4,    line_width=2) #legend='Calibrated CN',
@@ -3566,6 +3600,8 @@ p7.line(Lidgerwood.index,     Lidgerwood.PM2_5_corrected,                  color
 p7.legend.click_policy="mute"
 p7.legend.location='top_left'
 figure_format(p7)
+p7.xaxis.major_label_text_font = "times"
+p7.yaxis.major_label_text_font = "times"
 
 
 p8 = figure(title = 'Site #8',
@@ -3573,9 +3609,11 @@ p8 = figure(title = 'Site #8',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
-p8.title.text_font_size = '14pt'  
+p8.title.text_font_size = '14pt' 
+p8.title.text_font = 'times' 
+
 
 #p8.line(regal.index,     regal.PM2_5_corrected,  legend='Calibrated IAQU',       color='black', muted_color='black', muted_alpha=0.2,    line_width=2)
 p8.line(Regal.index,     Regal.PM2_5_corrected,                 color='black',   muted_color='red', muted_alpha=0.4, line_alpha=0.4,   line_width=2) #legend='Calibrated CN', 
@@ -3588,6 +3626,8 @@ p8.line(Regal.index,     Regal.PM2_5_corrected,                 color='black',  
 p8.legend.click_policy="mute"
 p8.legend.location='top_left'
 figure_format(p8)
+p8.xaxis.major_label_text_font = "times"
+p8.yaxis.major_label_text_font = "times"
 
 
 p9 = figure(title = 'Site  #9',
@@ -3595,9 +3635,10 @@ p9 = figure(title = 'Site  #9',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
 p9.title.text_font_size = '14pt'
+p9.title.text_font = 'times'
 
 #p9.line(sheridan.index,     sheridan.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
 p9.line(Sheridan.index,     Sheridan.PM2_5_corrected,              muted_color='red', muted_alpha=0.4, line_alpha=0.4,   color='black',       line_width=2) #legend='Calibrated CN',
@@ -3612,6 +3653,8 @@ p9.legend.click_policy="mute"
 p9.legend.location='top_left'
 
 figure_format(p9)
+p9.xaxis.major_label_text_font = "times"
+p9.yaxis.major_label_text_font = "times"
 
 
 p10 = figure(title = 'Site #10',
@@ -3619,10 +3662,11 @@ p10 = figure(title = 'Site #10',
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
             y_range= ranges.Range1d(start=0,end=47)) # for CN Burnban))
         
 p10.title.text_font_size = '14pt'
+p10.title.text_font = 'times'
 
 #p10.line(stevens.index,     stevens.PM2_5_corrected,  legend='Calibrated IAQU',       color='black',  muted_color='black', muted_alpha=0.2,   line_width=2)
 p10.line(Stevens.index,     Stevens.PM2_5_corrected,             muted_color='red', muted_alpha=0.4, line_alpha=0.4,    color='black',       line_width=2) #legend='Calibrated CN',
@@ -3630,6 +3674,8 @@ p10.line(Stevens.index,     Stevens.PM2_5_corrected,             muted_color='re
 #p10.line(stevens.index,     stevens.PM2_5_corrected_shift,  legend='Calibrated IAQU',  muted_color='black', muted_alpha=0.4,     color='black',     line_width=2)
 
 figure_format(p10)
+p10.xaxis.major_label_text_font = "times"
+p10.yaxis.major_label_text_font = "times"
 
 #p7 = gridplot([[p1,p2, p3], [p4, p5, p6]], plot_width = 400, plot_height = 300, toolbar_location=None)
 
@@ -3930,7 +3976,7 @@ Node = [Adams,
 Node_name = ['2',       #Adams
              '1',     # Audubon
              '3',     #Balboa
-     #        '4',     #Browne
+       #     '4',     #Browne
              '5',    # Grant
              '6', #Jefferson
              '7', #Lidgerwood
@@ -3947,7 +3993,7 @@ Node_name = ['2',       #Adams
 School_Type = ['N-P',
                'P',
                'N-P',
-        #       'N-P',
+         #      'N-P',
                'P',
                'N-P',
                'N-P',
@@ -4068,7 +4114,7 @@ df['avg_PM2_5'] = stats_table_adj['avg']
 df['stdev'] = stats_table_adj['stdev']
 df['Site'] = stats_table_adj['location']
 df['School_type_short'] = stats_table_adj['School_Type']
-df['Hourly_min_max_diff'] = hourly_max_min['hourly_avg_max_min_diff'].values
+#df['Hourly_min_max_diff'] = hourly_max_min['hourly_avg_max_min_diff'].values
 
 
 #%%
@@ -4125,44 +4171,44 @@ def characteristic_plot(x_data,y_data,df,x_label,y_label):
         output_file('/Users/matthew/Desktop/characteristic_correlations.html')
 
     df = df.copy()
-    y_axis_label_option ='Average PM 2.5 (ug/m3)'
+    y_axis_label_option ='Average PM 2.5 (ug/m³)'
     y_range=(7.5, 19)  # for burn ban
    # y_range=(6.2, 9.7) # for all data
-   # y_range=(3.4, 7)  # for all data without smoke
+ #   y_range=(3.4, 7)  # for all data without smoke
     if x_label == 'Distance_to_freeway':
         x_axis_label_option='Distance to Freeway (ft)'
         title_text_option = 'Average PM 2.5 vs Distance to Freeway'
-        y_axis_label_option ='Average PM 2.5 (ug/m3)'
+        y_axis_label_option ='Average PM 2.5 (ug/m³)'
      #   y_range=(5.5, 10.5)
         x_offset=-5
     elif x_label == 'Distance_to_major_arterial': 
         x_axis_label_option = 'Distance to Major Arterial (ft)'
         title_text_option = 'Average PM 2.5 vs Distance to Major Arterial'
-        y_axis_label_option ='Average PM 2.5 (ug/m3)'
+        y_axis_label_option ='Average PM 2.5 (ug/m³)'
     elif x_label == 'Distance_to_highway':
       #  y_range=(5.5, 10.5)
         x_axis_label_option = 'Distance to Highway (ft)'
         title_text_option = 'Average PM 2.5 vs Distance to Highway'
-        y_axis_label_option ='Average PM 2.5 (ug/m3)'
+        y_axis_label_option ='Average PM 2.5 (ug/m³)'
     elif x_label == 'Elevation':
         if y_label == 'Hourly_min_max_diff':
             #y_range=(1, 5) # for all data
             y_range=(3, 17) # for burn ban
             x_axis_label_option = 'Elevation (ft)'
             title_text_option = 'Hourly Avg. PM2.5 Max/Min Diff vs Elevation'
-            y_axis_label_option ='Hourly Avg. PM2.5 Diff (ug/m3)'
+            y_axis_label_option ='Hourly Avg. PM2.5 Diff (ug/m³)'
         else:
             #     print(1)
             #     df = df[~df.School.str.contains("Lidgerwood")]   # take out lidgerwood so don't have overlapping labels (sites 3 and 7 have same elevation)
             #     print(df)
             x_axis_label_option = 'Elevation (ft)'
             title_text_option = 'Average PM 2.5 vs Elevation'
-            y_axis_label_option ='Average PM 2.5 (ug/m3)'
+            y_axis_label_option ='Average PM 2.5 (ug/m³)'
     elif x_label == 'free_meal_percentage':
       #  y_range=(5.5, 10.5)
         x_axis_label_option = 'Free Meal Percentage (%)'
         title_text_option = 'Free Meal Percentage'
-        y_axis_label_option ='Average PM 2.5 (ug/m3)'
+        y_axis_label_option ='Average PM 2.5 (ug/m³)'
   #  elif x_label == 'Elevation' and y_label == 'Hourly_min_max_diff':
    #     y_range=(1, 5) # for all data
        # y_range=(1, 5) # for burn ban
@@ -4246,12 +4292,12 @@ source = ColumnDataSource(dict(x=np.array(df1.Site),y=np.array(df1.avg_PM2_5), t
 
 p6 = figure(plot_width=600, plot_height=400, tools="save",
         x_axis_label = 'Site #',
-        y_axis_label = 'Average PM 2.5 (ug/m3)',
+        y_axis_label = 'Average PM 2.5 (ug/m³)',
         title='Type of School',
         x_minor_ticks=2,
         x_range = source.data["x"],
         #y_range= ranges.Range1d(start=6.2,end=9.7)   # for all data
-       # y_range= ranges.Range1d(start=3.4,end=7)    # for smoke removed 
+      #  y_range= ranges.Range1d(start=3.4,end=7)    # for smoke removed 
         y_range= ranges.Range1d(start=7.5,end=19)   # for burn ban
         )
 
@@ -4268,13 +4314,14 @@ p6.xaxis.axis_label_text_font_size = "14pt"
 p6.xaxis.major_label_text_font_size = "14pt"
 p6.xaxis.axis_label_text_font = "times"
 p6.xaxis.axis_label_text_color = "black"
-p1.xaxis.major_label_text_font = "times"
+p6.xaxis.major_label_text_font = "times"
+
     
 p6.yaxis.axis_label_text_font_size = "14pt"
 p6.yaxis.major_label_text_font_size = "14pt"
 p6.yaxis.axis_label_text_font = "times"
 p6.yaxis.axis_label_text_color = "black"
-p1.yaxis.major_label_text_font = "times"
+p6.yaxis.major_label_text_font = "times"
     
 p6.toolbar.logo = None
 #p6.toolbar_location = None

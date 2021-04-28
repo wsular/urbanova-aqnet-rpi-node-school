@@ -149,7 +149,7 @@ p1 = figure(
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)',
+            y_axis_label='PM 2.5 (ug/m³)',
         #    y_range=(0, 22) # zoom 1 y range
             )
         
@@ -185,7 +185,7 @@ p1 = figure(
             plot_height=450,
             x_axis_type='datetime',
             x_axis_label='Time (local)',
-            y_axis_label='PM 2.5 (ug/m3)')
+            y_axis_label='PM 2.5 (ug/m³)')
         
 # just plotting the calibrated shifted indoor pm2.5 so not so cluttered, unless the shift doesn't make any sense and need a visual to explain
 p1.line(audubon.index,     audubon.PM2_5_corrected,  legend='IN-1',  muted_color='black', muted_alpha=0.3,     color='black',     line_width=2)

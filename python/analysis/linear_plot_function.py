@@ -134,14 +134,14 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
     # plot it
     p1 = figure(plot_width=900,
             plot_height=450,
-            x_axis_label='Reference Data (ug/m^3)',
-            y_axis_label='Indoor Unit (ug/m^3)',
+            x_axis_label='Reference Data (ug/m³)',
+            y_axis_label='Indoor Node (ug/m³)',
             )
 
     #p1.circle(x,x,legend='Ref Avg. 1 to 1 line', color='red')
     #p1.line(x,y_predicted,color='black',legend='y='+str(round(slope,2))+'x+'+str(round(intercept,2)), line_width=3, line_dash='dashed')
 
-    p1.circle(x, y, legend='Lower Regime: ' + 'y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)), color='black', size=5)
+    p1.circle(x, y, legend='Lower Regime: ' + 'y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r² = ' + str(round(r_squared1,3)), color='black', size=5)
    # p1.line(x,y_predicted1,color='blue',legend='y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)), line_width=3)
 
     
@@ -237,7 +237,7 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
         #p1.line(x_winter,y_predicted,color='black', line_width=2, line_dash='dashed')#,legend='y='+str(round(slope,2))+'x+'+str(round(intercept,2)))
         
         # lower regime data
-        p1.triangle(x_winter, y_winter, legend='Upper Regime:' + ' y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)), color='black', size=8)
+        p1.triangle(x_winter, y_winter, legend='Upper Regime:' + ' y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r² = ' + str(round(r_squared1,3)), color='black', size=8)
         # this is just commented out so dont have two entries in legend (wanted to keep the extrapolated line for high regime just for visual purposes)
       #  p1.line(x_winter,y_predicted1,color='green',line_width=3)#, legend='y='+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)), line_width=3)
 
@@ -297,12 +297,14 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
     p1.xaxis.major_label_text_font_size = "14pt"
     p1.xaxis.axis_label_text_font = "times"
     p1.xaxis.axis_label_text_color = "black"
+    p1.xaxis.major_label_text_font = "times"
 
    # p1.yaxis.axis_label="yaxis_name"
     p1.yaxis.axis_label_text_font_size = "14pt"
     p1.yaxis.major_label_text_font_size = "14pt"
     p1.yaxis.axis_label_text_font = "times"
     p1.yaxis.axis_label_text_color = "black"
+    p1.yaxis.major_label_text_font = "times"
    # p1.toolbar.logo = None
    # p1.toolbar_location = None
     
@@ -318,7 +320,7 @@ def linear_plot(x,y,x_winter,y_winter,unit_name,n_lines,**kwargs):
     # for audubon indoor cal raw data
    # export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/Audubon_indoor_cal_raw_data.png')
     # for audubon indoor cal corrected data
-   # export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/Audubon_indoor_cal_corrected_data.png')
+    export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/Audubon_indoor_cal_corrected_data.png')
     # for audubon combined calibration raw data
     #export_png(p1,'/Users/matthew/Desktop/thesis/Final_Figures/Materials_and_Methods/Audubon_combined_cal_raw_data.png')
     tab1 = Panel(child=p1, title = 'Smoke Event Raw Data')

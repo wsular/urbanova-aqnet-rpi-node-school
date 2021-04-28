@@ -25,7 +25,7 @@ def indoor_cal_smoke(indoor, name):
     indoor_cut = indoor_cut.sort_index()
     
     if name == 'Audubon': 
-      #  print('audubon')
+        print('audubon')
         indoor_cut['PM2_5_corrected'] = np.where(indoor_cut.PM2_5_corrected > 70, (indoor_cut.PM2_5_corrected-34.4)*(1/0.61),    # above threshold adjustment
           (indoor_cut.PM2_5_corrected+2.27)/2.35)                                                                                # below threshold adjustment (same as indoor_cal_low equations))
     

@@ -1022,8 +1022,8 @@ print('Paccar standard error a =', se_a, '\n',
 # plot it
 p2 = figure(plot_width=900,
             plot_height=450,
-            x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='Clarity Nodes(ug/m^3)')
+            x_axis_label='Clarity Reference (ug/m³)',
+            y_axis_label='Clarity Nodes(ug/m³)')
 
 p2.circle(x,y,legend='Reference 1 to 1 line', color='red')
 p2.line(x,y_predicted,color='red',legend='y='+str(round(slope,2))+'x+'+str(round(intercept,2)))
@@ -1049,85 +1049,101 @@ p2.line(x,y_predicted,color='red',legend='y='+str(round(slope,2))+'x+'+str(round
 p2.legend.location='top_left'
 p2.toolbar.logo = None
 p2.toolbar_location = None
+p2.xaxis.major_label_text_font = "times"
+p2.yaxis.major_label_text_font = "times"
 
 
 p3 = figure(plot_width=900,
             plot_height=450,
-            x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='IN-2 (ug/m^3)')
+            x_axis_label='Clarity Reference (ug/m³)',
+            y_axis_label='IN-2 (ug/m³)')
 
 p3.circle(df.Reference, df.Adams, color='black')
 p3.legend.label_text_font_size = "10px"
-p3.line(x1,y1_predicted,color='black',legend='y = '+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r^2 = ' + str(round(r_squared1,3)))
+p3.line(x1,y1_predicted,color='black',legend='y = '+str(round(slope1,2))+'x+'+str(round(intercept1,2))+ '  ' + 'r² = ' + str(round(r_squared1,3)))
 
 p3.legend.location='top_left'
 p3.toolbar.logo = None
 p3.toolbar_location = None
 figure_format(p3)
+p3.xaxis.major_label_text_font = "times"
+p3.yaxis.major_label_text_font = "times"
+
 
 p4 = figure(plot_width=900,
             plot_height=450,
-            x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='IN-5 (ug/m^3)')
+            x_axis_label='Clarity Reference (ug/m³)',
+            y_axis_label='IN-5 (ug/m³)')
 
 p4.circle(df.Reference, df.Grant,  color='black')
-p4.line(x2,y2_predicted,color='black',legend='y = '+str(round(slope2,2))+'x+'+str(round(intercept2,2))+ '  ' + 'r^2 = ' + str(round(r_squared2,3)))
+p4.line(x2,y2_predicted,color='black',legend='y = '+str(round(slope2,2))+'x+'+str(round(intercept2,2))+ '  ' + 'r² = ' + str(round(r_squared2,3)))
 p4.legend.label_text_font_size = "10px"
 
 p4.legend.location='top_left'
 p4.toolbar.logo = None
 p4.toolbar_location = None
 figure_format(p4)
+p4.xaxis.major_label_text_font = "times"
+p4.yaxis.major_label_text_font = "times"
+
 
 p5 = figure(plot_width=900,
             plot_height=450,
-            x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='IN-6 (ug/m^3)')
+            x_axis_label='Clarity Reference (ug/m³)',
+            y_axis_label='IN-6 (ug/m³)')
 
 p5.circle(df.Reference, df.Jefferson, color='black')
-p5.line(x3,y3_predicted,color='black',legend='y = '+str(round(slope3,2))+'x+'+str(round(intercept3,2))+ '  ' + 'r^2 = ' + str(round(r_squared3,3)))
+p5.line(x3,y3_predicted,color='black',legend='y = '+str(round(slope3,2))+'x+'+str(round(intercept3,2))+ '  ' + 'r² = ' + str(round(r_squared3,3)))
 p5.legend.label_text_font_size = "10px"
 
 p5.legend.location='top_left'
 p5.toolbar.logo = None
 p5.toolbar_location = None
 figure_format(p5)
+p5.xaxis.major_label_text_font = "times"
+p5.yaxis.major_label_text_font = "times"
+
 
 p6 = figure(plot_width=900,
             plot_height=450,
-            x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='IN-9 (ug/m^3)')
+            x_axis_label='Clarity Reference (ug/m³)',
+            y_axis_label='IN-9 (ug/m³)')
 
 p6.circle(df.Reference, df.Sheridan, color='black')
-p6.line(x4,y4_predicted,color='black',legend='y = '+str(round(slope4,2))+'x+'+str(round(intercept4,2))+ '  ' + 'r^2 = ' + str(round(r_squared4,3)))
+p6.line(x4,y4_predicted,color='black',legend='y = '+str(round(slope4,2))+'x+'+str(round(intercept4,2))+ '  ' + 'r² = ' + str(round(r_squared4,3)))
 p6.legend.label_text_font_size = "10px"
 
 p6.legend.location='top_left'
 p6.toolbar.logo = None
 p6.toolbar_location = None
 figure_format(p6)
+p6.xaxis.major_label_text_font = "times"
+p6.yaxis.major_label_text_font = "times"
+
 
 p7 = figure(plot_width=900,
             plot_height=450,
-            x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='IN-10 (ug/m^3)')
+            x_axis_label='Clarity Reference (ug/m³)',
+            y_axis_label='IN-10 (ug/m³)')
 
 p7.circle(df.Reference, df.Stevens,  color='black')
-p7.line(x5,y5_predicted,color='black',legend='y = '+str(round(slope5,2))+'x+'+str(round(intercept5,2))+ '  ' + 'r^2 = ' + str(round(r_squared5,3)))
+p7.line(x5,y5_predicted,color='black',legend='y = '+str(round(slope5,2))+'x+'+str(round(intercept5,2))+ '  ' + 'r² = ' + str(round(r_squared5,3)))
 p7.legend.label_text_font_size = "10px"
 
 p7.legend.location='top_left'
 p7.toolbar.logo = None
 p7.toolbar_location = None
 figure_format(p7)
+p7.xaxis.major_label_text_font = "times"
+p7.yaxis.major_label_text_font = "times"
 
 p8 = figure(plot_width=900,
             plot_height=450,
-            x_axis_label='Clarity Reference (ug/m^3)',
-            y_axis_label='Paccar (ug/m^3)')
+            x_axis_label='Clarity Reference (ug/m³)',
+            y_axis_label='Paccar (ug/m³)')
 
 p8.circle(df.Reference, df.Paccar, legend='Paccar', color='black')
-p8.line(x6,y6_predicted,color='black',legend='y='+str(round(slope6,2))+'x+'+str(round(intercept6,2))+ '  ' + 'r^2 = ' + str(round(r_squared6,3)))
+p8.line(x6,y6_predicted,color='black',legend='y='+str(round(slope6,2))+'x+'+str(round(intercept6,2))+ '  ' + 'r² = ' + str(round(r_squared6,3)))
 p8.legend.label_text_font_size = "10px"
 
 p8.legend.location='top_left'

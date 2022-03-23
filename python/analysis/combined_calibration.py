@@ -29,6 +29,7 @@ from mlr_function_for_combined_data import mlr_function_general
 from scipy.optimize import curve_fit
 from figure_format import figure_format
 from bokeh.io import export_png, output_file
+from bokeh.layouts import gridplot
 
 
 # Function to calculate the power-law with constants a and b
@@ -234,21 +235,29 @@ mlr_high_jefferson = generate_mlr_function_high_cal(high_calibration_df, 'Jeffer
 mlr_high_lidgerwood = generate_mlr_function_high_cal(high_calibration_df, 'Lidgerwood')
 mlr_high_regal = generate_mlr_function_high_cal(high_calibration_df, 'Regal')
 mlr_high_sheridan = generate_mlr_function_high_cal(high_calibration_df, 'Sheridan')
-#%%
 mlr_high_stevens = generate_mlr_function_high_cal(high_calibration_df, 'Stevens')
 #%%
 
 mlr_winter_audubon = generate_mlr_function_high_cal(winter_calibration_df, 'Audubon')
+#%%
 mlr_winter_adams = generate_mlr_function_high_cal(winter_calibration_df, 'Adams')
+#%%
 mlr_winter_balboa = generate_mlr_function_high_cal(winter_calibration_df, 'Balboa')
+#%%
 mlr_winter_browne = generate_mlr_function_high_cal(winter_calibration_df, 'Browne')
+#%%
 mlr_winter_grant = generate_mlr_function_high_cal(winter_calibration_df, 'Grant')
+#%%
 mlr_winter_jefferson = generate_mlr_function_high_cal(winter_calibration_df, 'Jefferson')
+#%%
 mlr_winter_lidgerwood = generate_mlr_function_high_cal(winter_calibration_df, 'Lidgerwood')
+#%%
 mlr_winter_regal = generate_mlr_function_high_cal(winter_calibration_df, 'Regal')
+#%%
 mlr_winter_sheridan = generate_mlr_function_high_cal(winter_calibration_df, 'Sheridan')
+#%%
 mlr_winter_stevens = generate_mlr_function_high_cal(winter_calibration_df, 'Stevens')
-
+#%%
 mlr_combined_audubon = generate_mlr_function_high_cal(calibration_df, 'Audubon')
 mlr_combined_adams = generate_mlr_function_high_cal(calibration_df, 'Adams')
 mlr_combined_balboa = generate_mlr_function_high_cal(calibration_df, 'Balboa')
@@ -445,7 +454,7 @@ p4.yaxis.major_label_text_font = "times"
 p4.xaxis.major_label_text_font = "times"
 p4.legend.location='top_left'
 
-export_png(p4, filename='/Users/matthew/Desktop/monroe_neph_bscat/combined_cal.png') #'_unshifted_uncertainty_2''
+#export_png(p4, filename='/Users/matthew/Desktop/monroe_neph_bscat/combined_cal.png') #'_unshifted_uncertainty_2''
 
 tab4 = Panel(child=p4, title="Combined Browne Calibrated Data")
 
@@ -460,26 +469,68 @@ show(tabs)
 # add in the second set of data (ie normally have high cal and winter cal df's input into the function)
 
 
-linear_plot(high_calibration_df.ref_avg, high_calibration_df.Audubon,winter_calibration_df.ref_avg, winter_calibration_df.Audubon,'Audubon',2)
+p1 = linear_plot(high_calibration_df.ref_avg, high_calibration_df.Audubon,winter_calibration_df.ref_avg, winter_calibration_df.Audubon,
+                 calibration_df.ref_avg,calibration_df.Audubon,'Audubon',2, 'Wildfire Node 1',
+                 high_calibration_df.Audubon_mlr_high,winter_calibration_df.Audubon_mlr_winter)
+#export_png(p1, filename='/Users/matthew/Desktop/thesis/publishing/figures/audubon_zoomed.png')
+#export_png(p1, filename='/Users/matthew/Desktop/thesis/publishing/figures/audubon_zoomed_no_stats.png')
+#%%
+p2 = linear_plot(high_calibration_df.ref_avg, high_calibration_df.Adams,winter_calibration_df.ref_avg, winter_calibration_df.Adams,
+                 calibration_df.ref_avg,calibration_df.Adams,'Adams',2, 'Wildfire Node 2',
+                 high_calibration_df.Adams_mlr_high,winter_calibration_df.Adams_mlr_winter)
+#%%
+p3 = linear_plot(high_calibration_df.ref_avg, high_calibration_df.Balboa,winter_calibration_df.ref_avg, winter_calibration_df.Balboa,
+                 calibration_df.ref_avg,calibration_df.Balboa,'Balboa',2, 'Wildfire Node 3',
+                 high_calibration_df.Balboa_mlr_high,winter_calibration_df.Balboa_mlr_winter)
+#%%
+p4 = linear_plot(high_calibration_df.ref_avg, high_calibration_df.Browne,winter_calibration_df.ref_avg, winter_calibration_df.Browne,
+                 calibration_df.ref_avg,calibration_df.Browne,'Browne',2, 'Wildfire Node 4',
+                 high_calibration_df.Browne_mlr_high,winter_calibration_df.Browne_mlr_winter)
+#%%
+p5 = linear_plot(high_calibration_df.ref_avg, high_calibration_df.Grant,winter_calibration_df.ref_avg, winter_calibration_df.Grant,
+                 calibration_df.ref_avg,calibration_df.Grant,'Grant',2, 'Wildfire Node 5',
+                 high_calibration_df.Grant_mlr_high,winter_calibration_df.Grant_mlr_winter)
+#%%
+p6 = linear_plot(high_calibration_df.ref_avg, high_calibration_df.Jefferson,winter_calibration_df.ref_avg, winter_calibration_df.Jefferson,
+                 calibration_df.ref_avg,calibration_df.Jefferson,'Jefferson',2, 'Wildfire Node 6',
+                 high_calibration_df.Jefferson_mlr_high,winter_calibration_df.Jefferson_mlr_winter)
+#%%
+p7 = linear_plot(high_calibration_df.ref_avg, high_calibration_df.Lidgerwood,winter_calibration_df.ref_avg, winter_calibration_df.Lidgerwood,
+                 calibration_df.ref_avg,calibration_df.Lidgerwood,'Lidgerwood',2, 'Wildfire Node 7',
+                 high_calibration_df.Lidgerwood_mlr_high,winter_calibration_df.Lidgerwood_mlr_winter)
+#%%
+p8 = linear_plot(high_calibration_df.ref_avg, high_calibration_df.Regal,winter_calibration_df.ref_avg, winter_calibration_df.Regal,
+                 calibration_df.ref_avg,calibration_df.Regal,'Regal',2, 'Wildfire Node 8',
+                 high_calibration_df.Regal_mlr_high,winter_calibration_df.Regal_mlr_winter)
+#%%
+p9 = linear_plot(high_calibration_df.ref_avg, high_calibration_df.Sheridan,winter_calibration_df.ref_avg, winter_calibration_df.Sheridan,
+                 calibration_df.ref_avg,calibration_df.Sheridan,'Sheridan',2, 'Wildfire Node 9',
+                 high_calibration_df.Sheridan_mlr_high,winter_calibration_df.Sheridan_mlr_winter)
+#%%
+p10 = linear_plot(high_calibration_df.ref_avg, high_calibration_df.Stevens,winter_calibration_df.ref_avg, winter_calibration_df.Stevens,
+                  calibration_df.ref_avg,calibration_df.Stevens,'Stevens',2, 'Wildfire Node 10',
+                  high_calibration_df.Stevens_mlr_high,winter_calibration_df.Stevens_mlr_winter)
+#%%
 
-#%%
-linear_plot(high_calibration_df.ref_avg, high_calibration_df.Adams,winter_calibration_df.ref_avg, winter_calibration_df.Adams,'Adams',2)
-#%%
-linear_plot(high_calibration_df.ref_avg, high_calibration_df.Balboa,winter_calibration_df.ref_avg, winter_calibration_df.Balboa,'Balboa',2)
-#%%
-linear_plot(high_calibration_df.ref_avg, high_calibration_df.Browne,winter_calibration_df.ref_avg, winter_calibration_df.Browne,'Browne',2)
-#%%
-linear_plot(high_calibration_df.ref_avg, high_calibration_df.Grant,winter_calibration_df.ref_avg, winter_calibration_df.Grant,'Grant',2)
-#%%
-linear_plot(high_calibration_df.ref_avg, high_calibration_df.Jefferson,winter_calibration_df.ref_avg, winter_calibration_df.Jefferson,'Jefferson',2)
-#%%
-linear_plot(high_calibration_df.ref_avg, high_calibration_df.Lidgerwood,winter_calibration_df.ref_avg, winter_calibration_df.Lidgerwood,'Lidgerwood',2)
-#%%
-linear_plot(high_calibration_df.ref_avg, high_calibration_df.Regal,winter_calibration_df.ref_avg, winter_calibration_df.Regal,'Regal',2)
-#%%
-linear_plot(high_calibration_df.ref_avg, high_calibration_df.Sheridan,winter_calibration_df.ref_avg, winter_calibration_df.Sheridan,'Sheridan',2)
-#%%
-linear_plot(high_calibration_df.ref_avg, high_calibration_df.Stevens,winter_calibration_df.ref_avg, winter_calibration_df.Stevens,'Stevens',2)
+# gridplot of wildfire/winter condition reference data
+
+p11 = gridplot([[p1,p2], [p3, p4], [p5, p6], [p7, p8], [p9, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
+
+
+#export_png(p11, filename='/Users/matthew/Desktop/thesis/publishing/figures/combined_correction_data_gridplot_with_stats.png')
+#export_png(p11, filename='/Users/matthew/Desktop/thesis/publishing/figures/combined_correction_data_gridplot_no_stats.png')
+
+export_png(p11, filename='/Users/matthew/Desktop/thesis/publishing/figures/combined_correction_data_gridplot_no_numbers_with_titles.png')
+
+tab1 = Panel(child=p11, title="Combined Reference Data")
+
+tabs = Tabs(tabs=[ tab1])
+
+show(tabs)
+
+
+
+
 #%%
 
 # Plot mlr calibrated data at the same time and get linear regression equations for corrected data

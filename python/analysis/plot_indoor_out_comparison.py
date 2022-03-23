@@ -49,7 +49,8 @@ def indoor_outdoor_plot(indoor, outdoor, site_number, stdev_number, time_period,
         filepath = '/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_5/'
         y_scale_option = (0, 200)
     else:
-        pass
+        filepath = '/Users/matthew/Desktop/'
+        y_scale_option = (-5, 30)
 
     
     # use if want to label site by school name
@@ -157,11 +158,11 @@ def indoor_outdoor_plot(indoor, outdoor, site_number, stdev_number, time_period,
     if shift == 'yes':
         export_png(p1, filename=filepath + indoor.iloc[0]['Location'] + '.png')
     
-    elif shift == 'no':
-        if stdev_number == 1:
-            export_png(p1, filename=filepath + indoor.iloc[0]['Location'] + '.png')#'_unshifted_uncertainty_1''
-        elif stdev_number == 2:
-            export_png(p1, filename=filepath + indoor.iloc[0]['Location'] + '.png') #'_unshifted_uncertainty_2''
+   # elif shift == 'no':
+   #     if stdev_number == 1:
+   #         export_png(p1, filename=filepath + indoor.iloc[0]['Location'] + '.png')#'_unshifted_uncertainty_1''
+   #     elif stdev_number == 2:
+   #         export_png(p1, filename=filepath + indoor.iloc[0]['Location'] + '.png') #'_unshifted_uncertainty_2''
         
     tab1 = Panel(child=p1, title="Indoor Outdoor Comparison")
     

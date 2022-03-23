@@ -23,15 +23,19 @@ from bokeh.models import HoverTool
 from spec_humid import spec_humid
 from load_indoor_data import load_indoor
 from limit_of_detection import lod
-import copy
-from random_forest_function_test import rf, evaluate_model
-from mlr_function import mlr_function, mlr_model
+#import copy
+#from random_forest_function_test import rf, evaluate_model
+#from mlr_function import mlr_function, mlr_model
 from Augusta_hybrid_calibration import hybrid_function
 from linear_plot_function import linear_plot
 #%%
 
 Reference_All = pd.DataFrame({})
 files = glob('/Users/matthew/Desktop/data/Clarity_Backup/Reference*.csv')
+#%%
+for name in glob('/Users/matthew/Desktop/data/Clarity_Backup/Reference*.csv'):
+    print(name)
+#%%
 files.sort()
 for file in files:
     Reference_All = pd.concat([Reference_All, pd.read_csv(file)], sort=False)

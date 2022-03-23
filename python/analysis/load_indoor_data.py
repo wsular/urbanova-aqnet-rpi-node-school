@@ -13,7 +13,7 @@ def load_indoor(name, df_csv, df_json, interval, **kwargs):
     
     
     
-    files_csv   = glob('/Users/matthew/Desktop/data/urbanova/ramboll/' + name + '/BME*.csv')
+    files_csv   = glob('/Users/matthew/work/data/urbanova/ramboll/' + name + '/BME*.csv')
     files_csv.sort()
     #print(files_csv)
     for file in files_csv:
@@ -27,7 +27,7 @@ def load_indoor(name, df_csv, df_json, interval, **kwargs):
     
     print(df_csv.head)
     
-    files_json   = glob('/Users/matthew/Desktop/data/urbanova/ramboll/' + name + '/WSU*.json')
+    files_json   = glob('/Users/matthew/work/data/urbanova/ramboll/' + name + '/WSU*.json')
     files_json.sort()
     for file in files_json:
         df_json = pd.concat([df_json, pd.read_json(file)], sort=False)

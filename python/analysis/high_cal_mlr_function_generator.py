@@ -7,17 +7,20 @@ Created on Sun Oct  4 16:59:33 2020
 """
 
 import statsmodels.api as sm
+#%%
 import numpy as np
 import scipy
 from bokeh.plotting import figure
 from bokeh.models import Panel, Tabs
 from bokeh.io import output_notebook, output_file, show
+#%%
 import pandas as pd
+#%%
 from glob import glob
-
+#%%
 def high_cal_setup():
     calibration_df = pd.DataFrame({})
-    files = glob('/Users/matthew/Desktop/data/high_calibration/high_calibration*.csv')
+    files = glob('/Users/matthew/work/data/high_calibration/high_calibration*.csv')
     files.sort()
     for file in files:
         calibration_df = pd.concat([calibration_df, pd.read_csv(file)], sort=False)

@@ -178,8 +178,8 @@ sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right no
 #end_time = '2020-12-07 23:00'
 
 # Date Range of interest
-start_time = '2022-02-16 01:00'   
-end_time = '2022-03-20 00:00'
+start_time = '2022-04-06 01:00'   
+end_time = '2022-04-10 00:00'
 sampling_period = '9'
 
 
@@ -1985,7 +1985,7 @@ regal['Location'] = 'Regal'
 #%%
 
 # just used to resample indoor data to lower frequency so doesnt take so long to load in each time
-date_range = '2_16_to_3_20_22'
+date_range = '4_06_to_4_10_22'
 #%%
 
 audubon.to_csv('/Users/matthew/work/data/urbanova/ramboll/Audubon/resample_15_min_audubon' + '_' + date_range + '.csv', index=False)

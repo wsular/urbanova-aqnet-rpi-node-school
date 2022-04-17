@@ -11,41 +11,30 @@ import pandas as pd
 from glob import glob
 from bokeh.models import Panel, Tabs
 from bokeh.layouts import gridplot
-
-import holoviews as hv
-hv.extension('bokeh', logo=False)
-
 from plot_indoor_out_comparison import indoor_outdoor_plot
 from load_indoor_data import load_indoor
 from high_cal_mlr_function_generator import high_cal_setup, generate_mlr_function_high_cal
 from indoor_cal_low import indoor_cal_low
 from outdoor_low_cal import outdoor_cal_low
-from time_period_4_compare_data_generator import in_out_compare_period_4_data_generator
 from bokeh.io import show
 from bokeh.io import export_png
 
 #%%
 
-ModelType = 'mlr'    # options: rf, mlr, hybrid, linear
-stdev_number = 2   # defines whether using 1 or 2 stdev for uncertainty
-
-slope_sigma1 = 2       # percent uncertainty of SRCAA BAM calibration to reference clarity slope
-slope_sigma2 = 4.5     # percent uncertainty of slope for paccar roof calibrations (square root of VAR slope from excel)
-slope_sigma_paccar = 2     # percent uncertainty of slope for Paccar Clarity unit at SRCAA BAM calibration
-sigma_i = 5            # uncertainty of Clarity measurements (arbitrary right now) in ug/m^3
+stdev_number = 2   # defines whether using 1 or 2 stdev for uncertainty (one of the options for plotting)
 
 # Date Range of interest
-start_time = '2022-04-06 01:00'   
-end_time = '2022-04-10 00:00'
+start_time = '2022-04-10 01:00'   
+end_time = '2022-04-17 00:00'
 sampling_period = '9'
 interval = '60T'
 
-weekly_plot_dates = '4_06_to_4_10_22'
+weekly_plot_dates = '4_10_to_4_17_22'
 
 #%%
 
 
-# initiate dataframe for high calibration data used to generate high calibration mlr functions for each location
+# initiate dataframe for high calibration data used to generate high calibration mlr functions for each location for Clarity Nodes
 calibration_df = high_cal_setup()
 
 # generate the mlr for each location based on high calibration data
@@ -60,9 +49,10 @@ mlr_high_regal = generate_mlr_function_high_cal(calibration_df, 'Regal')
 mlr_high_sheridan = generate_mlr_function_high_cal(calibration_df, 'Sheridan')
 mlr_high_stevens = generate_mlr_function_high_cal(calibration_df, 'Stevens')
 
-
-#Import entire data set
 #%%
+
+#Import entire data set of Clarity Data for each location
+
 Audubon_All = pd.DataFrame({})
 files = glob('/Users/matthew/work/data/Clarity_Backup/Audubon*.csv')
 files.sort()
@@ -145,7 +135,7 @@ for file in files:
 
 
 
-# resample and cut data to time period of interest
+# resample and cut Clarity data to time period of interest
 
 Audubon_All['time'] = pd.to_datetime(Audubon_All['time'])
 Audubon_All = Audubon_All.sort_values('time')
@@ -220,7 +210,7 @@ Stevens_All = Stevens_All.sort_values('time')
 Stevens_All.index = Stevens_All.time
 Stevens = Stevens_All.loc[start_time:end_time]
 
-
+# resample to interval used to generate the corrections
 
 Audubon = Audubon.resample(interval).mean() 
 Adams = Adams.resample(interval).mean()  
@@ -322,90 +312,40 @@ sheridan_bme_json = pd.DataFrame({})
 stevens_bme = pd.DataFrame({})
 stevens_bme_json = pd.DataFrame({})
 
-if sampling_period == '4':
-    audubon_bme, audubon_bme_json = load_indoor('Audubon', audubon_bme,audubon_bme_json, interval, 
-                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
-                                                start_2 = start_time_2, stop_2 = end_time_2)
-else:
-    audubon_bme, audubon_bme_json = load_indoor('Audubon', audubon_bme,audubon_bme_json, interval,
+
+audubon_bme, audubon_bme_json = load_indoor('Audubon', audubon_bme,audubon_bme_json, interval,
                                                 time_period_4 = 'no', start = start_time, stop = end_time)
 
 
-if sampling_period == '4':
-    adams_bme, adams_bme_json = load_indoor('Adams', adams_bme,adams_bme_json, interval, 
-                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
-                                                start_2 = start_time_2, stop_2 = end_time_2)
-else:
-    adams_bme, adams_bme_json = load_indoor('Adams', adams_bme,adams_bme_json, interval,
+adams_bme, adams_bme_json = load_indoor('Adams', adams_bme,adams_bme_json, interval,
                                             time_period_4 = 'no', start = start_time, stop = end_time)
 
-
-if sampling_period == '4':
-    balboa_bme, balboa_bme_json = load_indoor('Balboa', balboa_bme,balboa_bme_json, interval, 
-                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
-                                                start_2 = start_time_2, stop_2 = end_time_2)
-else:
-    balboa_bme, balboa_bme_json = load_indoor('Balboa', balboa_bme,balboa_bme_json, interval,
+balboa_bme, balboa_bme_json = load_indoor('Balboa', balboa_bme,balboa_bme_json, interval,
                                               time_period_4 = 'no', start = start_time, stop = end_time)
 
-
-if sampling_period == '4':
-    browne_bme, browne_bme_json = load_indoor('Browne', browne_bme,browne_bme_json, interval, 
-                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
-                                                start_2 = start_time_2, stop_2 = end_time_2)
-else:
-    browne_bme, browne_bme_json = load_indoor('Browne', browne_bme,browne_bme_json, interval,
+browne_bme, browne_bme_json = load_indoor('Browne', browne_bme,browne_bme_json, interval,
                                               time_period_4 = 'no', start = start_time, stop = end_time)
 
-if sampling_period == '4':
-    grant_bme, grant_bme_json = load_indoor('Grant', grant_bme,grant_bme_json, interval, 
-                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
-                                                start_2 = start_time_2, stop_2 = end_time_2)
-else:
-    grant_bme, grant_bme_json = load_indoor('Grant', grant_bme,grant_bme_json, interval,
+grant_bme, grant_bme_json = load_indoor('Grant', grant_bme,grant_bme_json, interval,
                                             time_period_4 = 'no', start = start_time, stop = end_time)
 
-if sampling_period == '4':
-    jefferson_bme, jefferson_bme_json = load_indoor('Jefferson', jefferson_bme,jefferson_bme_json, interval, 
-                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
-                                                start_2 = start_time_2, stop_2 = end_time_2)
-else:
-    jefferson_bme, jefferson_bme_json = load_indoor('Jefferson', jefferson_bme,jefferson_bme_json, interval,
+jefferson_bme, jefferson_bme_json = load_indoor('Jefferson', jefferson_bme,jefferson_bme_json, interval,
                                                     time_period_4 = 'no', start = start_time, stop = end_time)
 
 
-if sampling_period == '4':
-    lidgerwood_bme, lidgerwood_bme_json = load_indoor('Lidgerwood', lidgerwood_bme,lidgerwood_bme_json, interval, 
-                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
-                                                start_2 = start_time_2, stop_2 = end_time_2)
-else:
-    lidgerwood_bme, lidgerwood_bme_json = load_indoor('Lidgerwood', lidgerwood_bme,lidgerwood_bme_json, interval,
+lidgerwood_bme, lidgerwood_bme_json = load_indoor('Lidgerwood', lidgerwood_bme,lidgerwood_bme_json, interval,
                                                       time_period_4 = 'no', start = start_time, stop = end_time)
 
-if sampling_period == '4':
-    regal_bme, regal_bme_json = load_indoor('Regal', regal_bme,regal_bme_json, interval, 
-                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
-                                                start_2 = start_time_2, stop_2 = end_time_2)
-else:
-    regal_bme, regal_bme_json = load_indoor('Regal', regal_bme,regal_bme_json, interval,
+regal_bme, regal_bme_json = load_indoor('Regal', regal_bme,regal_bme_json, interval,
                                             time_period_4 = 'no', start = start_time, stop = end_time)
-    #%%
-if sampling_period == '4':
-    sheridan_bme, sheridan_bme_json = load_indoor('Sheridan', sheridan_bme,sheridan_bme_json, interval, 
-                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
-                                                start_2 = start_time_2, stop_2 = end_time_2)
-else:
-    sheridan_bme, sheridan_bme_json = load_indoor('Sheridan', sheridan_bme,sheridan_bme_json, interval,
-                                                  time_period_4 = 'no', start = start_time, stop = end_time)
-#%%
-if sampling_period == '4':
-    stevens_bme, stevens_bme_json = load_indoor('Stevens', stevens_bme,stevens_bme_json, interval, 
-                                                time_period_4 = 'yes', start_1 = start_time_1, stop_1 = end_time_1,
-                                                start_2 = start_time_2, stop_2 = end_time_2)
-else:
-    stevens_bme, stevens_bme_json = load_indoor('Stevens', stevens_bme,stevens_bme_json, interval,
+
+
+#sheridan_bme, sheridan_bme_json = load_indoor('Sheridan', sheridan_bme,sheridan_bme_json, interval,
+#                                                  time_period_4 = 'no', start = start_time, stop = end_time)
+
+
+stevens_bme, stevens_bme_json = load_indoor('Stevens', stevens_bme,stevens_bme_json, interval,
                                                 time_period_4 = 'no', start = start_time, stop = end_time)
-    
     
     
 grant = pd.DataFrame({})
@@ -446,8 +386,6 @@ files.sort()
 for file in files:
     jefferson = pd.concat([jefferson, pd.read_csv(file)], sort=False)
 
-
-# Comparison Data for indoor PMS5003 unit and Clarity Unit overlap for lowest 4 Clarity sensors
 
 browne = pd.DataFrame({})
 files   = glob('/Users/matthew/work/data/urbanova/ramboll/Browne/resample*.csv')
@@ -501,30 +439,16 @@ stevens['Datetime'] = pd.to_datetime(stevens['Datetime'])
 stevens.index = stevens.Datetime
 #%%
 
-if sampling_period == '4':
-    adams = in_out_compare_period_4_data_generator(adams, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Adams', unit = 'indoor')
-    audubon = in_out_compare_period_4_data_generator(audubon, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Audubon', unit = 'indoor')
-    balboa = in_out_compare_period_4_data_generator(balboa, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Balboa', unit = 'indoor')
-    browne = in_out_compare_period_4_data_generator(browne, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Browne', unit = 'indoor')
-    grant = in_out_compare_period_4_data_generator(grant, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Grant', unit = 'indoor')
-    jefferson = in_out_compare_period_4_data_generator(jefferson, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Jefferson', unit = 'indoor')
-    lidgerwood = in_out_compare_period_4_data_generator(lidgerwood, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Lidgerwood', unit = 'indoor')
-    regal = in_out_compare_period_4_data_generator(regal, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Regal', unit = 'indoor')
-   # sheridan = in_out_compare_period_4_data_generator(sheridan, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Sheridan', unit = 'indoor')
-    stevens = in_out_compare_period_4_data_generator(stevens, start_time_1, end_time_1, start_time_2, end_time_2, interval, 'Stevens', unit = 'indoor')
-    
-        
-else:
-    adams = adams.loc[start_time:end_time]
-    audubon = audubon.loc[start_time:end_time]
-    balboa = balboa.loc[start_time:end_time]
-    browne = browne.loc[start_time:end_time]
-    grant = grant.loc[start_time:end_time]
-    jefferson = jefferson.loc[start_time:end_time]
-    lidgerwood = lidgerwood.loc[start_time:end_time]
-    regal = regal.loc[start_time:end_time]
-   # sheridan = sheridan.loc[start_time:end_time]
-    stevens = stevens.loc[start_time:end_time]
+adams = adams.loc[start_time:end_time]
+audubon = audubon.loc[start_time:end_time]
+balboa = balboa.loc[start_time:end_time]
+browne = browne.loc[start_time:end_time]
+grant = grant.loc[start_time:end_time]
+jefferson = jefferson.loc[start_time:end_time]
+lidgerwood = lidgerwood.loc[start_time:end_time]
+regal = regal.loc[start_time:end_time]
+# sheridan = sheridan.loc[start_time:end_time]
+stevens = stevens.loc[start_time:end_time]
 
 
 adams = adams.resample(interval).mean() 
@@ -588,6 +512,7 @@ regal['Location'] = 'Regal'
 #sheridan['Location'] = 'Sheridan'
 stevens['Location'] = 'Stevens'
 
+# use when not in smoke cal times
 
 audubon_low = indoor_cal_low(audubon, 'Audubon', sampling_period)
 adams_low = indoor_cal_low(adams, 'Adams', sampling_period)
@@ -600,8 +525,6 @@ regal_low = indoor_cal_low(regal, 'Regal', sampling_period)
 #sheridan_low = indoor_cal_low(sheridan, 'Sheridan', sampling_period)
 stevens_low = indoor_cal_low(stevens, 'Stevens', sampling_period)
 
-
-# use when not in smoke cal times
 audubon = audubon_low
 adams = adams_low
 balboa = balboa_low
@@ -658,7 +581,7 @@ p11 = gridplot([[p1,p2], [p4, p5], [p6, p7], [p8, p10]], plot_width = 500, plot_
 # make sure to change the In_out_compare number to put in correct folder based on the time period
 
 #export_png(p11, filename='/Users/matthew/Desktop/thesis/Final_Figures/In_out_compare_' + sampling_period + '/all_sites_gridplot_unshifted.png')
-export_png(p11, filename='/Users/matthew/Desktop/weekly_plots/In_out_compare_' + weekly_plot_dates + '.png')
+export_png(p11, filename='/Users/matthew/work/software/urbanova/urbanova-aqnet-rpi-node-school/python/weekly_plots/weekly_plots/' + weekly_plot_dates + '.png')
 
 tab1 = Panel(child=p11, title="Indoor Outdoor Comparison")
 

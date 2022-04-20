@@ -511,7 +511,7 @@ lidgerwood['Location'] = 'Lidgerwood'
 regal['Location'] = 'Regal'
 #sheridan['Location'] = 'Sheridan'
 stevens['Location'] = 'Stevens'
-
+#%%
 # use when not in smoke cal times
 
 audubon_low = indoor_cal_low(audubon, 'Audubon', sampling_period)

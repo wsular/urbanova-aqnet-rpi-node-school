@@ -35,7 +35,6 @@ def prev_week_date_generator(previous_dates, site_name):
 
         date = datetime.now() - timedelta(day)
         dates_list.append(date)
-
         
     previous_dates[site_name] = dates_list
 
@@ -56,7 +55,7 @@ def one_week_file_compiler(previous_dates, site_name, site_df, site_number, bme_
         
         # load Plantower PM data
         date_string = date.strftime('%Y%m%d')
-        file = glob('/Users/matthew/work/data/urbanova/ramboll/' + site_name + '/WSU_LAR_Indoor_Air_Quality_Node_' + site_number + '_' + date_string + '*.csv')
+        file = glob('/Users/matthew/work/PMS_5003_resample_backup/data/ramboll/' + site_name + '/WSU_LAR_Indoor_Air_Quality_Node_' + site_number + '_' + date_string + '*.csv')
        # print(file)
         site_file_list.append(file)
         site_file_list.sort()
@@ -135,15 +134,57 @@ site_list = ['Audubon',
              'Sheridan',
              'Stevens']
 
+bme_site_list = ['bme_Audubon',
+             'bme_Adams',
+             'bme_Balboa',
+             'bme_Browne',
+             'bme_Grant',
+             'bme_Jefferson',
+             'bme_Lidgerwood',
+             'bme_Regal',
+             'bme_Sheridan',
+             'bme_Stevens']
+
+site_number_list = ['11',
+                    '9',
+                    '6',
+                    '5',
+                    '4',
+                    '8',
+                    '3',
+                    '10',
+                    '1',
+                    '2']
 # generate previous week of datetimes for each site
 
 for site_name in site_list:
     
     previous_dates = prev_week_date_generator(previous_dates,site_name)
 
-
 #%%
+    # this cell just testing to see if can condese the following cells using loops (don't use for now)
+previous_dates_list = []
 
+for x in range(len(site_list)):
+    previous_dates_list.append(previous_dates.iloc[:, 0].tolist())
+
+
+#df_name_list = ['adams',  'audubon',  'balboa',  'browne',  'grant',  'jefferson', 'lidgerwood',  'regal',  'sheridan',  'stevens', ]
+#bme_name_list = ['adams_bme', 'audubon_bme', 'balboa_bme', 'browne_bme', 'grant_bme',  'jefferson_bme', 'lidgerwood_bme', 'regal_bme', 'sheridan_bme', 'stevens_bme']
+
+df_list = {}
+bme_df_list = {}
+
+for name in site_list:
+        df_list[name] = pd.DataFrame()
+        
+for name in bme_site_list:
+        bme_df_list[name] = pd.DataFrame()
+
+for date, name, df, number, bme in zip(previous_dates_list, site_list, df_list, site_number_list, bme_site_list): 
+    
+    one_week_file_compiler(date, name, df, number, bme)
+        #%%
 # create dataframes for each site that have combined the previous 7 days worth of data into a single df
 # Note that the date_string list is simply rewritten each time a new locations df is created (it is only needed for the file names when saving to csv)
 
@@ -187,7 +228,9 @@ stevens = pd.DataFrame({})
 stevens_bme = pd.DataFrame({})
 stevens, stevens_bme, date_string_list = one_week_file_compiler(previous_dates, 'Stevens', stevens, '2', stevens_bme)
 
+        
 
+    
 #%%
 
 # set date range for resampled file name
@@ -296,7 +339,7 @@ p10 = plot_indoor(stevens, 'Stevens')
 
 p11 = gridplot([[p1,p2], [p4, p5], [p7, p8], [p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
 
-export_png(p11, filename='/Users/matthew/work/software/urbanova/urbanova-aqnet-rpi-node-school/python/weekly_plots/weekly_plots/' + date_start + '_to_' + date_end + '.png')
+#export_png(p11, filename='/Users/matthew/work/software/urbanova/urbanova-aqnet-rpi-node-school/python/weekly_plots/weekly_plots/' + date_start + '_to_' + date_end + '.png')
 
 tab1 = Panel(child=p11, title="Indoor PM2.5")
 tabs = Tabs(tabs=[ tab1])

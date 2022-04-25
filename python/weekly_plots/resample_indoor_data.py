@@ -15,8 +15,8 @@ import numpy as np
 
 # Date Range to be resampled
 
-start_time = '2022-04-10 01:00'   
-end_time = '2022-04-17 00:00'
+start_time = '2022-04-17 01:00'   
+end_time = '2022-04-24 00:00'
 sampling_period = '9'
 
 interval = '15T'  # only used for resampling indoor data so more manageable and doesnt take 20 min to load in... use 1 hr and 24 hr for any analysis as these are what the calibrations are based on 
@@ -254,7 +254,7 @@ regal['Location'] = 'Regal'
 
 # set date range for resampled file name
 
-date_range = '4_10_to_4_17_22'
+date_range = '4_17_to_4_24_22'
 #%%
 
 # save resampled data to csv files

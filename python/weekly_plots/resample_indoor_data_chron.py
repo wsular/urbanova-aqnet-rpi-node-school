@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 # -*- coding: utf-8 -*-
 """
 Created on Sat Apr 16 16:31:40 2022
@@ -6,7 +6,7 @@ Created on Sat Apr 16 16:31:40 2022
 @author: matthew
 """
 
-#%%
+
 import pandas as pd
 from glob import glob
 import numpy as np
@@ -21,14 +21,14 @@ from bokeh.io import export_png
 from plot_indoor import plot_indoor
 from indoor_correction import indoor_correction
 
-#%%
+
 
 # Function used to generate a df of datetimes for the previous 7 days for each school 
 # (Note that the dates are the same for each school, simply repeated for ease of use in the "one_week_file_compiler" function)
 
 def prev_week_date_generator(previous_dates, site_name):
 
-    previous_days = [1,2,3,4,5,6,7]     
+    previous_days = [1]#,2,3,4,5,6,7]     
     dates_list = []
 
     for day in previous_days:
@@ -108,8 +108,6 @@ def combine(Plantower, bme):
     return Plantower
 
 
-#%%
-
 # Set resample interval - used to resample indoor data to lower frequency so that it is more manageable to load in at a future time for analysis.
 # Note that data used for analysis is resampled back to 1 hr or 24 hr for analysis after being loaded in as the 15 min resamples created in this script
 resample_interval = '15T'
@@ -161,30 +159,32 @@ for site_name in site_list:
     
     previous_dates = prev_week_date_generator(previous_dates,site_name)
 
-#%%
-    # this cell just testing to see if can condese the following cells using loops (don't use for now)
-previous_dates_list = []
+###
+    # this cell just testing to see if can condense the following cells using loops (don't use for now)
+##previous_dates_list = []
 
-for x in range(len(site_list)):
-    previous_dates_list.append(previous_dates.iloc[:, 0].tolist())
+##for x in range(len(site_list)):
+##    previous_dates_list.append(previous_dates.iloc[:, 0].tolist())
 
 
 #df_name_list = ['adams',  'audubon',  'balboa',  'browne',  'grant',  'jefferson', 'lidgerwood',  'regal',  'sheridan',  'stevens', ]
 #bme_name_list = ['adams_bme', 'audubon_bme', 'balboa_bme', 'browne_bme', 'grant_bme',  'jefferson_bme', 'lidgerwood_bme', 'regal_bme', 'sheridan_bme', 'stevens_bme']
 
-df_list = {}
-bme_df_list = {}
+##df_list = {}
+##bme_df_list = {}
 
-for name in site_list:
-        df_list[name] = pd.DataFrame()
+##for name in site_list:
+##        df_list[name] = pd.DataFrame()
         
-for name in bme_site_list:
-        bme_df_list[name] = pd.DataFrame()
+##for name in bme_site_list:
+##        bme_df_list[name] = pd.DataFrame()
 
-for date, name, df, number, bme in zip(previous_dates_list, site_list, df_list, site_number_list, bme_site_list): 
+##for date, name, df, number, bme in zip(previous_dates_list, site_list, df_list, site_number_list, bme_site_list): 
     
-    one_week_file_compiler(date, name, df, number, bme)
-        #%%
+##    one_week_file_compiler(date, name, df, number, bme
+    
+###
+
 # create dataframes for each site that have combined the previous 7 days worth of data into a single df
 # Note that the date_string list is simply rewritten each time a new locations df is created (it is only needed for the file names when saving to csv)
 
@@ -208,9 +208,9 @@ grant = pd.DataFrame({})
 grant_bme = pd.DataFrame({})
 grant, grant_bme, date_string_list = one_week_file_compiler(previous_dates, 'Grant', grant, '4', grant_bme)
 
-#jefferson = pd.DataFrame({})
-#jefferson_bme = pd.DataFrame({})
-#jefferson, jefferson_bme, date_string_list = one_week_file_compiler(previous_dates, 'Jefferson', jefferson, '8', jefferson_bme)
+jefferson = pd.DataFrame({})
+jefferson_bme = pd.DataFrame({})
+jefferson, jefferson_bme, date_string_list = one_week_file_compiler(previous_dates, 'Jefferson', jefferson, '8', jefferson_bme)
 
 lidgerwood = pd.DataFrame({})
 lidgerwood_bme = pd.DataFrame({})
@@ -228,17 +228,12 @@ stevens = pd.DataFrame({})
 stevens_bme = pd.DataFrame({})
 stevens, stevens_bme, date_string_list = one_week_file_compiler(previous_dates, 'Stevens', stevens, '2', stevens_bme)
 
-        
-
-    
-#%%
 
 # set date range for resampled file name
 
-date_start = date_string_list[6]
+#date_start = date_string_list[6]
 date_end = date_string_list[0]
 
-#%%
 
 # resample indoor data to 15 min frequency
 # plantower has one extra data point on next day at 0 seconds, when combine with bme drop the extra line
@@ -267,9 +262,9 @@ grant = combine(grant, grant_bme)
 
 # currently Plantower unit at jefferson is down
 
-#jefferson = resample(jefferson, 'Jefferson', resample_interval) # doubled checked with other script output, matches
-#jefferson_bme = resample(jefferson_bme, 'Jefferson', resample_interval)
-#jefferson = combine(jefferson, jefferson_bme)
+jefferson = resample(jefferson, 'Jefferson', resample_interval) # doubled checked with other script output, matches
+jefferson_bme = resample(jefferson_bme, 'Jefferson', resample_interval)
+jefferson = combine(jefferson, jefferson_bme)
 
 lidgerwood = resample(lidgerwood, 'Lidgerwood', resample_interval) # doubled checked with other script output, matches
 lidgerwood_bme = resample(lidgerwood_bme, 'Lidgerwood', resample_interval)
@@ -291,23 +286,33 @@ stevens = resample(stevens, 'Stevens', resample_interval) # doubled checked with
 stevens_bme = resample(stevens_bme, 'Stevens', resample_interval)
 stevens = combine(stevens, stevens_bme)
 
-#%%
+
 
 # save resampled data to csv files (save before resample for plotting to keep 15 min interval because dfs resampled to 1 hour for the correction)
 
-audubon.to_csv('/Users/matthew/work/data/urbanova/ramboll/Audubon/resample_15_min_audubon' + '_' + date_start + '_' + date_end + '.csv', index=False)
-adams.to_csv('/Users/matthew/work/data/urbanova/ramboll/Adams/resample_15_min_adams' + '_' + date_start + '_' + date_end + '.csv', index=False)
-#balboa.to_csv('/Users/matthew/work/data/urbanova/ramboll/Balboa/resample_15_min_balboa' + '_' + date_start + '_' + date_end + '.csv', index=False)
-browne.to_csv('/Users/matthew/work/data/urbanova/ramboll/Browne/resample_15_min_browne' + '_' + date_start + '_' + date_end + '.csv', index=False)
-grant.to_csv('/Users/matthew/work/data/urbanova/ramboll/Grant/resample_15_min_grant' + '_' + date_start + '_' + date_end + '.csv', index=False)
+#audubon.to_csv('/Users/matthew/work/data/urbanova/ramboll/Audubon/resample_15_min_audubon' + '_' + date_start + '_' + date_end + '.csv', index=False)
+#adams.to_csv('/Users/matthew/work/data/urbanova/ramboll/Adams/resample_15_min_adams' + '_' + date_start + '_' + date_end + '.csv', index=False)
+##balboa.to_csv('/Users/matthew/work/data/urbanova/ramboll/Balboa/resample_15_min_balboa' + '_' + date_start + '_' + date_end + '.csv', index=False)
+#browne.to_csv('/Users/matthew/work/data/urbanova/ramboll/Browne/resample_15_min_browne' + '_' + date_start + '_' + date_end + '.csv', index=False)
+#grant.to_csv('/Users/matthew/work/data/urbanova/ramboll/Grant/resample_15_min_grant' + '_' + date_start + '_' + date_end + '.csv', index=False)
 #jefferson.to_csv('/Users/matthew/work/data/urbanova/ramboll/Jefferson/resample_15_min_jefferson' + '_' + date_start + '_' + date_end + '.csv', index=False)
-lidgerwood.to_csv('/Users/matthew/work/data/urbanova/ramboll/Lidgerwood/resample_15_min_lidgerwood' + '_' + date_start + '_' + date_end + '.csv', index=False)
-regal.to_csv('/Users/matthew/work/data/urbanova/ramboll/Regal/resample_15_min_regal' + '_' + date_start + '_' + date_end + '.csv', index=False)
-#sheridan.to_csv('/Users/matthew/work/data/urbanova/ramboll/Sheridan/resample_15_min_sheridan' + '_' + date_start + '_' + date_end + '.csv', index=False)
-stevens.to_csv('/Users/matthew/work/data/urbanova/ramboll/Stevens/resample_15_stevens' + '_' + date_start + '_' + date_end + '.csv', index=False)
+#lidgerwood.to_csv('/Users/matthew/work/data/urbanova/ramboll/Lidgerwood/resample_15_min_lidgerwood' + '_' + date_start + '_' + date_end + '.csv', index=False)
+#regal.to_csv('/Users/matthew/work/data/urbanova/ramboll/Regal/resample_15_min_regal' + '_' + date_start + '_' + date_end + '.csv', index=False)
+##sheridan.to_csv('/Users/matthew/work/data/urbanova/ramboll/Sheridan/resample_15_min_sheridan' + '_' + date_start + '_' + date_end + '.csv', index=False)
+#stevens.to_csv('/Users/matthew/work/data/urbanova/ramboll/Stevens/resample_15_stevens' + '_' + date_start + '_' + date_end + '.csv', index=False)
+
+audubon.to_csv('/Users/matthew/work/data/urbanova/ramboll/Audubon/resample_15_min_audubon' + '_' + '_' + date_end + '.csv', index=False)
+adams.to_csv('/Users/matthew/work/data/urbanova/ramboll/Adams/resample_15_min_adams' + '_' + '_' + date_end + '.csv', index=False)
+#balboa.to_csv('/Users/matthew/work/data/urbanova/ramboll/Balboa/resample_15_min_balboa' + '_' + '_' + date_end + '.csv', index=False)
+browne.to_csv('/Users/matthew/work/data/urbanova/ramboll/Browne/resample_15_min_browne' + '_' + '_' + date_end + '.csv', index=False)
+grant.to_csv('/Users/matthew/work/data/urbanova/ramboll/Grant/resample_15_min_grant' + '_' + '_' + date_end + '.csv', index=False)
+jefferson.to_csv('/Users/matthew/work/data/urbanova/ramboll/Jefferson/resample_15_min_jefferson' + '_' + '_' + date_end + '.csv', index=False)
+lidgerwood.to_csv('/Users/matthew/work/data/urbanova/ramboll/Lidgerwood/resample_15_min_lidgerwood' + '_' + '_' + date_end + '.csv', index=False)
+regal.to_csv('/Users/matthew/work/data/urbanova/ramboll/Regal/resample_15_min_regal' + '_' + '_' + date_end + '.csv', index=False)
+#sheridan.to_csv('/Users/matthew/work/data/urbanova/ramboll/Sheridan/resample_15_min_sheridan' + '_' + '_' + date_end + '.csv', index=False)
+stevens.to_csv('/Users/matthew/work/data/urbanova/ramboll/Stevens/resample_15_stevens' + '_' + '_' + date_end + '.csv', index=False)
 
 
-#%%
 
 # apply linear correction to indoor sensors (resamples to 1 hr to apply correction)
 
@@ -316,13 +321,13 @@ adams = indoor_correction(adams, 'Adams', correction_interval)
 #balboa = indoor_correction(balboa, 'Balboa', correction_interval)
 browne = indoor_correction(browne, 'Browne', correction_interval)
 grant = indoor_correction(grant, 'Grant', correction_interval)
-#jefferson = indoor_correction(jefferson, 'Jefferson', correction_interval)
+jefferson = indoor_correction(jefferson, 'Jefferson', correction_interval)
 lidgerwood = indoor_correction(lidgerwood, 'Lidgerwood', correction_interval)
 regal = indoor_correction(regal, 'Regal', correction_interval)
 #sheridan = indoor_correction(sheridan, 'Sheridan', correction_interval)
 stevens = indoor_correction(stevens, 'Stevens', correction_interval)
 
-#%%
+
 
 # generate plots
 
@@ -331,15 +336,17 @@ p2 = plot_indoor(adams, 'Adams')
 #p3 = plot_indoor(balboa, 'Balboa')
 p4 = plot_indoor(browne, 'Browne')
 p5 = plot_indoor(grant, 'Grant')
-#p6 = plot_indoor(jefferson, 'Jefferson')
+p6 = plot_indoor(jefferson, 'Jefferson')
 p7 = plot_indoor(lidgerwood, 'Lidgerwood')
 p8 = plot_indoor(regal, 'Regal')
 #p9 = plot_indoor(sheridan, 'Sheridan') 
 p10 = plot_indoor(stevens, 'Stevens') 
 
-p11 = gridplot([[p1,p2], [p4, p5], [p7, p8], [p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
+p11 = gridplot([[p1,p2], [p4, p5], [p6, p7], [p8, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
 
 #export_png(p11, filename='/Users/matthew/work/software/urbanova/urbanova-aqnet-rpi-node-school/python/weekly_plots/weekly_plots/' + date_start + '_to_' + date_end + '.png')
+export_png(p11, filename='/Users/matthew/work/software/urbanova/urbanova-aqnet-rpi-node-school/python/weekly_plots/weekly_plots/' + date_end + '.png')
+
 
 tab1 = Panel(child=p11, title="Indoor PM2.5")
 tabs = Tabs(tabs=[ tab1])

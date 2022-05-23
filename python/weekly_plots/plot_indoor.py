@@ -23,7 +23,7 @@ def plot_indoor(indoor, site_name):
             x_axis_type='datetime',
             x_axis_label='Time (local)',
             y_axis_label='PM 2.5 (ug/m³)',
-            y_range = (-5, 30))
+            y_range = (-3, 20))
     
     p1.title.text = site_name
     p1.title.text_font_size = '14pt'

@@ -24,12 +24,12 @@ from bokeh.io import export_png
 stdev_number = 2   # defines whether using 1 or 2 stdev for uncertainty (one of the options for plotting)
 
 # Date Range of interest
-start_time = '2022-04-17 01:00'   
-end_time = '2022-04-24 00:00'
+start_time = '2022-05-03 01:00'   
+end_time = '2022-05-09 00:00'
 sampling_period = '9'
 interval = '60T'
 
-weekly_plot_dates = '4_17_to_4_24_22'
+weekly_plot_dates = '5_03_to_5_09_22'
 
 #%%
 

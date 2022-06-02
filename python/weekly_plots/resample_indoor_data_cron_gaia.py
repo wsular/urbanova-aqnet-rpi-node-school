@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Apr 16 16:31:40 2022
+Created on Wed Jun  1 19:26:41 2022
 
 @author: matthew
 """
-
 
 import pandas as pd
 from glob import glob
@@ -55,14 +54,14 @@ def one_week_file_compiler(previous_dates, site_name, site_df, site_number, bme_
         
         # load Plantower PM data
         date_string = date.strftime('%Y%m%d')
-        file = glob('/Users/matthew/work/PMS_5003_resample_backup/data/ramboll/' + site_name + '/WSU_LAR_Indoor_Air_Quality_Node_' + site_number + '_' + date_string + '*.csv')
+        file = glob('/mnt/data/vonw/fieldExperiments/2017_curr-Urbanova/ramboll/' + site_name + '/WSU_LAR_Indoor_Air_Quality_Node_' + site_number + '_' + date_string + '*.csv')
        # print(file)
         site_file_list.append(file)
         site_file_list.sort()
         date_string_list.append(date_string)
         
         # load BME sensor data
-        file_bme = glob('/Users/matthew/work/PMS_5003_resample_backup/data/ramboll/' + site_name + '/BME_WSU_LAR_Indoor_Air_Quality_Node_' + site_number + '_' + date_string + '*.csv')
+        file_bme = glob('/mnt/data/vonw/fieldExperiments/2017_curr-Urbanova/ramboll/' + site_name + '/BME_WSU_LAR_Indoor_Air_Quality_Node_' + site_number + '_' + date_string + '*.csv')
       #  print(file_bme)
         bme_site_file_list.append(file_bme)
         bme_site_file_list.sort()
@@ -301,16 +300,16 @@ stevens = combine(stevens, stevens_bme)
 ##sheridan.to_csv('/Users/matthew/work/data/urbanova/ramboll/Sheridan/resample_15_min_sheridan' + '_' + date_start + '_' + date_end + '.csv', index=False)
 #stevens.to_csv('/Users/matthew/work/data/urbanova/ramboll/Stevens/resample_15_stevens' + '_' + date_start + '_' + date_end + '.csv', index=False)
 
-audubon.to_csv('/Users/matthew/work/data/urbanova/ramboll/Audubon/resample_15_min_audubon' + '_' + '_' + date_end + '.csv', index=False)
-adams.to_csv('/Users/matthew/work/data/urbanova/ramboll/Adams/resample_15_min_adams' + '_' + '_' + date_end + '.csv', index=False)
-#balboa.to_csv('/Users/matthew/work/data/urbanova/ramboll/Balboa/resample_15_min_balboa' + '_' + '_' + date_end + '.csv', index=False)
-browne.to_csv('/Users/matthew/work/data/urbanova/ramboll/Browne/resample_15_min_browne' + '_' + '_' + date_end + '.csv', index=False)
-grant.to_csv('/Users/matthew/work/data/urbanova/ramboll/Grant/resample_15_min_grant' + '_' + '_' + date_end + '.csv', index=False)
-jefferson.to_csv('/Users/matthew/work/data/urbanova/ramboll/Jefferson/resample_15_min_jefferson' + '_' + '_' + date_end + '.csv', index=False)
-lidgerwood.to_csv('/Users/matthew/work/data/urbanova/ramboll/Lidgerwood/resample_15_min_lidgerwood' + '_' + '_' + date_end + '.csv', index=False)
-regal.to_csv('/Users/matthew/work/data/urbanova/ramboll/Regal/resample_15_min_regal' + '_' + '_' + date_end + '.csv', index=False)
-#sheridan.to_csv('/Users/matthew/work/data/urbanova/ramboll/Sheridan/resample_15_min_sheridan' + '_' + '_' + date_end + '.csv', index=False)
-stevens.to_csv('/Users/matthew/work/data/urbanova/ramboll/Stevens/resample_15_stevens' + '_' + '_' + date_end + '.csv', index=False)
+audubon.to_csv('/home/mattr/resampled_data/Audubon/resample_15_min_audubon' + '_' + '_' + date_end + '.csv', index=False)
+adams.to_csv('/home/mattr/resampled_data/Adams/resample_15_min_adams' + '_' + '_' + date_end + '.csv', index=False)
+#balboa.to_csv('/home/mattr/resampled_data/Balboa/resample_15_min_balboa' + '_' + '_' + date_end + '.csv', index=False)
+browne.to_csv('/home/mattr/resampled_data/Browne/resample_15_min_browne' + '_' + '_' + date_end + '.csv', index=False)
+grant.to_csv('/home/mattr/resampled_data/Grant/resample_15_min_grant' + '_' + '_' + date_end + '.csv', index=False)
+jefferson.to_csv('/home/mattr/resampled_data/Jefferson/resample_15_min_jefferson' + '_' + '_' + date_end + '.csv', index=False)
+lidgerwood.to_csv('/home/mattr/resampled_data/Lidgerwood/resample_15_min_lidgerwood' + '_' + '_' + date_end + '.csv', index=False)
+regal.to_csv('/home/mattr/resampled_data/Regal/resample_15_min_regal' + '_' + '_' + date_end + '.csv', index=False)
+#sheridan.to_csv('/home/mattr/resampled_data/Sheridan/resample_15_min_sheridan' + '_' + '_' + date_end + '.csv', index=False)
+stevens.to_csv('/home/mattr/resampled_data/Stevens/resample_15_stevens' + '_' + '_' + date_end + '.csv', index=False)
 
 
 
@@ -344,13 +343,10 @@ p10 = plot_indoor(stevens, 'Stevens')
 
 p11 = gridplot([[p1,p2], [p4, p5], [p6, p7], [p8, p10]], plot_width = 500, plot_height = 260, toolbar_location=None)
 
-#export_png(p11, filename='/Users/matthew/work/software/urbanova/urbanova-aqnet-rpi-node-school/python/weekly_plots/weekly_plots/' + date_start + '_to_' + date_end + '.png')
-export_png(p11, filename='/Users/matthew/work/software/urbanova/urbanova-aqnet-rpi-node-school/python/weekly_plots/weekly_plots/' + date_end + '.png')
+export_png(p11, filename='/home/mattr/plots/' + date_end + '.png')
 
 
 tab1 = Panel(child=p11, title="Indoor PM2.5")
 tabs = Tabs(tabs=[ tab1])
 show(tabs)
-
-
 
